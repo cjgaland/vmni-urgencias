@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.3",
+    titulo: "Manual ilustrado, curva flujo-volumen, modo alumno con decisiones y más",
+    texto: "La **Ayuda** estrena el **Manual del Usuario completo en PDF** (descargable e imprimible, con capturas de pantalla, trucos y FAQ) y el **código QR** para compartir la app apuntando con la cámara. La **Docencia** crece hasta **9 temas** (nuevo tema de **alto flujo nasal — TAFCN**) con la **curva flujo-volumen animada** (asas normal, obstructiva y restrictiva); el cuestionario pasa a **40 preguntas** con **progreso guardado** (aciertos, racha y **repaso de falladas**). Los **Casos** permiten **archivar varios casos** en el dispositivo y añaden **6 ejemplos ficticios** completos; el 🎓 modo alumno registra **tus decisiones** en cada etapa y las compara con lo que se hizo. El **Seguimiento** calcula el **índice ROX** cuando el soporte es alto flujo. El **simulador** incorpora **AVAPS** (volumen asegurado) con volumen diana. Y además: **enlaces directos** a cada sección (#simulador, #docencia…), **tamaño de letra ajustable** (A− / A+ en Ayuda), y el buzón de **💬 Sugerencias** en el pie.",
+  },
+  {
     version: "v2.2",
     titulo: "Base científica pública, cifosis y cirugía torácica",
     texto: "Transparencia: desde **Docencia → Bibliografía** puedes **ver y descargar en PDF la base científica completa** de la app (edición de divulgación, con todas las referencias). Los modificadores anatómicos incorporan la **cifosis severa** (CPT reducida: IPAP altas, Ti largo, posible vía aérea difícil) y la **cirugía torácica previa** (capacidad reducida: Vt bajo, vigilar asimetría y neumotórax). Y el documento interno de base científica pasa a v0.2 con la **sección de fármacos validada** integrada.",

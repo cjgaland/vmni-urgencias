@@ -476,6 +476,11 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .ev-veredicto.vigilar{color:var(--ambar)}
 .ev-veredicto.fracaso{color:var(--rojo)}
 .etiq-sim{font-size:.68rem;font-weight:800;color:#8a5a1d;background:#FFF0C2;border-radius:6px;padding:1px 7px}
+.alumno-comparacion{
+  background:#fff;border:1px solid var(--borde);border-radius:9px;padding:10px 13px;
+  margin-bottom:10px;font-size:.88rem;display:flex;flex-direction:column;gap:6px;
+}
+:root[data-tema="oscuro"] .alumno-comparacion{background:var(--tarjeta)}
 .alumno-panel{
   margin-top:14px;background:var(--alerta-fondo);border:1px dashed var(--ambar);
   border-radius:11px;padding:12px 15px;font-size:.92rem;
@@ -511,8 +516,13 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .pie-aviso{font-size:.68rem;font-style:italic;opacity:.8}
 
 /* ---------- ayuda: manual, versiones y FAQ ---------- */
+.ayuda-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.letra-ctl{display:flex;gap:6px}
 .enlace-version{color:var(--acento);font-weight:700;text-decoration:none}
 .enlace-version:hover{text-decoration:underline}
+.manual-cabecera{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.qr-caja{text-align:center;color:var(--texto-suave);font-size:.72rem;flex-shrink:0}
+.qr-caja img{display:block;border-radius:8px;background:#fff;padding:4px;margin:0 auto 4px;border:1px solid var(--borde)}
 .manual-cabecera h3{color:var(--primario);margin-bottom:6px}
 .manual-cabecera p{color:var(--texto-suave);font-size:.9rem}
 .manual-bloque{

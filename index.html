@@ -6,7 +6,7 @@
 <title>VMNI Urgencias</title>
 <meta name="description" content="Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva en Urgencias">
 <meta name="theme-color" content="#0F4C5C">
-<script>try{if(localStorage.getItem("vmni-tema")==="oscuro")document.documentElement.dataset.tema="oscuro"}catch(e){}</script>
+<script>try{if(localStorage.getItem("vmni-tema")==="oscuro")document.documentElement.dataset.tema="oscuro";const L=parseInt(localStorage.getItem("vmni-letra"));if(L>=13&&L<=21)document.documentElement.style.fontSize=L+"px"}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="iconos/icono-192.png">
 <link rel="apple-touch-icon" href="iconos/icono-180.png">
@@ -35,7 +35,7 @@
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
   <button id="btnTema" class="btn-tema" title="Modo oscuro / claro">🌙</button>
-  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v2.2 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v2.3 BETA</span>
 </header>
 
 <main>
@@ -247,6 +247,10 @@
       <div class="control"><label>FiO₂ <output id="oFio2Sim">30</output> %</label><input type="range" id="rFio2" min="21" max="100" step="1" value="30"></div>
       <div class="control"><label>Trigger (flujo) <output id="oTrigger">2</output> L/min</label><input type="range" id="rTrigger" min="1" max="8" value="2"></div>
       <div class="control"><label>Ti máximo <output id="oTi">1,5</output> s</label><input type="range" id="rTi" min="0.6" max="2.5" step="0.1" value="1.5"></div>
+      <div class="fila-docente" style="margin:10px 0 2px">
+        <label class="conmutador"><input type="checkbox" id="tglAvaps"><span></span> AVAPS (volumen asegurado)</label>
+      </div>
+      <div class="control" id="ctlVtDiana" style="display:none"><label>Vt objetivo <output id="oVtDiana">450</output> ml</label><input type="range" id="rVtDiana" min="300" max="700" step="10" value="450"></div>
       <h3>Asincronías</h3>
       <div class="chips asincronias">
         <button class="chip sel" data-a="normal">Normal</button>
@@ -287,6 +291,7 @@
       <div class="campo"><label>FC 1 h</label><input type="number" id="sFc1"></div>
       <div class="campo"><label>SpO₂ 1 h</label><input type="number" id="sSpo21"></div>
       <div class="campo"><label>FiO₂ 1 h</label><input type="number" step="0.05" id="sFio21"></div>
+      <div class="campo"><label>Soporte</label><select id="sSoporte"><option value="vni">VNI</option><option value="tafcn">Alto flujo (TAFCN)</option></select></div>
     </div>
     <div class="botonera"><span></span><button class="btn-primario" onclick="valorarRespuesta()">Valorar respuesta →</button></div>
   </div>
@@ -419,8 +424,14 @@
 
 <!-- ===================== AYUDA ===================== -->
 <section id="ayuda" class="pantalla">
-  <div class="cabecera-seccion"><h2>❓ Ayuda</h2>
-  <p class="sub-seccion">Manual del usuario, control de versiones y preguntas frecuentes.</p></div>
+  <div class="cabecera-seccion ayuda-cab">
+    <div><h2>❓ Ayuda</h2>
+    <p class="sub-seccion">Manual del usuario, control de versiones y preguntas frecuentes.</p></div>
+    <div class="letra-ctl" title="Tamaño de letra de la app">
+      <button class="btn-sec btn-mini" onclick="ajustarLetra(-1)">A−</button>
+      <button class="btn-sec btn-mini" onclick="ajustarLetra(1)">A+</button>
+    </div>
+  </div>
   <div class="chips doc-tabs" id="ayudaTabs">
     <button class="chip sel" data-t="Manual">📘 Manual del Usuario</button>
     <button class="chip" data-t="Versiones">🧾 Control de Versiones</button>
@@ -445,7 +456,8 @@
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v2.2 beta</a> · 2026<br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v2.3 beta</a> · 2026
+  · <a class="enlace-version" href="https://github.com/cjgaland/vmni-urgencias/issues" target="_blank" rel="noopener">💬 Sugerencias</a><br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 

@@ -39,6 +39,7 @@ const Sim = (() => {
   let docente = true, examen = false, revelado = false;
   let ipap = 15, epap = 5, frResp = 14, rampa = 2, ciclado = 25;
   let fio2 = 0.30, trigger = 2, ti = 1.5, spo2Act = 96;
+  let avaps = false, vtDiana = 450;
   const RT = { 1: 0.07, 2: 0.18, 3: 0.38 };
 
   let activo = false, raf = null;
@@ -239,6 +240,14 @@ const Sim = (() => {
       const cicladoOk = tFase > 0.3 && f < flujoPico * cicl;
       if (cicladoOk || tFase >= tiMax) {
         tiReal = tFase; picoCiclo = pawAct;
+        // AVAPS: la IPAP «flota» persiguiendo el Vt objetivo
+        if (avaps) {
+          const vteMl = Vinsp * 1000;
+          if (vteMl < vtDiana - 30 && ipap < 28) ipap += 1;
+          else if (vteMl > vtDiana + 30 && ipap > epap + 4) ipap -= 1;
+          const rI = document.getElementById("rIpap"), oI = document.getElementById("oIpap");
+          if (rI) { rI.value = ipap; oI.textContent = ipap; }
+        }
         if (asinc === "tardio" && tFase >= tiMax && t - ultimaAnot > 2.5) alarma(0, "Ciclado tardío: sobrepresión y espiración activa");
         fase = "exp"; tFase = 0;
         // doble disparo: el esfuerzo continúa tras el ciclado
@@ -384,7 +393,7 @@ const Sim = (() => {
 
   function datosCabecera() {
     document.getElementById("simDatos").textContent =
-      `IPAP ${ipap} · EPAP ${epap} · FiO₂ ${Math.round(fio2 * 100)}% · Ciclado ${ciclado}% · Ti ${String(ti).replace(".", ",")}s`;
+      `${avaps ? `AVAPS→${vtDiana} ml · ` : ""}IPAP ${ipap} · EPAP ${epap} · FiO₂ ${Math.round(fio2 * 100)}% · Ciclado ${ciclado}% · Ti ${String(ti).replace(".", ",")}s`;
   }
 
   /* ---------- textos docentes ---------- */
@@ -584,6 +593,13 @@ const Sim = (() => {
     sonidoOn = !sonidoOn;
     btnSon.textContent = sonidoOn ? "🔔" : "🔕";
     if (sonidoOn) beep(false); // confirmación audible
+  });
+  liga("rVtDiana", "oVtDiana", v => { vtDiana = v; });
+  const tglA = document.getElementById("tglAvaps");
+  if (tglA) tglA.addEventListener("change", () => {
+    avaps = tglA.checked;
+    document.getElementById("ctlVtDiana").style.display = avaps ? "" : "none";
+    datosCabecera();
   });
   const tgl = document.getElementById("tglDocente");
   if (tgl) tgl.addEventListener("change", () => { docente = tgl.checked; pintarDocente(); aplicarGuia(); });

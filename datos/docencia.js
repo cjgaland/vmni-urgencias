@@ -22,6 +22,7 @@ const DOCENCIA_DATA = {
     {
       id: "flujos", icono: "🌬️", titulo: "Flujos y curva flujo-volumen",
       resumen: "PEF, FEV1 y la limitación al flujo del obstructivo.",
+      flujovol: true,
       bloques: [
         { t: "Los flujos que medimos", p: "El <strong>pico de flujo espiratorio (PEF)</strong> es la velocidad máxima al inicio de la espiración forzada (útil para graduar la crisis asmática). El <strong>FEV1</strong> es el volumen espirado en el primer segundo; su cociente con la capacidad vital forzada (<strong>FEV1/FVC &lt;0,7</strong>) define la obstrucción." },
         { t: "La curva flujo-volumen cuenta la enfermedad", p: "En el <strong>obstructivo</strong>, la rama espiratoria se vuelve <strong>cóncava («excavada»)</strong>: por mucho que apriete, el flujo está limitado porque la vía aérea pequeña se colapsa — es la <em>limitación al flujo espiratorio</em>. En el <strong>restrictivo</strong> la curva es una miniatura de la normal: flujos proporcionalmente conservados sobre volúmenes pequeños." },
@@ -89,6 +90,19 @@ const DOCENCIA_DATA = {
         { t: "PCV y volumen asegurado (AVAPS)", p: "PCV (controlado por presión con Ti fijo): para el neuromuscular que no dispara. AVAPS/volumen garantizado: la IPAP «flota» entre un mínimo y un máximo para asegurar el Vt — útil en SHO cuando no se alcanza volumen con presiones fijas." },
         { t: "Nuestro parque", p: "<strong>Breas Vivo 50/60</strong>: rama única con fuga intencional, O₂ por caudalímetro (sin mezclador: la FiO₂ real depende de la IPAP y del flujo — ver la tabla de la app). <strong>Philips V60</strong>: mezclador (FiO₂ directa), compensación de fugas Auto-Trak, CPAP/S/T/PCV/AVAPS. <strong>Hersill VITAE 40</strong>: transporte, en sala de críticos. <strong>AirVo</strong>: alto flujo (TAFCN), primera línea en el hipoxémico de novo (ATS 2026)." },
         { t: "FiO₂ sin mezclador: la trampa", p: "A más IPAP, más dilución: con 10 L/min de O₂ la FiO₂ real baja de ~0,40 (IPAP 8) a ~0,35 (IPAP 20). Conecta el O₂ cerca de la mascarilla, guíate por la SpO₂ y recuerda que un flujo &gt;4 L/min en la mascarilla genera fugas y asincronías: si no llegas, pide un equipo con mezclador (BTS)." },
+      ],
+    },
+    {
+      id: "altoflujo", icono: "💨", titulo: "Alto flujo nasal (TAFCN / AirVo)",
+      resumen: "La tercera pata del soporte no invasivo, y desde 2026 la primera en el hipoxémico.",
+      bloques: [
+        { t: "Qué es y qué hace", p: "Oxígeno y aire mezclados a <strong>30–60 L/min</strong>, calentados a 37 °C y humidificados al 100%, por cánulas nasales de gran calibre, con la <strong>FiO₂ ajustable por separado del flujo</strong> (0,21–1,0). El flujo alto <strong>lava el espacio muerto nasofaríngeo</strong> (barre CO₂ sin «ventilar»), genera una ligera presión positiva (~0,5–1 cmH₂O por cada 10 L/min, con la boca cerrada) y la humidificación lo hace mucho más confortable que la mascarilla." },
+        { t: "Cuándo usarlo", p: "<strong>Fallo hipoxémico de novo: primera línea</strong> frente al O₂ convencional (ATS 2026, recomendación fuerte). <strong>Hipercapnia con acidemia leve (pH >7,25)</strong>: alternativa a la VNI con monitorización y escalada disponibles (~1/3 acabará en VNI). <strong>Preoxigenación</strong> antes de intubar y <strong>postextubación</strong> de bajo riesgo. No es puente válido como rescate del fracaso de la VNI: ahí la salida suele ser la IOT." },
+        { t: "Cómo programар el AirVo", p: "Empezar con <strong>flujo 45–50 L/min</strong> (30–40 si no lo tolera) y <strong>37 °C</strong>; FiO₂ la mínima para el objetivo de SpO₂ (92–96%, u 88–92% si riesgo hipercápnico). Vigilar con el <strong>índice ROX = (SpO₂/FiO₂)/FR</strong>: ≥4,88 a las 12 h predice éxito; <3,85, alto riesgo de fracaso (la app lo calcula en Seguimiento al elegir soporte TAFCN).", cajas: [{ titulo: "💡 Para recordar", items: [
+          "**El flujo manda:** el confort y el lavado de CO₂ vienen del flujo; la oxigenación, de la FiO₂. Son dos mandos independientes.",
+          "**ROX <3,85** o FR que no baja = no te entretengas: VNI o IOT según el caso.",
+          "**Boca abierta** = se pierde la presión positiva (el lavado de espacio muerto se mantiene).",
+        ] }] },
       ],
     },
     {
@@ -211,6 +225,24 @@ const DOCENCIA_DATA = {
     { q: "VNI en la crisis asmática grave:", o: ["Recomendación fuerte: usarla siempre", "Contraindicación absoluta", "Sin recomendación firme: prueba corta solo con vigilancia estrecha", "Solo en niños"], c: 2, e: "ERS/ATS 2017 no hace recomendación; el consenso 2021 la deja en «puede hacerse» con vigilancia estrecha (idealmente UCI) y la revisión de 2025 es favorable pero con certeza baja. Prioridad: broncodilatación y umbral de IOT muy bajo." },
     { q: "Paciente neuromuscular agudo con VC de 800 ml y FR 24, pCO₂ 44. ¿VNI?", o: ["No: no hay hipercapnia", "Sí: en la ENM se inicia precozmente sin esperar la acidosis", "Solo si el pH baja de 7,25", "Nunca: la ENM contraindica la VNI"], c: 1, e: "En la ENM la VNI se indica precozmente: VC <1 L con FR >20 ya la justifica aunque esté normocápnico (BTS rec. 50-51). Y si falla, NO retrasar la intubación (rec. 53): se agotan sin avisar." },
     { q: "En un Vivo con O₂ por caudalímetro, subes la IPAP de 10 a 20 manteniendo 10 L/min de O₂. La FiO₂ real:", o: ["Sube", "No cambia", "Baja", "Se duplica"], c: 2, e: "Baja (de ~0,40 a ~0,35): a más IPAP, más flujo de aire de la turbina diluyendo el mismo O₂ (tabla de Thys & Liistro). Por eso tras cada subida de presión hay que revisar la SpO₂." },
+    /* --- fármacos (sección validada) --- */
+    { tema: "farmacos", q: "Pauta de corticoide sistémico de referencia en la agudización de EPOC:", o: ["Metilprednisolona 1 g IV 3 días", "Prednisona 40 mg vo durante 5 días", "Prednisona 40 mg vo durante 14 días", "Budesonida inhalada sola"], c: 1, e: "Prednisona 40 mg/día 5 días (GOLD): alargar el curso no añade beneficio y suma efectos adversos. Vía IV solo si no tolera la oral. GesEPOC: mayor eficacia si eosinófilos ≥300/mm³." },
+    { tema: "farmacos", q: "¿Cuál de estas situaciones indica por SÍ MISMA antibiótico en la agudización de EPOC?", o: ["FR >25", "Necesidad de VNI", "Sibilancias intensas", "Eosinófilos altos"], c: 1, e: "La necesidad de soporte ventilatorio indica antibiótico por sí sola (GesEPOC); también la purulencia (Anthonisen ≥2) o la PCR ≥20 mg/L. El empírico habitual es amoxicilina-clavulánico, ajustado al mapa local." },
+    { tema: "farmacos", q: "En el EAP con TAS 185 mmHg, además de la CPAP y la furosemida, puedes añadir:", o: ["Morfina pautada cada 4 h", "Nitroglicerina titulando (TAS >110)", "Betabloqueante IV de entrada", "Suero fisiológico rápido"], c: 1, e: "NTG sl/IV (10–20 µg/min titulando) si TAS >110 (evitar con TAS <100, estenosis aórtica grave o IAM de VD). La morfina NO es rutinaria: su uso sistemático se asocia a peor pronóstico (ESC)." },
+    { tema: "farmacos", q: "Objetivo de la naloxona en la sobredosis de opioides:", o: ["Despertar completamente al paciente", "FR ≥10 rpm (titulando 0,04–0,1 mg IV/2-3 min)", "Revertir la miosis", "Dosis única de 2 mg IV"], c: 1, e: "Se titula a VENTILACIÓN (FR ≥10), no a consciencia: despertarlo de golpe precipita abstinencia y agitación. Primero ventilar con bolsa-mascarilla; en opioides de acción larga, perfusión y vigilancia prolongada." },
+    { tema: "farmacos", q: "El sulfato de magnesio IV en la crisis asmática:", o: ["Es de primera línea en toda crisis", "2 g en 20 min solo en la crisis grave que no responde", "Se nebuliza siempre con el salbutamol", "Está contraindicado en el asma"], c: 1, e: "Dosis única de 2 g IV en 20 min, reservado a la crisis grave sin respuesta al tratamiento inicial o con hipoxemia persistente (GINA). Reduce ingresos en ese subgrupo." },
+    { tema: "farmacos", q: "El flumazenilo en la intoxicación por benzodiacepinas:", o: ["Debe darse siempre que haya somnolencia", "Es de uso excepcional: contraindicado en dependencia de BZD, coingesta de tricíclicos o epilepsia", "Es inocuo y de vida media larga", "Sustituye a la ventilación"], c: 1, e: "Riesgo de convulsiones de difícil control en dependientes o con coingestas proconvulsivantes: uso muy seleccionado (0,2 mg IV lentos, máx. 1–2 mg) y valorando con toxicología. El soporte ventilatorio es lo primero." },
+    /* --- fisiología --- */
+    { tema: "fisiologia", q: "La capacidad residual funcional (CRF) es:", o: ["VT + VRI", "VRE + VR: el aire que queda tras una espiración tranquila", "Todo el aire movilizable", "El volumen de una inspiración máxima"], c: 1, e: "CRF = VRE + VR (~2.300 ml): el «colchón» donde ocurre el intercambio entre respiraciones. Es la capacidad que defiende la EPAP/CPAP — reclutándola mejora la oxigenación (EAP, obesidad)." },
+    { tema: "fisiologia", q: "τ (constante de tiempo) = R × C. En un EPOC con τ larga, ¿qué pasa si la FR sube mucho?", o: ["Mejora el vaciado", "El tiempo espiratorio no da para vaciar (3τ) → atrapamiento y autoPEEP", "Baja la PaCO₂ siempre", "Nada relevante"], c: 1, e: "El pulmón necesita ~3τ para vaciarse. Con τ ≈ 0,8 s hacen falta ~2,4 s de espiración: a FR altas cada ciclo deja aire dentro → autoPEEP → esfuerzos inefectivos. Por eso «menos puede ser más» en el obstructivo." },
+    { tema: "fisiologia", q: "Hipoxemia que mejora con EPAP/CPAP pero poco con la FiO₂ sugiere:", o: ["Espacio muerto (TEP)", "Shunt reclutable (EAP, atelectasia)", "Hipoventilación pura", "Anemia"], c: 1, e: "El shunt (sangre que pasa por alveolos no ventilados) responde mal al O₂ y bien a la presión que recluta esos alveolos. El espacio muerto, en cambio, sube el CO₂. Puedes verlo en el simulador con el perfil EAP." },
+    { tema: "fisiologia", q: "¿Por qué hiperoxigenar a un EPOC retenedor sube la PaCO₂?", o: ["Solo por quitar el estímulo hipóxico", "Empeora el V/Q + efecto Haldane + (menos) estímulo hipóxico", "Porque el O₂ pesa más", "No la sube: es un mito"], c: 1, e: "Tres mecanismos: pérdida de la vasoconstricción hipóxica donde no conviene (↑V/Q desajustado), efecto Haldane (la Hb oxigenada suelta CO₂) y, en menor medida, la depresión del estímulo hipóxico. Objetivo: 88–92%." },
+    /* --- confort y casos --- */
+    { tema: "cuidados", q: "¿Cuál es la postura correcta del paciente en VMNI?", o: ["Decúbito supino plano", "Cabecera a 30–45° con el cuello sin flexión", "Decúbito lateral estricto", "Sentado a 90° siempre"], c: 1, e: "Semiincorporado a 30–45°, evitando la flexión cervical (que obstruye la vía aérea superior y empeora la sincronía). Es parte del tratamiento: la intolerancia es una causa precoz de fracaso." },
+    { tema: "cuidados", q: "La prevención de la úlcera del puente nasal:", o: ["Se hace solo si aparece eritema", "Empieza en el minuto 1: apósito hidrocoloide y arnés con la regla de los dos dedos", "Consiste en apretar más la mascarilla", "No es posible"], c: 1, e: "Hidrocoloide ANTES de que haya lesión y arnés por el que pasen dos dedos: apretar no quita la fuga, deforma la mascarilla y lesiona (úlcera en 5–20%). Rotar interfaz en usos prolongados." },
+    /* --- modificadores anatómicos --- */
+    { tema: "anatomia", q: "En la cifoscoliosis severa que precisa VNI es esperable necesitar:", o: ["IPAP bajas (<10)", "IPAP altas (a veces >20) con Ti 1,2–1,5 s", "Solo CPAP", "FR de respaldo de 30"], c: 1, e: "La caja rígida y la CPT reducida exigen presiones inspiratorias altas para lograr volumen, con Ti largos (patrón restrictivo) y EPAP de reclutamiento. Además: posible vía aérea difícil si hay que intubar." },
+    { tema: "anatomia", q: "Paciente con lobectomía previa que precisa VNI por una agudización. ¿Qué ajuste es prudente?", o: ["Vt en el rango alto (9–10 ml/kg)", "Vt en el rango bajo (~6 ml/kg ideal) y umbral bajo para descartar neumotórax", "Doblar la FR de respaldo", "Evitar siempre la VNI"], c: 1, e: "Con parénquima reducido, el mismo Vt distiende más el pulmón restante: objetivo en el rango bajo, vigilar la asimetría ventilatoria y, ante un deterioro brusco, imagen precoz para descartar neumotórax." },
   ],
 
   /* ---------------- BIBLIOGRAFÍA COMENTADA ---------------- */
@@ -236,4 +268,13 @@ const DOCENCIA_DATA = {
     { tipo: "Guía", ref: "GEMA — Guía Española para el Manejo del Asma (edición vigente). gemasma.org.", com: "La contraparte española de GINA, con las pautas y dosis adaptadas a nuestro medio. Referencia para la sección de fármacos de la app (pendiente de validación)." },
   ],
 };
+/* temas de las 26 preguntas originales (las nuevas ya llevan el suyo) */
+[
+  "indicaciones", "oxigenacion", "parametros", "seguimiento", "indicaciones", "indicaciones",
+  "gasometria", "asincronias", "asincronias", "asincronias", "asincronias", "asincronias",
+  "seguimiento", "seguimiento", "parametros", "retirada", "evidencia", "evidencia",
+  "indicaciones", "indicaciones", "gasometria", "gasometria", "interfaces", "indicaciones",
+  "indicaciones", "parametros",
+].forEach((t, i) => { if (DOCENCIA_DATA.preguntas[i] && !DOCENCIA_DATA.preguntas[i].tema) DOCENCIA_DATA.preguntas[i].tema = t; });
+
 if (typeof module !== "undefined" && module.exports) module.exports = DOCENCIA_DATA;

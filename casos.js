@@ -6,7 +6,12 @@
 const Casos = (() => {
   "use strict";
   const LS = "vmni-caso-activo";
+  const LSLISTA = "vmni-casos-guardados";
   let caso = null;
+  function listaGuardados() {
+    try { return JSON.parse(localStorage.getItem(LSLISTA) || "[]"); } catch (e) { return []; }
+  }
+  function guardarLista(l) { try { localStorage.setItem(LSLISTA, JSON.stringify(l)); } catch (e) {} }
   let vista = "lista"; // lista | nuevo | activo | informe
 
   try { const b = localStorage.getItem(LS); if (b) { caso = JSON.parse(b); vista = "activo"; } } catch (e) {}
@@ -69,6 +74,16 @@ const Casos = (() => {
           <p>Importa un caso guardado para revisar su evolución y su informe.</p>
         </article>
       </div>
+      ${listaGuardados().length ? `
+      <p class="sub" style="margin-top:22px">Mis casos en este dispositivo (${listaGuardados().length})</p>
+      <div class="grid-modulos">
+        ${listaGuardados().map(g => `
+          <article class="card modulo" onclick="Casos.abrirGuardado('${g.id}')">
+            <div class="icono doc">${g.cerrado ? "✅" : "⏳"}</div><h3>${esc(g.titulo)}</h3>
+            <p>${esc(g.escenario)} · ${g.edad} años · ${g.eventos} eventos${g.cerrado ? " · cerrado" : " · abierto"}</p>
+            <div style="margin-top:10px"><button class="btn-sec btn-mini" onclick="event.stopPropagation(); Casos.borrarGuardado('${g.id}')">🗑 Borrar</button></div>
+          </article>`).join("")}
+      </div>` : ""}
       <p class="sub" style="margin-top:22px">Casos ficticios de ejemplo <em>(inventados, para aprender)</em></p>
       <div class="grid-modulos">
         ${CASOS_EJEMPLO.map((c, i) => `
@@ -167,7 +182,16 @@ const Casos = (() => {
         </div>
         ${caso.alumno ? `
         <div class="alumno-panel">
-          <p>🎓 <strong>¿Qué harías ahora?</strong> Decide parámetros, fármacos y cuidados (puedes anotarlos como eventos) antes de ver qué pasó.</p>
+          ${caso.alumno.comparacion ? `
+          <div class="alumno-comparacion">
+            <div><strong>🧠 Tú decidiste:</strong> ${caso.alumno.comparacion.tuyo.length ? caso.alumno.comparacion.tuyo.map(esc).join(" · ") : "<em>(no marcaste nada)</em>"}</div>
+            <div><strong>📋 En el caso se hizo:</strong> ${caso.alumno.comparacion.hecho.length ? caso.alumno.comparacion.hecho.map(esc).join(" · ") : "<em>nada entre etapas</em>"}</div>
+          </div>` : ""}
+          <p>🎓 <strong>¿Qué harías ahora?</strong> Marca tus decisiones y revela para compararlas con lo que se hizo.</p>
+          <div class="chips" data-grupo="alumnoDec" style="margin-top:8px">
+            ${["Subir IPAP / PS", "Subir EPAP", "Ajustar FiO₂ / O₂", "Fármaco clave", "Corregir fugas / interfaz", "Avisar a UCI / escalar", "Mantener y reevaluar"]
+              .map(d => `<button class="chip" data-v="${d}">${d}</button>`).join("")}
+          </div>
           <div class="botonera" style="margin-top:10px">
             <button class="btn-sec btn-mini" onclick="Casos.salirAlumno()">Salir del modo alumno</button>
             ${vis.quedan > 0 ? `<button class="btn-primario" onclick="Casos.revelarEtapa()">Revelar siguiente etapa (${vis.quedan} restantes) →</button>` : `<button class="btn-primario" onclick="Casos.salirAlumno()">Caso completo revelado: ver todo →</button>`}
@@ -192,11 +216,36 @@ const Casos = (() => {
 
       <div class="botonera suelta">
         <button class="btn-sec" onclick="Casos.descartar()">🗑 Descartar caso</button>
-        <span style="display:flex;gap:10px">
+        <span style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-sec" onclick="Casos.archivar()">📥 Archivar en el dispositivo</button>
           <button class="btn-sec" onclick="Casos.exportar()">💾 Guardar .json</button>
           <button class="btn-primario" onclick="Casos.verInforme()">📄 Informe →</button>
         </span>
       </div>`;
+  }
+
+  /* ---------- varios casos guardados en el dispositivo ---------- */
+  function archivar() {
+    const l = listaGuardados();
+    caso.id = caso.id || Math.random().toString(16).slice(2, 10);
+    const copia = JSON.parse(JSON.stringify(caso));
+    delete copia.alumno;
+    const i = l.findIndex(g => g.id === caso.id);
+    const ficha = { id: caso.id, titulo: caso.titulo, escenario: caso.meta.escenario, edad: caso.meta.edad, eventos: caso.eventos.length, cerrado: !!caso.cierre, caso: copia };
+    if (i >= 0) l[i] = ficha; else l.push(ficha);
+    guardarLista(l);
+    caso = null; guardar(); pintar();
+  }
+  function abrirGuardado(id) {
+    const g = listaGuardados().find(x => x.id === id);
+    if (!g) return;
+    caso = JSON.parse(JSON.stringify(g.caso));
+    guardar(); vista = "activo"; pintar();
+  }
+  function borrarGuardado(id) {
+    if (!confirm("¿Borrar este caso guardado del dispositivo?")) return;
+    guardarLista(listaGuardados().filter(x => x.id !== id));
+    pintar();
   }
 
   /* ================= eventos ================= */
@@ -324,7 +373,19 @@ const Casos = (() => {
     guardar(); pintar();
   }
 
-  function revelarEtapa() { caso.alumno.etapa++; guardar(); pintar(); }
+  function revelarEtapa() {
+    // captura las decisiones marcadas y prepara la comparación con lo revelado
+    const tuyo = [...document.querySelectorAll('[data-grupo="alumnoDec"] .chip.sel')].map(c => c.dataset.v);
+    const antes = eventosVisibles();
+    caso.alumno.etapa++;
+    const despues = eventosVisibles();
+    const nuevos = despues.eventos.filter(e => !antes.eventos.includes(e) && e.tipo !== "reevaluacion");
+    const resumen = ev => ev.tipo === "farmaco" ? `💊 ${ev.datos.nombre}` :
+      ev.tipo === "parametros" ? `🎛 ${ev.datos.modo} EPAP ${f1(ev.datos.epap)}/IPAP ${f1(ev.datos.ipap)}` :
+      ev.tipo === "cuidado" ? `🛏 ${ev.datos.texto}` : `📝 ${ev.datos.texto}`;
+    caso.alumno.comparacion = { tuyo, hecho: nuevos.map(resumen) };
+    guardar(); pintar();
+  }
   function salirAlumno() { delete caso.alumno; guardar(); pintar(); }
 
   function addReevaluacion() {

@@ -78,5 +78,72 @@ const CASOS_EJEMPLO = [
     ],
     cierre: { t: 85, destino: "UCI con ventilación mecánica invasiva", comentario: "Fracaso precoz de la VNI pese a optimización. La demora en intubar cuando hay criterios empeora el pronóstico: aquí no la hubo." },
   },
+  {
+    formato: "vmni-caso-v1", tipo: "docente", ejemplo: true,
+    titulo: "Asma grave: prueba corta de VNI vigilada",
+    meta: { edad: 34, sexo: "m", talla: 164, escenario: "Asma aguda grave" },
+    basal: {
+      entradas: {
+        antecedentes: { respiratorios: ["asma"], otros: [], circunstancias: [] },
+        clinica: { fr: 35, fc: 126, tas: 150, gcs: 15, spo2: 89 },
+        gasometria: { tipo: "arterial", ph: 7.33, pco2: 48, po2: 61, hco3: 24, lactato: 20 },
+        fio2: { dispositivo: "vk", valor: 35 }, sospecha: "asma",
+      },
+      resumen: { rama: "hipercapnico", subtipo: "C1", escenarioId: "asma", clasif: "Fallo hipercápnico — acidosis respiratoria aguda pura", gravedad: "acidosis leve", titulo: "Prueba corta de binivel SOLO con vigilancia estrecha", ph: 7.33, pco2: 48, fr: 35, gcs: 15, fc: 126, pafi: 174, hacor: 7 },
+    },
+    eventos: [
+      { t: 3, tipo: "farmaco", datos: { id: "broncodilatador", nombre: "Salbutamol + ipratropio", dosis: "neb 5 mg + 0,5 mg, repetida ×3 la 1.ª hora", nota: "" } },
+      { t: 8, tipo: "farmaco", datos: { id: "corticoide", nombre: "Hidrocortisona IV", dosis: "200 mg", nota: "corticoide en la primera hora" } },
+      { t: 15, tipo: "nota", datos: { texto: "UCI avisada desde el inicio; se pacta prueba corta de VNI con reevaluación a los 30-45 min" } },
+      { t: 20, tipo: "parametros", datos: { modo: "S/T", epap: 4, ipap: 10, fio2: "0,35", nota: "Prueba corta; vigilancia 1:1" } },
+      { t: 40, tipo: "farmaco", datos: { id: "magnesio", nombre: "Sulfato de magnesio IV", dosis: "2 g en 20 min", nota: "respuesta inicial incompleta" } },
+      { t: 55, tipo: "reevaluacion", datos: { ph: 7.37, pco2: 42, fr: 24, gcs: 15, fc: 104, spo2: 95, fio2: 0.35 }, veredicto: { veredicto: "favorable", resumen: "Broncodilatación efectiva: pCO₂ normalizándose y FR en descenso", menores: [] }, hacor: 2 },
+    ],
+    cierre: { t: 150, destino: "Planta con retirada diurna progresiva", comentario: "Retirada de la VNI a los 90 min; continúa broncodilatación pautada y corticoide. El asma que retiene CO₂ siempre es una crisis grave: la VNI fue puente, no sustituto, del tratamiento médico." },
+  },
+  {
+    formato: "vmni-caso-v1", tipo: "docente", ejemplo: true,
+    titulo: "SHO agudizado: volumen asegurado y destino VMD",
+    meta: { edad: 59, sexo: "v", talla: 170, escenario: "SHO / restrictivo" },
+    basal: {
+      entradas: {
+        antecedentes: { respiratorios: ["sho", "sahos", "obesidad"], otros: ["hta", "dm"], circunstancias: [] },
+        clinica: { fr: 26, fc: 102, tas: 156, gcs: 13, spo2: 83 },
+        gasometria: { tipo: "arterial", ph: 7.26, pco2: 78, po2: 50, hco3: 34, lactato: 13 },
+        fio2: { dispositivo: "gafas", valor: 2 }, sospecha: "noclaro",
+      },
+      resumen: { rama: "hipercapnico", subtipo: "C2", escenarioId: "sho_restrictivo", clasif: "Fallo hipercápnico — acidosis crónica agudizada", gravedad: "acidosis moderada", titulo: "Iniciar VNI binivel — SHO / restrictivo", ph: 7.26, pco2: 78, fr: 26, gcs: 13, fc: 102, pafi: 172, hacor: 9 },
+    },
+    eventos: [
+      { t: 5, tipo: "parametros", datos: { modo: "S/T", epap: 8, ipap: 16, fio2: "0,3", nota: "EPAP alta de inicio por obesidad (IMC 44)" } },
+      { t: 6, tipo: "cuidado", datos: { texto: "Cabecera a 45° (clave en la obesidad) y protección nasal" } },
+      { t: 30, tipo: "parametros", datos: { modo: "AVAPS", epap: 8, ipap: "14–24", fio2: "0,3", nota: "Volumen asegurado 480 ml: no se alcanzaba Vt con presión fija" } },
+      { t: 70, tipo: "reevaluacion", datos: { ph: 7.31, pco2: 68, fr: 21, gcs: 15, fc: 92, spo2: 90, fio2: 0.3 }, veredicto: { veredicto: "favorable", resumen: "Despierto y colaborador; pH y pCO₂ mejorando con el volumen asegurado", menores: [] }, hacor: 3 },
+      { t: 240, tipo: "reevaluacion", datos: { ph: 7.35, pco2: 60, fr: 18, gcs: 15, fc: 84, spo2: 91, fio2: 0.28 }, veredicto: { veredicto: "favorable", resumen: "Camino de su situación basal de hipercapnia crónica", menores: [] }, hacor: 1 },
+      { t: 300, tipo: "nota", datos: { texto: "Interconsulta a neumología: VNI nocturna domiciliaria y estudio de sueño al alta" } },
+    ],
+    cierre: { t: 420, destino: "Planta con retirada diurna progresiva", comentario: "Retirada diurna manteniendo VNI nocturna. En el SHO el episodio agudo es la puerta de entrada a la ventilación domiciliaria: no darle el alta sin ese plan." },
+  },
+  {
+    formato: "vmni-caso-v1", tipo: "docente", ejemplo: true,
+    titulo: "Intoxicación por opioides: naloxona titulada",
+    meta: { edad: 42, sexo: "v", talla: 176, escenario: "Sobredosis de depresores" },
+    basal: {
+      entradas: {
+        antecedentes: { respiratorios: [], otros: [], circunstancias: [] },
+        clinica: { fr: 7, fc: 88, tas: 118, gcs: 9, spo2: 81 },
+        gasometria: { tipo: "arterial", ph: 7.24, pco2: 66, po2: 52, hco3: 27, lactato: 18 },
+        fio2: { dispositivo: "aire", valor: 0 }, sospecha: "sobredosis",
+      },
+      resumen: { rama: "sobredosis", subtipo: "A", escenarioId: "sobredosis", clasif: "Sospecha de sobredosis de depresores", gravedad: "—", titulo: "Revertir y reevaluar", ph: 7.24, pco2: 66, fr: 7, gcs: 9, fc: 88, pafi: null, hacor: null },
+    },
+    eventos: [
+      { t: 2, tipo: "nota", datos: { texto: "Ventilación asistida con bolsa-mascarilla mientras se prepara la naloxona: ventilar SIEMPRE antes que revertir" } },
+      { t: 5, tipo: "farmaco", datos: { id: "naloxona", nombre: "Naloxona IV titulada", dosis: "0,08 mg, repetida cada 2-3 min (total 0,24 mg)", nota: "objetivo FR ≥10, no despertar de golpe" } },
+      { t: 12, tipo: "reevaluacion", datos: { ph: 7.33, pco2: 52, fr: 13, gcs: 13, fc: 92, spo2: 93, fio2: 0.28 }, veredicto: { veredicto: "favorable", resumen: "Ventila por sí mismo sin abstinencia brusca; vigilancia prolongada por vida media corta de la naloxona", menores: [] }, hacor: 3 },
+      { t: 90, tipo: "reevaluacion", datos: { ph: 7.38, pco2: 44, fr: 14, gcs: 15, fc: 86, spo2: 96, fio2: 0.21 }, veredicto: { veredicto: "favorable", resumen: "Resuelto sin VNI ni IOT; el antídoto bien titulado evitó ambas", menores: [] }, hacor: 0 },
+    ],
+    cierre: { t: 360, destino: "Alta desde urgencias", comentario: "Observación prolongada (6 h) por posible renarcotización. La hipoventilación por tóxicos se trata revirtiendo la causa: la VNI no sustituye al antídoto." },
+  },
 ];
 if (typeof module !== "undefined" && module.exports) module.exports = CASOS_EJEMPLO;

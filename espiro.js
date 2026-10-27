@@ -141,3 +141,121 @@ const Espiro = (() => {
 
   return { montar, pausar, maniobrar };
 })();
+
+/* ====== Curva flujo-volumen animada (tema «Flujos») ======
+   Bucle normal, obstructivo (espiración excavada) y restrictivo (miniatura),
+   con un «lápiz» recorriendo el asa en tiempo real. */
+const FlujoVol = (() => {
+  "use strict";
+  const TIPOS = {
+    normal: { nombre: "Normal", cpt: 5.8, rv: 1.2, pef: 8, insp: 5, curva: 1.0, color: "#0F4C5C" },
+    obstructivo: { nombre: "Obstructivo", cpt: 6.3, rv: 2.8, pef: 5, insp: 4, curva: 2.4, color: "#B3541E" },
+    restrictivo: { nombre: "Restrictivo", cpt: 3.4, rv: 0.9, pef: 6, insp: 4, curva: 1.0, color: "#2A7F8E" },
+  };
+  let cv = null, ctx = null, dpr = 1, W = 720, H = 360;
+  let tipo = "normal", activo = false, raf = null, t = 0;
+
+  const X0 = 52, Y0 = 26;
+  const xDe = v => X0 + ((7 - v) / 7) * (W - X0 - 20);          // CPT a la izquierda, 0 a la derecha
+  const yDe = f => Y0 + ((10 - f) / 18) * (H - Y0 - 34);        // flujo +10 arriba … −8 abajo
+
+  function flujoEsp(T, v) { // v entre rv y cpt
+    const pico = T.cpt - 0.25 * (T.cpt - T.rv);
+    if (v >= pico) return T.pef * (T.cpt - v) / (T.cpt - pico);
+    return T.pef * Math.pow((v - T.rv) / (pico - T.rv), T.curva);
+  }
+  function punto(T, fase) { // fase 0..1 (0-0.5 espiración, 0.5-1 inspiración)
+    if (fase < 0.5) {
+      const p = fase / 0.5;
+      const v = T.cpt - p * (T.cpt - T.rv);
+      return [v, flujoEsp(T, v)];
+    }
+    const p = (fase - 0.5) / 0.5;
+    const v = T.rv + p * (T.cpt - T.rv);
+    return [v, -T.insp * Math.sin(Math.PI * p)];
+  }
+
+  function fondo() {
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
+    // ejes
+    ctx.strokeStyle = "rgba(15,76,92,.35)"; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(X0, yDe(0)); ctx.lineTo(W - 14, yDe(0)); ctx.stroke(); // eje V (flujo 0)
+    ctx.beginPath(); ctx.moveTo(X0, Y0); ctx.lineTo(X0, H - 30); ctx.stroke();
+    ctx.fillStyle = "#5A6B70"; ctx.font = "600 12px -apple-system, sans-serif";
+    ctx.textAlign = "right";
+    [8, 4, 0, -4].forEach(f => ctx.fillText(f, X0 - 6, yDe(f) + 4));
+    ctx.save(); ctx.translate(14, H / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center";
+    ctx.fillText("Flujo (L/s)  — esp. ↑ / insp. ↓", 0, 0); ctx.restore();
+    ctx.textAlign = "center";
+    [6, 4, 2, 0].forEach(v => ctx.fillText(v, xDe(v), H - 12));
+    ctx.fillText("Volumen pulmonar (L) — CPT a la izquierda, RV a la derecha", (X0 + W) / 2, H - 0.5);
+    // asas guía (las tres, tenues) + la activa marcada
+    Object.entries(TIPOS).forEach(([k, T]) => {
+      ctx.strokeStyle = k === tipo ? T.color : "rgba(120,140,148,.25)";
+      ctx.lineWidth = k === tipo ? 2.6 : 1.4;
+      ctx.beginPath();
+      for (let i = 0; i <= 200; i++) {
+        const [v, f] = punto(T, i / 200);
+        i === 0 ? ctx.moveTo(xDe(v), yDe(f)) : ctx.lineTo(xDe(v), yDe(f));
+      }
+      ctx.closePath(); ctx.stroke();
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.font = "700 12px -apple-system, sans-serif";
+      const [ve, fe] = punto(T, 0.18);
+      ctx.fillText(T.nombre, xDe(ve), yDe(fe) - 8);
+    });
+    // nota del patrón activo
+    ctx.fillStyle = "#5A6B70"; ctx.font = "500 11.5px -apple-system, sans-serif"; ctx.textAlign = "left";
+    const notas = {
+      normal: "Espiración casi lineal hasta el volumen residual; asa amplia.",
+      obstructivo: "Rama espiratoria CÓNCAVA («excavada»): limitación al flujo; RV alto (atrapamiento).",
+      restrictivo: "Asa en miniatura: volúmenes pequeños con flujos proporcionalmente conservados.",
+    };
+    ctx.fillText(notas[tipo], X0 + 6, Y0 + 4);
+  }
+
+  function bucle(ahora) {
+    if (!activo) return;
+    if (!bucle.t0) bucle.t0 = ahora;
+    const dt = Math.min(0.05, (ahora - bucle.t0) / 1000); bucle.t0 = ahora;
+    t += dt;
+    fondo();
+    const T = TIPOS[tipo];
+    const fase = (t % 4) / 4;
+    // estela reciente
+    ctx.strokeStyle = T.color; ctx.lineWidth = 4; ctx.lineCap = "round";
+    ctx.beginPath();
+    for (let i = 24; i >= 0; i--) {
+      const f2 = ((t - i * 0.02) % 4) / 4;
+      const [v, f] = punto(T, f2);
+      i === 24 ? ctx.moveTo(xDe(v), yDe(f)) : ctx.lineTo(xDe(v), yDe(f));
+    }
+    ctx.stroke();
+    const [v, f] = punto(T, fase);
+    ctx.fillStyle = T.color;
+    ctx.beginPath(); ctx.arc(xDe(v), yDe(f), 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(xDe(v), yDe(f), 2.6, 0, Math.PI * 2); ctx.fill();
+    raf = requestAnimationFrame(bucle);
+  }
+
+  function setTipo(k) {
+    tipo = k;
+    document.querySelectorAll("#fvTipos .chip").forEach(c => c.classList.toggle("sel", c.dataset.v === k));
+  }
+  function montar() {
+    cv = document.getElementById("flujovolCanvas");
+    if (!cv) return;
+    ctx = cv.getContext("2d");
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(540, Math.min(1000, cv.parentElement.clientWidth - 8));
+    H = 360;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    activo = true; bucle.t0 = null; t = 0;
+    raf = requestAnimationFrame(bucle);
+  }
+  function pausar() { activo = false; if (raf) cancelAnimationFrame(raf); }
+  return { montar, pausar, setTipo };
+})();

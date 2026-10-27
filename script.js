@@ -2,12 +2,15 @@
 
 /* ---------- navegación ---------- */
 function irA(id) {
+  if (!document.getElementById(id)) id = "inicio";
   document.querySelectorAll(".pantalla").forEach(s => s.classList.remove("visible"));
   document.getElementById(id).classList.add("visible");
+  if (("#" + id) !== location.hash) history.replaceState(null, "", "#" + id);
   document.querySelectorAll("[data-s]").forEach(b => b.classList.toggle("activo", b.dataset.s === id));
   window.scrollTo({ top: 0, behavior: "instant" });
   if (id === "simulador") Sim.activar(); else Sim.pausar();
   if (id !== "docencia" && typeof Espiro !== "undefined") Espiro.pausar();
+  if (id !== "docencia" && typeof FlujoVol !== "undefined") FlujoVol.pausar();
   if (id === "seguimiento") prefillSeguimiento();
   if (id === "casos" && typeof Casos !== "undefined") Casos.pintar();
 }
@@ -289,6 +292,15 @@ function valorarRespuesta() {
       <label>${lbl}</label><strong>${v0 ?? "—"} → ${v1 ?? "—"}</strong>
       <span>${mejor === true ? "↗ mejorando" : mejor === false ? "↘ empeorando" : "→ sin cambio claro"}</span>
     </div>`;
+  // índice ROX si el soporte es alto flujo: (SpO2/FiO2)/FR
+  let roxHtml = "";
+  if (document.getElementById("sSoporte").value === "tafcn" && spo2 !== undefined && fio2 && h1.fr) {
+    const rox = Math.round((spo2 / fio2) / h1.fr * 100) / 100;
+    const lectura = rox >= 4.88 ? ["ok", "≥4,88: buen pronóstico del alto flujo"] :
+      rox < 3.85 ? ["", "⚠ <3,85: alto riesgo de fracaso del alto flujo — valorar VNI/IOT"] :
+      ["", "zona intermedia: reevaluar en 1–2 h"];
+    roxHtml = `<div class="card kpi ${lectura[0] === "ok" ? "mejora" : "neutro"}"><label>ROX</label><strong>${String(rox).replace(".", ",")}</strong><span>${lectura[1]}</span></div>`;
+  }
   const clasesV = { favorable: "ok", vigilar: "alerta-suave", fracaso: "alerta-suave" };
   const titulosV = { favorable: "✅ Respuesta favorable", vigilar: "🕐 Vigilancia estrecha", fracaso: "🚨 Criterios de fracaso: escalada IOT/UCI" };
   document.getElementById("respuestaDinamica").innerHTML = `
@@ -297,6 +309,7 @@ function valorarRespuesta() {
       ${kpi("FR", basal.fr, h1.fr, basal.fr !== undefined && h1.fr !== undefined ? h1.fr < basal.fr : null)}
       ${kpi("pCO₂", basal.pco2, h1.pco2, basal.pco2 !== undefined && h1.pco2 !== undefined ? h1.pco2 < basal.pco2 : null)}
       ${r.hacor ? kpi("HACOR", "", r.hacor.total, !r.hacor.altoRiesgo) : ""}
+      ${roxHtml}
     </div>
     <div class="card veredicto ${clasesV[r.veredicto]}">
       <h3>${titulosV[r.veredicto]}</h3>
@@ -328,6 +341,7 @@ document.querySelectorAll("#docTabs .chip").forEach(ch => {
 /* --- temas --- */
 function pintarTemas() {
   if (typeof Espiro !== "undefined") Espiro.pausar();
+  if (typeof FlujoVol !== "undefined") FlujoVol.pausar();
   document.getElementById("docTemas").innerHTML = `<div class="grid-modulos">` + D.temas.map(tm => `
     <article class="card modulo" onclick="abrirTema('${tm.id}')">
       <div class="icono doc">${tm.icono}</div><h3>${tm.titulo}</h3><p>${tm.resumen}</p>
@@ -335,6 +349,7 @@ function pintarTemas() {
 }
 function abrirTema(id) {
   if (typeof Espiro !== "undefined") Espiro.pausar();
+  if (typeof FlujoVol !== "undefined") FlujoVol.pausar();
   const idx = D.temas.findIndex(x => x.id === id);
   const tm = D.temas[idx];
   const ant = D.temas[idx - 1], sig = D.temas[idx + 1];
@@ -361,10 +376,21 @@ function abrirTema(id) {
             <button class="btn-sec btn-mini" onclick="Espiro.maniobrar('esp')">⬇ Espiración máxima</button>
           </div>
         </div>` : ""}
+      ${tm.flujovol ? `
+        <div class="espiro-marco">
+          <p class="sub">Curva flujo-volumen animada</p>
+          <canvas id="flujovolCanvas"></canvas>
+          <div class="chips" id="fvTipos" style="margin-top:8px">
+            <button class="chip sel" data-v="normal" onclick="FlujoVol.setTipo('normal')">Normal</button>
+            <button class="chip" data-v="obstructivo" onclick="FlujoVol.setTipo('obstructivo')">Obstructivo</button>
+            <button class="chip" data-v="restrictivo" onclick="FlujoVol.setTipo('restrictivo')">Restrictivo</button>
+          </div>
+        </div>` : ""}
       ${nav}
     </div>`;
   window.scrollTo({ top: 0, behavior: "instant" });
   if (tm.espirograma) Espiro.montar();
+  if (tm.flujovol && typeof FlujoVol !== "undefined") FlujoVol.montar();
 }
 
 /* --- glosario --- */
@@ -377,28 +403,56 @@ function pintarGlosario(filtro = "") {
 }
 document.getElementById("busGlosario").addEventListener("input", e => pintarGlosario(e.target.value));
 
-/* --- ponte a prueba --- */
+/* --- ponte a prueba (con progreso personal en el dispositivo) --- */
 const QUIZ_N = 10;
+const NOMBRES_TEMA = { indicaciones: "Indicaciones", oxigenacion: "Oxigenación", parametros: "Parámetros", seguimiento: "Seguimiento", gasometria: "Gasometría", asincronias: "Asincronías", retirada: "Retirada", evidencia: "Evidencia", interfaces: "Interfaces", farmacos: "Fármacos", fisiologia: "Fisiología", cuidados: "Cuidados", anatomia: "Anatomía" };
 let quiz = null;
+let QSTATS = { hechas: 0, aciertos: 0, racha: 0, mejorRacha: 0, falladas: {}, temas: {} };
+try { const s = localStorage.getItem("vmni-quiz"); if (s) QSTATS = Object.assign(QSTATS, JSON.parse(s)); } catch (e) {}
+function qGuardar() { try { localStorage.setItem("vmni-quiz", JSON.stringify(QSTATS)); } catch (e) {} }
+
 function quizInicio() {
+  const nFall = Object.keys(QSTATS.falladas).length;
+  const pct = QSTATS.hechas ? Math.round(QSTATS.aciertos / QSTATS.hechas * 100) : null;
+  const peorTema = Object.entries(QSTATS.temas)
+    .filter(([, v]) => v.v >= 3)
+    .sort((a, b) => (a[1].a / a[1].v) - (b[1].a / b[1].v))[0];
   document.getElementById("docQuiz").innerHTML = `
     <div class="card quiz-portada">
       <h3>🎯 Ponte a prueba</h3>
-      <p>${QUIZ_N} preguntas aleatorias de un banco de ${D.preguntas.length}, basadas en la Base Científica del proyecto. Cada respuesta se corrige al momento con su explicación y su referencia.</p>
-      <div class="botonera"><span></span><button class="btn-primario" onclick="quizEmpezar()">Empezar →</button></div>
+      <p>${QUIZ_N} preguntas aleatorias de un banco de ${D.preguntas.length} (las que falles tendrán prioridad en el siguiente intento). Corrección inmediata con explicación y referencia.</p>
+      ${QSTATS.hechas ? `
+      <div class="chips-datos" style="margin:12px 0 4px">
+        <span class="dato">Respondidas <strong>${QSTATS.hechas}</strong></span>
+        <span class="dato ${pct >= 70 ? "ok" : ""}">Aciertos <strong>${pct}%</strong></span>
+        <span class="dato">Racha <strong>${QSTATS.racha}</strong> <small>(récord ${QSTATS.mejorRacha})</small></span>
+        ${peorTema ? `<span class="dato">A repasar: <strong>${NOMBRES_TEMA[peorTema[0]] || peorTema[0]}</strong></span>` : ""}
+      </div>` : ""}
+      <div class="botonera">
+        ${nFall ? `<button class="btn-sec" onclick="quizEmpezar(true)">🔁 Repasar falladas (${nFall})</button>` : "<span></span>"}
+        <button class="btn-primario" onclick="quizEmpezar()">Empezar →</button>
+      </div>
     </div>`;
 }
-function quizEmpezar() {
-  const idx = [...D.preguntas.keys()];
-  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
-  quiz = { orden: idx.slice(0, QUIZ_N), i: 0, aciertos: 0 };
+function quizEmpezar(soloFalladas) {
+  const mezclar = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  let orden;
+  if (soloFalladas) {
+    orden = mezclar(Object.keys(QSTATS.falladas).map(Number).filter(i => D.preguntas[i])).slice(0, QUIZ_N);
+  } else {
+    const fall = mezclar(Object.keys(QSTATS.falladas).map(Number).filter(i => D.preguntas[i])).slice(0, 3);
+    const resto = mezclar([...D.preguntas.keys()].filter(i => !fall.includes(i)));
+    orden = fall.concat(resto).slice(0, QUIZ_N);
+    orden = mezclar(orden);
+  }
+  quiz = { orden, i: 0, aciertos: 0, n: orden.length };
   quizPregunta();
 }
 function quizPregunta() {
   const p = D.preguntas[quiz.orden[quiz.i]];
   document.getElementById("docQuiz").innerHTML = `
     <div class="card">
-      <div class="quiz-progreso">Pregunta ${quiz.i + 1} de ${QUIZ_N} · Aciertos: ${quiz.aciertos}</div>
+      <div class="quiz-progreso">Pregunta ${quiz.i + 1} de ${quiz.n} · Aciertos: ${quiz.aciertos}${p.tema ? ` · ${NOMBRES_TEMA[p.tema] || p.tema}` : ""}</div>
       <h3 class="quiz-q">${p.q}</h3>
       <div class="quiz-opciones">
         ${p.o.map((op, i) => `<button class="opcion" onclick="quizResponder(${i})">${"ABCD"[i]}. ${op}</button>`).join("")}
@@ -408,9 +462,20 @@ function quizPregunta() {
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 function quizResponder(i) {
-  const p = D.preguntas[quiz.orden[quiz.i]];
+  const idx = quiz.orden[quiz.i];
+  const p = D.preguntas[idx];
   const ok = i === p.c;
   if (ok) quiz.aciertos++;
+  // progreso personal
+  QSTATS.hechas++;
+  if (ok) { QSTATS.aciertos++; QSTATS.racha++; QSTATS.mejorRacha = Math.max(QSTATS.mejorRacha, QSTATS.racha); delete QSTATS.falladas[idx]; }
+  else { QSTATS.racha = 0; QSTATS.falladas[idx] = (QSTATS.falladas[idx] || 0) + 1; }
+  if (p.tema) {
+    QSTATS.temas[p.tema] = QSTATS.temas[p.tema] || { v: 0, a: 0 };
+    QSTATS.temas[p.tema].v++;
+    if (ok) QSTATS.temas[p.tema].a++;
+  }
+  qGuardar();
   document.querySelectorAll("#docQuiz .opcion").forEach((b, bi) => {
     b.disabled = true;
     if (bi === p.c) b.classList.add("correcta");
@@ -420,23 +485,29 @@ function quizResponder(i) {
     <div class="explica-quiz ${ok ? "bien" : "mal"}">
       <strong>${ok ? "✅ Correcto." : "❌ No es esa."}</strong> ${p.e}
     </div>
-    <div class="botonera"><span></span><button class="btn-primario" onclick="quizSiguiente()">${quiz.i + 1 < QUIZ_N ? "Siguiente →" : "Ver resultado →"}</button></div>`;
+    <div class="botonera"><span></span><button class="btn-primario" onclick="quizSiguiente()">${quiz.i + 1 < quiz.n ? "Siguiente →" : "Ver resultado →"}</button></div>`;
 }
 function quizSiguiente() {
   quiz.i++;
-  if (quiz.i < QUIZ_N) return quizPregunta();
-  const pct = Math.round(quiz.aciertos / QUIZ_N * 100);
+  if (quiz.i < quiz.n) return quizPregunta();
+  const pct = Math.round(quiz.aciertos / quiz.n * 100);
   const msg = pct >= 90 ? "Nivel experto: listo para enseñar VMNI." :
     pct >= 70 ? "Muy bien: dominas lo esencial; repasa las que fallaste." :
     pct >= 50 ? "Vas en camino: revisa los temas y el simulador, y repite." :
     "Empieza por los Temas y el simulador de asincronías, y vuelve a intentarlo.";
+  const nFall = Object.keys(QSTATS.falladas).length;
   document.getElementById("docQuiz").innerHTML = `
     <div class="card quiz-portada">
-      <h3>Resultado: ${quiz.aciertos} / ${QUIZ_N} (${pct}%)</h3>
+      <h3>Resultado: ${quiz.aciertos} / ${quiz.n} (${pct}%)</h3>
       <p>${msg}</p>
+      <div class="chips-datos" style="margin:10px 0 4px">
+        <span class="dato">Racha actual <strong>${QSTATS.racha}</strong></span>
+        <span class="dato">Récord <strong>${QSTATS.mejorRacha}</strong></span>
+        <span class="dato ${QSTATS.aciertos / QSTATS.hechas >= 0.7 ? "ok" : ""}">Histórico <strong>${Math.round(QSTATS.aciertos / QSTATS.hechas * 100)}%</strong></span>
+      </div>
       <div class="botonera">
-        <button class="btn-sec" onclick="irA('simulador')">Ir al simulador</button>
-        <button class="btn-primario" onclick="quizEmpezar()">Repetir con otras preguntas ↻</button>
+        ${nFall ? `<button class="btn-sec" onclick="quizEmpezar(true)">🔁 Repasar falladas (${nFall})</button>` : `<button class="btn-sec" onclick="irA('simulador')">Ir al simulador</button>`}
+        <button class="btn-primario" onclick="quizEmpezar()">Otra ronda ↻</button>
       </div>
     </div>`;
 }
@@ -492,8 +563,19 @@ function pintarVersiones() {
 
 function pintarManual() {
   document.getElementById("ayudaManual").innerHTML = `
-    <div class="card manual-cabecera"><h3>📘 Guía de uso de la aplicación</h3>
-    <p>Toca cada bloque para desplegarlo. La letra pequeña clínica está en <strong>Docencia</strong>; esto es el «cómo se usa».</p></div>` +
+    <div class="card manual-cabecera">
+      <div><h3>📘 Guía de uso de la aplicación</h3>
+      <p>Toca cada bloque para desplegarlo. La letra pequeña clínica está en <strong>Docencia</strong>; esto es el «cómo se usa».</p></div>
+      <div class="qr-caja"><img src="iconos/qr-app.png" alt="QR de la app" width="96" height="96">
+      <small>📱 Comparte la app:<br>apunta con la cámara</small></div>
+    </div>
+    <div class="card biblio-descarga">
+      <div>
+        <h3>📕 Manual del Usuario completo</h3>
+        <p>La guía ilustrada de toda la app, con capturas de pantalla, trucos y preguntas frecuentes — para leer con calma o imprimir.</p>
+      </div>
+      <a class="btn-primario" href="manual-usuario.pdf" target="_blank" rel="noopener">📥 Ver / descargar PDF</a>
+    </div>` +
     MANUAL_AYUDA.map((b, i) => `
       <details class="manual-bloque"${i === 0 ? " open" : ""}>
         <summary>${b.icono} ${b.titulo}</summary>
@@ -583,6 +665,14 @@ if (seccionHerr) {
   seccionHerr.addEventListener("change", () => { calcOxi(); calcPeso(); calcPh(); calcHacor(); calcFio2(); });
 }
 
+/* ==================== TAMAÑO DE LETRA ==================== */
+function ajustarLetra(delta) {
+  const actual = parseInt(getComputedStyle(document.documentElement).fontSize) || 16;
+  const nuevo = Math.max(13, Math.min(21, actual + delta));
+  document.documentElement.style.fontSize = nuevo + "px";
+  try { localStorage.setItem("vmni-letra", nuevo); } catch (e) {}
+}
+
 /* ==================== MODO OSCURO ==================== */
 const btnTema = document.getElementById("btnTema");
 function aplicarTemaApp(oscuro) {
@@ -594,6 +684,21 @@ if (btnTema) {
   btnTema.addEventListener("click", () => aplicarTemaApp(document.documentElement.dataset.tema !== "oscuro"));
   if (document.documentElement.dataset.tema === "oscuro") btnTema.textContent = "☀️";
 }
+
+/* ==================== enlaces profundos (#seccion) ==================== */
+function navegarPorHash() {
+  const h = location.hash.replace("#", "");
+  if (!h) return;
+  if (h === "resultado-demo") { // para capturas y demostraciones
+    irA("evaluacion");
+    const esperar = () => { REGLAS ? (calcular()) : setTimeout(esperar, 150) };
+    esperar();
+    return;
+  }
+  if (document.getElementById(h)) irA(h);
+}
+window.addEventListener("hashchange", navegarPorHash);
+navegarPorHash();
 
 /* ==================== PWA: registro y aviso de actualización ==================== */
 if ("serviceWorker" in navigator) {
