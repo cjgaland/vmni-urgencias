@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.0",
+    titulo: "Modo CASOS: evolución, informe y ficheros",
+    texto: "Nueva sección **🗂 Casos**: desde cualquier evaluación puedes **iniciar un caso anónimo** (solo edad, sexo y talla; tiempos relativos, nunca fechas) e ir registrando en su línea temporal **reevaluaciones** (valoradas por el motor, con HACOR y criterios de fracaso), **cambios de parámetros**, **cuidados** y **notas**. Al final, un **informe imprimible** compara la situación basal con la final, recoge la cronología completa y pasa un **checklist automático** de lo hecho y lo no registrado (gasometría en los primeros 90 min, protección nasal, escalada ante fracaso…). Los casos se **guardan y cargan como ficheros .json** que viven solo en tu dispositivo, y se incluyen **tres casos ficticios de ejemplo** —siempre marcados como tales— para aprender. También: la SpO₂ simulada del simulador queda cubierta por tests automáticos.",
+  },
+  {
     version: "v1.3",
     titulo: "Oxigenación simulada, más mandos del respirador y confort",
     texto: "El simulador cierra el lazo de la oxigenación: nuevo deslizador de **FiO₂** y **SpO₂ simulada** en el panel de numéricos, que responde a la FiO₂, a la **EPAP** (reclutamiento: pruébalo con el perfil EAP) y a las **fugas** (la fuga diluye el oxígeno), con alarma por debajo del 88%. Llegan además los mandos de **trigger** (sensibilidad de disparo) y **Ti máximo**, con guías propias: el **autociclado** se corrige bajando la sensibilidad y el **doble disparo** alargando el Ti, como en la realidad. En **Seguimiento** se estrena el **checklist de confort y cuidados** (cabecera 30–45°, cuello sin flexión, protección nasal, pausas…). Y se arregla el **beep en el móvil**: el sonido se desbloquea con el primer toque en la pantalla.",
@@ -75,6 +80,20 @@ const MANUAL_AYUDA = [
       {
         titulo: "Cuatro pestañas para aprender y repasar",
         texto: "**Temas** (fundamentos, interfaces, modos y respiradores del área, la evidencia en 1 minuto), **Glosario** con buscador, **Ponte a prueba** (10 preguntas aleatorias autocorregidas con explicación y referencia) y **Bibliografía comentada** con el porqué de cada fuente.",
+      },
+    ],
+  },
+  {
+    icono: "🗂", titulo: "Casos: registrar, informar y compartir",
+    secciones: [
+      {
+        titulo: "De la evaluación al informe",
+        texto: "Haz la evaluación y pulsa **🗂 Iniciar caso** en el resultado: la situación basal queda guardada y se abre la **línea temporal**, donde añades reevaluaciones (el motor las valora al momento), cambios de parámetros, cuidados y notas, siempre con **tiempos relativos** (t+60′). Al cerrar el caso con su destino, el **informe** compara basal→final, lista la cronología y pasa un **checklist de lo hecho y lo no registrado**; imprímelo o guárdalo en PDF con el botón 🖨.",
+        cajas: [{ titulo: "🔒 Anonimato por diseño", items: [
+          "**Sin identificadores:** solo edad en años, sexo y talla; ni nombres, ni fechas, ni número de historia — tampoco los escribas en el título o las notas.",
+          "**Fichero .json local:** el caso se guarda y carga como fichero en TU dispositivo; la app no lo envía a ningún sitio.",
+          "**Ejemplos ficticios:** tres casos inventados (siempre marcados «CASO FICTICIO · DOCENTE») para practicar la lectura de evoluciones.",
+        ] }],
       },
     ],
   },

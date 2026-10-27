@@ -30,11 +30,12 @@
     <button data-s="evaluacion" onclick="irA('evaluacion')">Evaluación</button>
     <button data-s="simulador" onclick="irA('simulador')">Simulador</button>
     <button data-s="problemas" onclick="irA('problemas')">Problemas</button>
+    <button data-s="casos" onclick="irA('casos')">Casos</button>
     <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
   <button id="btnTema" class="btn-tema" title="Modo oscuro / claro">🌙</button>
-  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.3 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v2.0 BETA</span>
 </header>
 
 <main>
@@ -81,6 +82,11 @@
       <div class="icono calcico">🧮</div>
       <h3>Herramientas rápidas</h3>
       <p>PaFi/SaFi, peso ideal y Vt, pH esperado, HACOR y FiO₂ — sin hacer una evaluación completa.</p>
+    </article>
+    <article class="card modulo" onclick="irA('casos')">
+      <div class="icono doc">🗂</div>
+      <h3>Casos</h3>
+      <p>Registra la evolución de un caso anónimo, genera su informe y guárdalo como fichero. Con ejemplos ficticios para aprender.</p>
     </article>
   </div>
 
@@ -333,6 +339,13 @@
   <div id="docBiblio" class="oculto"></div>
 </section>
 
+<!-- ===================== CASOS ===================== -->
+<section id="casos" class="pantalla">
+  <div class="cabecera-seccion"><h2>🗂 Casos</h2>
+  <p class="sub-seccion">Registro evolutivo anónimo: sin nombres, sin fechas — solo edad, sexo, talla y tiempos relativos. Nada sale de tu dispositivo salvo que tú guardes el fichero.</p></div>
+  <div id="casosCont"></div>
+</section>
+
 <!-- ===================== HERRAMIENTAS RÁPIDAS ===================== -->
 <section id="herramientas" class="pantalla">
   <div class="cabecera-seccion"><h2>🧮 Herramientas rápidas</h2>
@@ -421,19 +434,22 @@
   <button data-s="evaluacion" onclick="irA('evaluacion')"><span>🩺</span>Evaluar</button>
   <button data-s="simulador" onclick="irA('simulador')"><span>〰️</span>Simular</button>
   <button data-s="problemas" onclick="irA('problemas')"><span>🛠️</span>Problemas</button>
+  <button data-s="casos" onclick="irA('casos')"><span>🗂</span>Casos</button>
   <button data-s="docencia" onclick="irA('docencia')"><span>🎓</span>Docencia</button>
   <button data-s="ayuda" onclick="irA('ayuda')"><span>❓</span>Ayuda</button>
 </nav>
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.3 beta</a> · 2026<br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v2.0 beta</a> · 2026<br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 
 <script src="motor.js"></script>
 <script src="datos/docencia.js"></script>
 <script src="datos/ayuda.js"></script>
+<script src="datos/casos-ejemplo.js"></script>
+<script src="casos.js"></script>
 <script src="sim.js"></script>
 <script src="espiro.js"></script>
 <script src="script.js"></script>

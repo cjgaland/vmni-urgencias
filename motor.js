@@ -87,6 +87,18 @@
     return c;
   }
 
+  /* ---------- SpO2 simulada (usada por el simulador; pura para poder testearla) ----------
+     Modelo docente: alveolar simplificada + shunt del perfil, reclutable con la EPAP,
+     y dilución de la FiO2 por la fuga; saturación por la ecuación de Severinghaus. */
+  function spo2Simulada(perfil, fio2, epap, fugaLmin) {
+    const fio2Eff = 0.21 + (fio2 - 0.21) * (1 - Math.min(0.5, (fugaLmin || 0) / 50));
+    const reclut = Math.min(1, Math.max(0, (epap - 4) / 8));
+    const shuntEff = perfil.shunt * (1 - perfil.recluta * reclut);
+    const pao2 = Math.max(28, (fio2Eff * 713 - perfil.paco2 / 0.8) * (1 - 3.3 * shuntEff));
+    const spo2 = Math.min(100, 100 / (1 + 23400 / (pao2 ** 3 + 150 * pao2)));
+    return { spo2, pao2: red(pao2, 0), fio2Eff: red(fio2Eff, 2) };
+  }
+
   /* ---------- HACOR ---------- */
   function hacor({ fc, ph, gcs, pafi, fr }) {
     if (![fc, ph, gcs, pafi, fr].every(esNum)) return null;
@@ -317,7 +329,7 @@
     return { veredicto, texto, menores, hacor: h, mejoraPh, mejoraFr };
   }
 
-  const Motor = { init, fio2Estimada, calculos, hacor, clasificar, recomendar, evaluar, evaluarRespuesta };
+  const Motor = { init, fio2Estimada, calculos, hacor, clasificar, recomendar, evaluar, evaluarRespuesta, spo2Simulada };
   if (typeof module !== "undefined" && module.exports) module.exports = Motor;
   global.Motor = Motor;
 })(typeof window !== "undefined" ? window : globalThis);

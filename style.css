@@ -421,6 +421,53 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .biblio-com{color:var(--texto-suave);font-size:.88rem;margin-top:6px}
 @media (max-width:600px){.glos-fila{grid-template-columns:1fr;gap:2px}}
 
+/* ---------- modo casos ---------- */
+.caso-cab{margin-bottom:14px}
+.caso-titulo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.caso-titulo h3{color:var(--primario);font-size:1.15rem}
+.etiq-caso{
+  font-size:.62rem;font-weight:800;letter-spacing:.09em;border-radius:999px;padding:4px 11px;
+  background:var(--acento-claro);color:var(--secundario);
+}
+.etiq-caso.ficticio{background:#FFF0C2;color:#8a5a1d;border:1px dashed #D9B86A}
+.etiq-caso.real{background:var(--rojo-fondo);color:var(--rojo)}
+.timeline{display:flex;flex-direction:column;gap:2px;margin-top:10px}
+.ev{
+  display:flex;gap:12px;align-items:flex-start;padding:9px 10px;border-left:3px solid var(--borde);
+  margin-left:6px;font-size:.9rem;
+}
+.ev:hover{background:var(--acento-claro);border-left-color:var(--acento)}
+.ev-t{flex-shrink:0;width:58px;font-weight:800;font-size:.78rem;color:var(--acento);font-variant-numeric:tabular-nums}
+.ev-icono{flex-shrink:0}
+.ev-cuerpo{min-width:0}
+.ev.basal{border-left-color:var(--primario);background:var(--acento-claro);border-radius:0 10px 10px 0}
+.ev.cierre{border-left-color:var(--ok);background:var(--ok-fondo);border-radius:0 10px 10px 0}
+.ev-veredicto{font-size:.82rem;margin-top:3px;font-weight:600}
+.ev-veredicto.favorable{color:var(--ok)}
+.ev-veredicto.vigilar{color:var(--ambar)}
+.ev-veredicto.fracaso{color:var(--rojo)}
+.inf-sub{color:var(--secundario);margin:18px 0 8px;font-size:.95rem}
+.inf-sub small{color:var(--texto-suave);font-weight:500}
+.tabla-informe{width:100%;border-collapse:collapse;font-size:.9rem}
+.tabla-informe th,.tabla-informe td{border:1px solid var(--borde);padding:7px 12px;text-align:center}
+.tabla-informe td:first-child{text-align:left;font-weight:600}
+.tabla-informe th{background:var(--acento-claro);color:var(--secundario);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
+.chk-lista{display:flex;flex-direction:column;gap:6px}
+.chk{font-size:.9rem;padding:7px 11px;border-radius:9px;border:1px solid var(--borde)}
+.chk span{font-weight:800;margin-right:6px}
+.chk.si{background:var(--ok-fondo);border-color:#CBE5CF}.chk.si span{color:var(--ok)}
+.chk.no{background:var(--rojo-fondo);border-color:#EACFCF}.chk.no span{color:var(--rojo)}
+.chk.na{color:var(--texto-suave)}
+
+/* impresión del informe */
+@media print{
+  body *{visibility:hidden}
+  #informeCaso,#informeCaso *{visibility:visible}
+  #informeCaso{position:absolute;top:0;left:0;width:100%}
+  #informeCaso .card{box-shadow:none;border:none}
+  .no-imprimir{display:none!important}
+}
+
 /* ---------- nav móvil / pie ---------- */
 .nav-movil{display:none}
 .pie{
@@ -506,7 +553,7 @@ input[type=range]{width:100%;accent-color:var(--acento)}
   }
   .nav-movil button{
     flex:1;background:none;border:none;color:var(--texto-suave);
-    font-size:.64rem;font-weight:600;cursor:pointer;
+    font-size:.58rem;font-weight:600;cursor:pointer;min-width:0;
     display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border-radius:10px;
   }
   .nav-movil button span{font-size:1.15rem}

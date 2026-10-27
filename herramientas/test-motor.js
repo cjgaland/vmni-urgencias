@@ -114,6 +114,33 @@ caso("ENM hipercápnico → escenario neuromuscular con 'no retrasar IOT'", () =
   esperar(r.recomendacion.titulacion.some(t => t.includes("NO retrasar")), "aviso IOT");
 });
 
+console.log("— SpO2 simulada (modelo del simulador) —");
+const PERFILES_SIM = {
+  normal: { paco2: 40, shunt: 0.03, recluta: 0.5 },
+  epoc: { paco2: 60, shunt: 0.07, recluta: 0.25 },
+  eap: { paco2: 35, shunt: 0.22, recluta: 0.6 },
+};
+caso("EAP con EPAP 5 y aire ambiente: hipoxemia grave (SpO2 <80, alarma)", () => {
+  const s = Motor.spo2Simulada(PERFILES_SIM.eap, 0.21, 5, 0).spo2;
+  esperar(s < 80, `SpO2 ${s.toFixed(1)}`);
+});
+caso("EAP: la EPAP recluta (11 vs 5 con FiO2 0,28 sube la SpO2 ≥5 puntos)", () => {
+  const bajo = Motor.spo2Simulada(PERFILES_SIM.eap, 0.28, 5, 0).spo2;
+  const alto = Motor.spo2Simulada(PERFILES_SIM.eap, 0.28, 11, 0).spo2;
+  esperar(alto > bajo + 5 && alto > 93, `de ${bajo.toFixed(1)} a ${alto.toFixed(1)}`);
+});
+caso("EPOC con aire ambiente: SpO2 ~88-92 (retenedor típico)", () => {
+  const s = Motor.spo2Simulada(PERFILES_SIM.epoc, 0.21, 5, 0).spo2;
+  esperar(s >= 87 && s <= 93, `SpO2 ${s.toFixed(1)}`);
+});
+caso("Pulmón normal con aire: SpO2 ≥95; y la fuga de 30 L/min desatura con FiO2 alta", () => {
+  const s = Motor.spo2Simulada(PERFILES_SIM.normal, 0.21, 5, 0).spo2;
+  esperar(s >= 95, `normal ${s.toFixed(1)}`);
+  const sinFuga = Motor.spo2Simulada(PERFILES_SIM.eap, 0.6, 5, 0).spo2;
+  const conFuga = Motor.spo2Simulada(PERFILES_SIM.eap, 0.6, 5, 30).spo2;
+  esperar(conFuga < sinFuga - 2, `fuga: de ${sinFuga.toFixed(1)} a ${conFuga.toFixed(1)}`);
+});
+
 console.log("— Seguimiento —");
 caso("Respuesta favorable: pH 7,27→7,33 y FR 32→24", () => {
   const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32, pco2: 68, gcs: 14 }, { ph: 7.33, fr: 24, pco2: 60, gcs: 15, fc: 95, pafi: 210 });

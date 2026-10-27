@@ -9,6 +9,7 @@ function irA(id) {
   if (id === "simulador") Sim.activar(); else Sim.pausar();
   if (id !== "docencia" && typeof Espiro !== "undefined") Espiro.pausar();
   if (id === "seguimiento") prefillSeguimiento();
+  if (id === "casos" && typeof Casos !== "undefined") Casos.pintar();
 }
 
 function pasoWizard(n) {
@@ -128,6 +129,25 @@ function calcular() {
   }
   const r = Motor.evaluar(e);
   BASAL = { ph: r.calculos.ph, pco2: r.calculos.pco2, fr: e.clinica.fr, gcs: e.clinica.gcs, fc: e.clinica.fc, pafi: r.calculos.pafiEfectiva };
+  const cls = r.clasificacion;
+  const clasifTexto =
+    cls.rama === "hipercapnico" ? `Fallo hipercápnico — ${cls.subtexto}` :
+    cls.rama === "hipoxemico" ? `Fallo hipoxémico — ${cls.banda.texto}` :
+    cls.rama === "eap" ? "EAP / IC aguda" :
+    cls.rama === "iot" ? "Criterios de IOT/UCI inmediata" :
+    cls.rama === "sobredosis" ? "Sospecha de sobredosis de depresores" :
+    cls.rama === "hipercapnia_compensada" ? "Hipercapnia compensada (sin acidosis)" : "Clasificación incompleta";
+  window.ULTIMA_EVAL = {
+    entradas: e,
+    resumen: {
+      rama: cls.rama, subtipo: cls.subtipo || "", clasif: clasifTexto,
+      gravedad: cls.gravedad ? cls.gravedad.texto : "",
+      titulo: r.recomendacion.titulo, tipo: r.recomendacion.tipo,
+      ph: r.calculos.ph, pco2: r.calculos.pco2, fr: e.clinica.fr, gcs: e.clinica.gcs,
+      fc: e.clinica.fc, pafi: r.calculos.pafiEfectiva ?? null, safi: r.calculos.safi ?? null,
+      hacor: r.hacor ? r.hacor.total : null,
+    },
+  };
   document.getElementById("resultadoDinamico").innerHTML = htmlResultado(r);
   pasoWizard(4);
 }
@@ -220,6 +240,7 @@ function htmlResultado(r) {
     ${claves ? `<ul class="claves">${claves}</ul>` : ""}
     <div class="botonera">
       <button class="btn-sec" onclick="irA('simulador')">Ver en el simulador</button>
+      <button class="btn-sec" onclick="irA('casos'); Casos.nuevo()">🗂 Iniciar caso</button>
       <button class="btn-primario" onclick="irA('seguimiento')">Iniciar seguimiento ⏱</button>
     </div>
     <p class="provisional">Reglas clínicas v${r.reglasVersion} — ${r.estado}</p>

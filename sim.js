@@ -308,14 +308,8 @@ const Sim = (() => {
   let ultimoNum = 0;
   function pintarNumericos() {
     const vte = Math.round(Vinsp * 1000 / 10) * 10;
-    // SpO2 simulada: FiO2 efectiva (la fuga la diluye), alveolar simplificada,
-    // shunt del perfil reclutable con la EPAP y curva de Severinghaus
-    const P = PERFILES[perfil];
-    const fio2Eff = 0.21 + (fio2 - 0.21) * (1 - Math.min(0.5, fugaMedia / 50));
-    const reclut = Math.min(1, Math.max(0, (epap - 4) / 8));
-    const shuntEff = P.shunt * (1 - P.recluta * reclut);
-    const pao2 = Math.max(28, (fio2Eff * 713 - P.paco2 / 0.8) * (1 - 3.3 * shuntEff));
-    const spo2Obj = Math.min(100, 100 / (1 + 23400 / (pao2 ** 3 + 150 * pao2)));
+    // SpO2 simulada (modelo puro en Motor.spo2Simulada, testeado en Node)
+    const spo2Obj = Motor.spo2Simulada(PERFILES[perfil], fio2, epap, fugaMedia).spo2;
     spo2Act += (spo2Obj - spo2Act) * 0.15;
     // alarmas de parámetro (tras el transitorio inicial)
     const al = {
