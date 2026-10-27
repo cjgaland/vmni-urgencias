@@ -122,6 +122,10 @@ Umbrales relevantes: FR >24 (criterio de inicio en EPOC, ERS/ATS p.6), FR >30 (f
 
 ## 3. Árbol de decisión (formalización del algoritmo A–E del borrador)
 
+![Figura 1 · Visión global del árbol de decisión](algoritmo.png)
+
+*Figura 1. Visión global del proceso: cribado de intubación (paso 0), rama de tóxicos (A), clasificación en fallo hipoxémico (B), hipercápnico (C) y EAP (D), reevaluación a la hora y salidas (continuar/retirada vs escalada). Los umbrales detallados, en el texto.*
+
 ### Paso 0 — Cribado de intubación/UCI inmediata (antes de cualquier VNI)
 **IOT emergente** (consenso 2021, tabla 3; BTS Box 1): parada respiratoria o cardiaca · pausas respiratorias o gasping con pérdida de alerta · FC <50 con bajo nivel de consciencia · agitación incontrolable · aspiración masiva / secreciones no manejables · inestabilidad hemodinámica sin respuesta a volumen y vasoactivos · GCS <8 de causa no hipercápnica.
 → Si LET/paliativo: rama paliativa (VNI para confort si pertenece a grupos con eficacia documentada).
@@ -328,9 +332,11 @@ El simulador de la app mostrará las curvas en modo **genérico** y con "pieles"
 
 ## 13. Decisiones abiertas para revisión (Carlos + Enrique)
 
+> En la versión Word de este documento, cada decisión aparece como **formulario de revisión**: casillas «Aceptamos la propuesta» / «La rechazamos» y un espacio para escribir la decisión propia. Lo acordado se incorporará aquí y pasará al motor de la app.
+
 | # | Cuestión | Opciones / propuesta |
 |---|---|---|
-| D-1 | Jerarquía de fuentes cuando discrepan | Propuesta: ATS 2026 > ERS/ATS 2017 > BTS 2016 > consenso 2021 > manuales. ¿De acuerdo? |
+| D-1 | Jerarquía de fuentes cuando discrepan | ATS 2026 > ERS/ATS 2017 > BTS 2016 > consenso 2021 > manuales. ¿De acuerdo? |
 | D-2 | FiO2 por gafas nasales | 4%/L (clásica) vs 3%/L. **Errata del borrador (0,3/L) corregida** |
 | D-3 | SaFi | ¿Usar solo los anclajes 315/235 o curva continua interpolada? Aviso automático si SpO2 >97% |
 | D-4 | Lactato | ¿mg/dL o mmol/L (o conmutable)? Umbrales 2/4 mmol/L ≈ 18/36 mg/dL vs los del borrador (20/30 mg/dL) |
@@ -382,3 +388,82 @@ El simulador de la app mostrará las curvas en modo **genérico** y con "pieles"
 2. **HCO3:** se pedía decidir categorías vs absoluto → **valor absoluto** (necesario para pH esperado/Winter), con categorías solo visuales.
 3. **«Sat O2 mayor o menor de 98»** → el umbral operativo es **SpO2 ≤97%** para que la SaFi sea válida (por encima, la curva de la hemoglobina se aplana y la SaFi infraestima la gravedad).
 4. Añadidos a las entradas: GCS numérico, FC/TA (los exigen HACOR y los criterios de IOT), inmunodepresión, VMNI/CPAP domiciliaria previa.
+
+---
+
+## Anexo A. Glosario de siglas y acrónimos
+
+| Sigla | Significado |
+|---|---|
+| AP | Antecedentes personales |
+| APACHE II | Acute Physiology and Chronic Health Evaluation II (score de gravedad) |
+| ATS | American Thoracic Society |
+| AVAPS | Average Volume-Assured Pressure Support (presión de soporte con volumen medio asegurado) |
+| BiPAP / binivel | Ventilación con doble nivel de presión (IPAP + EPAP) |
+| BTS | British Thoracic Society |
+| CPAP | Presión positiva continua en la vía aérea |
+| DM | Diferencia de medias (metaanálisis) |
+| EAP | Edema agudo de pulmón |
+| ECA | Ensayo clínico aleatorizado |
+| ECCO2R | Eliminación extracorpórea de CO2 |
+| ENM | Enfermedad neuromuscular |
+| EPAP | Presión positiva espiratoria en la vía aérea |
+| EPOC | Enfermedad pulmonar obstructiva crónica |
+| ERC | Enfermedad renal crónica |
+| ERS | European Respiratory Society |
+| ESC | European Society of Cardiology |
+| FC | Frecuencia cardiaca |
+| FiO2 | Fracción inspirada de oxígeno |
+| FMO | Fallo multiorgánico |
+| FQ | Fibrosis quística |
+| FR | Frecuencia respiratoria |
+| GA / GV | Gasometría arterial / venosa |
+| GCS | Escala de coma de Glasgow |
+| GN | Gafas nasales |
+| GOLD | Global Initiative for Chronic Obstructive Lung Disease |
+| GRADE | Sistema de gradación de la certeza de la evidencia |
+| HACOR | Heart rate, Acidosis, Consciousness, Oxygenation, Respiratory rate (score de fracaso de VNI) |
+| HCO3 | Bicarbonato |
+| HME | Intercambiador de calor y humedad (humidificación pasiva) |
+| HTA | Hipertensión arterial |
+| HUGCR | Hospital Universitario Gran Canaria Dr. Negrín (manual de VMNI) |
+| IAM | Infarto agudo de miocardio |
+| IC / ICC | Insuficiencia cardiaca (congestiva) |
+| IC95% | Intervalo de confianza al 95% |
+| IMC | Índice de masa corporal |
+| IOT | Intubación orotraqueal |
+| IPAP | Presión positiva inspiratoria en la vía aérea |
+| I:E | Relación inspiración:espiración |
+| IRA / IRC | Insuficiencia respiratoria aguda / crónica |
+| LET | Limitación del esfuerzo terapéutico |
+| NNT / NNTB | Número necesario a tratar (para beneficiar) |
+| OR | Odds ratio |
+| PaCO2 / pCO2 | Presión parcial de CO2 (arterial) |
+| PaFi | Cociente PaO2/FiO2 |
+| PaO2 / pO2 | Presión parcial de O2 (arterial) |
+| PAV | Ventilación asistida proporcional |
+| PC / PCV | Ventilación controlada por presión |
+| PEEP / autoPEEP (PEEPi) | Presión positiva al final de la espiración / PEEP intrínseca |
+| PS | Presión de soporte (IPAP − EPAP) |
+| PtcCO2 / TcPCO2 | CO2 transcutáneo |
+| ROX | Índice (SpO2/FiO2)/FR para alto flujo |
+| RR | Riesgo relativo |
+| S / S/T / T | Modos espontáneo / espontáneo-programado / programado |
+| SaFi | Cociente SpO2/FiO2 |
+| SAHOS | Síndrome de apnea-hipopnea obstructiva del sueño |
+| SBT | Prueba de respiración espontánea (spontaneous breathing trial) |
+| SCA | Síndrome coronario agudo |
+| SDRA | Síndrome de distrés respiratorio agudo |
+| SEDAR / SECIP / SEMES / SEMICYUC / SENeo / SENP / SEPAR | Sociedades científicas españolas firmantes del consenso 2021 |
+| SHO | Síndrome de hipoventilación-obesidad |
+| SNG | Sonda nasogástrica |
+| SpO2 / SaO2 | Saturación de O2 por pulsioximetría / arterial |
+| TA / TAS | Tensión arterial (sistólica) |
+| TAFCN | Terapia de alto flujo con cánulas nasales (HFNC) |
+| Ti | Tiempo inspiratorio |
+| UCI / HDU / UCRI | Unidad de cuidados intensivos / intermedios / respiratorios intermedios |
+| VC / Vt | Volumen corriente (tidal) |
+| VK | Ventimask (mascarilla Venturi) |
+| VMD | Ventilación mecánica domiciliaria |
+| VMI | Ventilación mecánica invasiva |
+| VMNI / VNI | Ventilación mecánica no invasiva |

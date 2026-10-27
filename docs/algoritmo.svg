@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1000" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a6a72"/>
+    </marker>
+  </defs>
+  <style>
+    .box{rx:10;}
+    .t{fill:#223;}
+    .arrow{stroke:#4a6a72;stroke-width:2;fill:none;marker-end:url(#ar);}
+    .lbl{font-size:13px;fill:#4a6a72;font-style:italic;}
+  </style>
+
+  <rect width="1280" height="1000" fill="#ffffff"/>
+
+  <!-- INICIO -->
+  <rect x="490" y="18" width="300" height="56" rx="12" fill="#0F4C5C"/>
+  <text x="640" y="42" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">FALLO RESPIRATORIO AGUDO</text>
+  <text x="640" y="62" text-anchor="middle" font-size="13" fill="#cfe3e8">Clínica · antecedentes · gasometría · FiO₂</text>
+
+  <!-- PASO 0 -->
+  <line class="arrow" x1="640" y1="74" x2="640" y2="100"/>
+  <rect x="455" y="100" width="370" height="56" rx="10" fill="#fff" stroke="#A63C3C" stroke-width="2.5"/>
+  <text x="640" y="124" text-anchor="middle" font-size="15" font-weight="bold" fill="#A63C3C">PASO 0 · ¿Criterios de IOT / UCI inmediata?</text>
+  <text x="640" y="144" text-anchor="middle" font-size="12" fill="#666">parada · gasping · GCS&lt;8 no hipercápnico · shock refractario…</text>
+
+  <line class="arrow" x1="825" y1="128" x2="1000" y2="128"/>
+  <text x="900" y="120" class="lbl">sí</text>
+  <rect x="1000" y="100" width="230" height="56" rx="10" fill="#A63C3C"/>
+  <text x="1115" y="124" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">IOT · UCI</text>
+  <text x="1115" y="144" text-anchor="middle" font-size="12" fill="#f3d9d9">si LET → VNI paliativa (confort)</text>
+
+  <!-- RAMA A -->
+  <line class="arrow" x1="640" y1="156" x2="640" y2="182"/>
+  <text x="652" y="176" class="lbl">no</text>
+  <rect x="430" y="182" width="420" height="52" rx="10" fill="#FDF3E7" stroke="#B3541E" stroke-width="1.8"/>
+  <text x="640" y="204" text-anchor="middle" font-size="14" font-weight="bold" fill="#B3541E">A · ¿Sospecha de sobredosis de depresores?</text>
+  <text x="640" y="223" text-anchor="middle" font-size="12" fill="#666">revertir (naloxona / flumazenilo) y reevaluar; si no revierte, seguir ↓</text>
+
+  <!-- CLASIFICACIÓN -->
+  <line class="arrow" x1="640" y1="234" x2="640" y2="260"/>
+  <rect x="505" y="260" width="270" height="40" rx="10" fill="#16697A"/>
+  <text x="640" y="285" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Clasificar por pH · pCO₂ · PaFi</text>
+
+  <line class="arrow" x1="505" y1="280" x2="215" y2="330"/>
+  <line class="arrow" x1="640" y1="300" x2="640" y2="330"/>
+  <line class="arrow" x1="775" y1="280" x2="1070" y2="330"/>
+
+  <!-- RAMA B (izquierda) -->
+  <rect x="40" y="330" width="350" height="48" rx="10" fill="#2A7F8E"/>
+  <text x="215" y="350" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">B · FALLO HIPOXÉMICO</text>
+  <text x="215" y="368" text-anchor="middle" font-size="12" fill="#d9ecef">pH ≥7,35 · pCO₂ normal — estratificar PaFi/SaFi</text>
+
+  <line class="arrow" x1="215" y1="378" x2="215" y2="398"/>
+  <rect x="40" y="398" width="350" height="44" rx="8" fill="#EAF3F5" stroke="#2A7F8E"/>
+  <text x="55" y="416" font-size="13" font-weight="bold" fill="#0F4C5C">PaFi &gt;300 · sin hipoxemia</text>
+  <text x="55" y="433" font-size="12" fill="#444">buscar causa; si trabajo ↑ / FR alta → vigilar, TAFCN</text>
+
+  <rect x="40" y="452" width="350" height="58" rx="8" fill="#EAF3F5" stroke="#2A7F8E"/>
+  <text x="55" y="470" font-size="13" font-weight="bold" fill="#0F4C5C">PaFi 200–300 · leve</text>
+  <text x="55" y="487" font-size="12" fill="#444">↑FiO₂ &gt;0,40 · TAFCN 1ª línea (ATS 2026) · CPAP si EAP,</text>
+  <text x="55" y="502" font-size="12" fill="#444">trabajo intenso o PaFi &lt;250 · BiPAP si EPOC/SAHOS/SHO</text>
+
+  <rect x="40" y="520" width="350" height="44" rx="8" fill="#EAF3F5" stroke="#2A7F8E"/>
+  <text x="55" y="538" font-size="13" font-weight="bold" fill="#0F4C5C">PaFi 100–200 · moderada</text>
+  <text x="55" y="555" font-size="12" fill="#444">CPAP (± BiPAP según AP) · si &lt;150 → consultar UCI</text>
+
+  <rect x="40" y="574" width="350" height="44" rx="8" fill="#F7E8E8" stroke="#A63C3C"/>
+  <text x="55" y="592" font-size="13" font-weight="bold" fill="#A63C3C">PaFi &lt;100 · grave</text>
+  <text x="55" y="609" font-size="12" fill="#444">valorar VMI/UCI · VNI solo si LET (equipo experto)</text>
+
+  <!-- RAMA C (centro) -->
+  <rect x="455" y="330" width="370" height="48" rx="10" fill="#0F4C5C"/>
+  <text x="640" y="350" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">C · FALLO HIPERCÁPNICO</text>
+  <text x="640" y="368" text-anchor="middle" font-size="12" fill="#cfe3e8">pH &lt;7,35 · pCO₂ &gt;45 — subclasificar</text>
+
+  <line class="arrow" x1="640" y1="378" x2="640" y2="398"/>
+  <rect x="455" y="398" width="370" height="100" rx="8" fill="#EAF3F5" stroke="#0F4C5C"/>
+  <text x="470" y="418" font-size="12.5" fill="#223"><tspan font-weight="bold" fill="#0F4C5C">C1 aguda pura:</tspan> HCO₃ &lt;30 · pH ≈ esperado agudo</text>
+  <text x="470" y="440" font-size="12.5" fill="#223"><tspan font-weight="bold" fill="#0F4C5C">C2 crónica agudizada:</tspan> HCO₃ &gt;30 (IRC agudizada)</text>
+  <text x="470" y="462" font-size="12.5" fill="#223"><tspan font-weight="bold" fill="#0F4C5C">C3 mixta (=E):</tspan> pH &lt; esperado · lactato ↑ · Winter</text>
+  <text x="470" y="484" font-size="12" fill="#666" font-style="italic">pH esperado: 7,40 − 0,008×(pCO₂−40) agudo · 0,003 crónico</text>
+
+  <line class="arrow" x1="640" y1="498" x2="640" y2="518"/>
+  <rect x="415" y="518" width="450" height="100" rx="10" fill="#16697A"/>
+  <text x="640" y="540" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">VNI BINIVEL</text>
+  <text x="640" y="560" text-anchor="middle" font-size="12" fill="#d9ecef">si pH &lt;7,35 persiste tras ≤60 min de tto. médico + O₂ (SpO₂ 88–92%)</text>
+  <text x="640" y="578" text-anchor="middle" font-size="12" fill="#d9ecef">pH 7,25–7,35 → Urgencias/monitorizado · pH &lt;7,25 → junto a IOT (UCI)</text>
+  <text x="640" y="596" text-anchor="middle" font-size="12" fill="#d9ecef">pH &lt;7,15 → IOT salvo LET · pH &gt;7,25: TAFCN alternativa (ATS 2026)</text>
+  <text x="640" y="612" text-anchor="middle" font-size="11.5" fill="#aed2da" font-style="italic">EPAP 4–5 · IPAP 10–15 → titulación §6–7</text>
+
+  <!-- RAMA D (derecha) -->
+  <rect x="900" y="330" width="340" height="48" rx="10" fill="#2A7F8E"/>
+  <text x="1070" y="350" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">D · EAP / IC AGUDA</text>
+  <text x="1070" y="368" text-anchor="middle" font-size="12" fill="#d9ecef">clínica de EAP · FR &gt;25 · SpO₂ &lt;90% (ESC 2021)</text>
+
+  <line class="arrow" x1="1070" y1="378" x2="1070" y2="398"/>
+  <rect x="900" y="398" width="340" height="72" rx="8" fill="#EAF3F5" stroke="#2A7F8E"/>
+  <text x="915" y="418" font-size="13" font-weight="bold" fill="#0F4C5C">CPAP precoz 5 → 7–12 cmH₂O</text>
+  <text x="915" y="436" font-size="12" fill="#444">BiPAP si hipercapnia, acidosis o fatiga</text>
+  <text x="915" y="453" font-size="12" fill="#444">no en shock cardiogénico ni SCA no estabilizado</text>
+
+  <rect x="900" y="486" width="340" height="56" rx="8" fill="#fff" stroke="#9fb8bf" stroke-dasharray="5 4"/>
+  <text x="915" y="506" font-size="12.5" font-weight="bold" fill="#4a6a72">Inicio rápido (botón de la app)</text>
+  <text x="915" y="524" font-size="12" fill="#666">EAP → rama D · EPOC hipercápnico → rama C</text>
+
+  <!-- REEVALUACIÓN -->
+  <line class="arrow" x1="215" y1="618" x2="215" y2="680"/>
+  <line class="arrow" x1="640" y1="618" x2="640" y2="680"/>
+  <line class="arrow" x1="1070" y1="470" x2="1070" y2="680"/>
+
+  <rect x="190" y="680" width="900" height="64" rx="10" fill="#0F4C5C"/>
+  <text x="640" y="706" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff">REEVALUACIÓN A LA HORA (y 4–6 h)</text>
+  <text x="640" y="728" text-anchor="middle" font-size="13" fill="#cfe3e8">pH · FR · PaFi/SaFi · consciencia · trabajo respiratorio · HACOR · fugas y sincronía</text>
+
+  <line class="arrow" x1="420" y1="744" x2="340" y2="790"/>
+  <text x="340" y="772" class="lbl">mejora</text>
+  <line class="arrow" x1="860" y1="744" x2="940" y2="790"/>
+  <text x="880" y="772" class="lbl">no mejora</text>
+
+  <rect x="110" y="790" width="460" height="92" rx="10" fill="#EAF4EC" stroke="#2E7D32" stroke-width="2"/>
+  <text x="340" y="814" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#2E7D32">CONTINUAR · corregir problemas (§10)</text>
+  <text x="340" y="836" text-anchor="middle" font-size="12.5" fill="#444">↓FR y mejoría de pH en 1–4 h predicen éxito</text>
+  <text x="340" y="854" text-anchor="middle" font-size="12.5" fill="#444">uso máximo primeras 24 h → retirada (§9):</text>
+  <text x="340" y="872" text-anchor="middle" font-size="12.5" fill="#444">EPOC directa al normalizar pH · ENM/SHO nocturna + VMD</text>
+
+  <rect x="710" y="790" width="460" height="92" rx="10" fill="#F7E8E8" stroke="#A63C3C" stroke-width="2"/>
+  <text x="940" y="814" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#A63C3C">ESCALADA · IOT / UCI (§8.4)</text>
+  <text x="940" y="836" text-anchor="middle" font-size="12.5" fill="#444">2 criterios menores en 1 h: FR &gt;35 · pH &lt;7,30 o ↓ ·</text>
+  <text x="940" y="854" text-anchor="middle" font-size="12.5" fill="#444">pCO₂ +20% · PaFi &lt;150 · ↑encefalopatía — HACOR &gt;5</text>
+  <text x="940" y="872" text-anchor="middle" font-size="12.5" fill="#444">antes: descartar neumotórax, fugas, IPAP insuficiente</text>
+
+  <text x="640" y="930" text-anchor="middle" font-size="12" fill="#8aa0a6" font-style="italic">Figura 1 · Visión global del árbol de decisión — VMNI en Urgencias v0.1 (los detalles y umbrales, en las secciones 3–8)</text>
+</svg>
