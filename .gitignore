@@ -1,0 +1,10 @@
+# Material de apoyo: bibliografía con copyright y vídeos pesados — NO se sube al repositorio
+Apoyo/
+
+# Copias de seguridad locales (rotación propia)
+Backup/
+
+# Sistema
+.DS_Store
+~$*
+*.tmp
