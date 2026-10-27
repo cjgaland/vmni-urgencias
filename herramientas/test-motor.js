@@ -120,6 +120,10 @@ caso("Modificadores anatómicos: obesidad → escenario SHO con sus alertas; her
   esperar(r1.recomendacion.alertas.some(a => a.includes("Obesidad")), "alerta obesidad");
   const r2 = Motor.evaluar(base({ antecedentes: { respiratorios: ["hernia_diafragmatica"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.31, pco2: 55, po2: 60, hco3: 27, lactato: 12 } }));
   esperar(r2.recomendacion.alertas.some(a => a.includes("Hernia diafragmática")), "alerta hernia");
+  const r3 = Motor.evaluar(base({ antecedentes: { respiratorios: ["cifosis"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.3, pco2: 58, po2: 62, hco3: 28, lactato: 12 } }));
+  esperar(r3.recomendacion.escenario === "sho_restrictivo" && r3.recomendacion.alertas.some(a => a.includes("Cifosis")), "cifosis");
+  const r4 = Motor.evaluar(base({ antecedentes: { respiratorios: ["cirugia_toracica"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.42, pco2: 38, po2: 55, hco3: 24, lactato: 12 }, fio2: { dispositivo: "vk", valor: 40 } }));
+  esperar(r4.recomendacion.alertas.some(a => a.includes("Cirugía torácica")), "cirugía torácica (rama hipoxémica)");
 });
 
 caso("Peso ideal y Vt objetivo: varón 170 cm → 66 kg → 396–528 ml (y la mujer pesa 4,5 kg menos)", () => {

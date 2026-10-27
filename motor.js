@@ -178,7 +178,7 @@
     if (cls.rama === "hipercapnico") {
       if (e.sospecha === "asma" || (resp.includes("asma") && !resp.includes("epoc"))) return "asma";
       if (resp.includes("neuromuscular")) return "neuromuscular";
-      if (resp.includes("sho") || resp.includes("restrictivo") || resp.includes("obesidad") || resp.includes("hernia_diafragmatica")) return "sho_restrictivo";
+      if (["sho", "restrictivo", "obesidad", "hernia_diafragmatica", "cifosis", "cirugia_toracica"].some(x => resp.includes(x))) return "sho_restrictivo";
       return "epoc_hipercapnico";
     }
     if (cls.rama === "eap") return "eap";
@@ -197,6 +197,8 @@
     const anatomicas = () => {
       if (resp.includes("obesidad")) alertas.push("Obesidad importante: EPAP inicial 8–10 (carga torácica), posible vía aérea difícil (avisar si IOT) y HBPM con dosis ajustada.");
       if (resp.includes("hernia_diafragmatica")) alertas.push("Hernia diafragmática/eventración: parénquima reducido — Vt en el rango bajo (≈6 ml/kg ideal), Ti 1,2–1,5 s y SNG precoz si distensión gástrica.");
+      if (resp.includes("cifosis")) alertas.push("Cifosis/cifoscoliosis severa: CPT reducida y caja rígida — pueden necesitarse IPAP altas (>20) para lograr Vt, Ti 1,2–1,5 s, EPAP de reclutamiento; posible vía aérea difícil.");
+      if (resp.includes("cirugia_toracica")) alertas.push("Cirugía torácica previa (resección/toracoplastia): capacidad pulmonar reducida — Vt en rango bajo, vigilar asimetría ventilatoria y umbral bajo para descartar neumotórax con imagen.");
     };
 
     if (cls.rama === "iot") {

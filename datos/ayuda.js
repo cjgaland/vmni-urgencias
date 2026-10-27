@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.2",
+    titulo: "Base científica pública, cifosis y cirugía torácica",
+    texto: "Transparencia: desde **Docencia → Bibliografía** puedes **ver y descargar en PDF la base científica completa** de la app (edición de divulgación, con todas las referencias). Los modificadores anatómicos incorporan la **cifosis severa** (CPT reducida: IPAP altas, Ti largo, posible vía aérea difícil) y la **cirugía torácica previa** (capacidad reducida: Vt bajo, vigilar asimetría y neumotórax). Y el documento interno de base científica pasa a v0.2 con la **sección de fármacos validada** integrada.",
+  },
+  {
     version: "v2.1",
     titulo: "Tratamiento farmacológico, evolución simulada y modo alumno",
     texto: "Tras la validación del documento de fármacos, el resultado de la evaluación incluye la tarjeta **💊 Tratamiento médico recomendado** por escenario (GesEPOC, GOLD, ESC, GINA/GEMA), siempre con el aviso de **individualizar** (alergias, antecedentes, concomitancias, protocolos del centro). En los **casos**, los fármacos se registran como eventos con dosis prefijadas editables y el informe añade su **checklist** (broncodilatador en 30 min, corticoide en 1 h, diurético en el EAP…). Los casos **docentes** estrenan **⚗️ Simular evolución**: tú decides qué administras y la app genera la siguiente reevaluación según el soporte y los fármacos clave (nunca disponible en casos reales: es docencia, no predicción). Los ejemplos ficticios añaden el **🎓 modo alumno** por etapas: piensa qué harías y revela lo que pasó. Y la evaluación reconoce **obesidad** y **hernia diafragmática** con sus avisos específicos.",
@@ -131,7 +136,7 @@ const MANUAL_AYUDA = [
 
 const FAQ_AYUDA = [
   { p: "¿La app decide por mí?", r: "No. Es una **utilidad de apoyo a la decisión** con fines también docentes: te acerca los umbrales y la evidencia, pero la decisión clínica es siempre del profesional, con el paciente delante y los protocolos del centro en la mano." },
-  { p: "¿De dónde salen las recomendaciones?", r: "De un documento de base científica construido sobre las guías ATS 2026, ERS/ATS 2017, BTS 2016, el consenso español SEPAR/SEMICYUC/SEMES 2021, GOLD, ESC 2021, las revisiones Cochrane y los manuales de referencia. Cada umbral del motor lleva su referencia (puedes verlas en Docencia → Bibliografía)." },
+  { p: "¿De dónde salen las recomendaciones?", r: "De un documento de base científica construido sobre las guías ATS 2026, ERS/ATS 2017, BTS 2016, el consenso español SEPAR/SEMICYUC/SEMES 2021, GOLD, ESC 2021, GesEPOC, GINA/GEMA, las revisiones Cochrane y los manuales de referencia. Puedes **ver y descargar la base científica completa en PDF** desde **Docencia → Bibliografía** — transparencia total del proyecto." },
   { p: "¿Por qué pone «reglas provisionales»?", r: "Porque la revisión científica final del documento (16 decisiones concretas, como techos de EPAP o unidades del láctico) está **pendiente de validación** por el coautor. Cuando se cierre, publicaremos una versión con las reglas definitivas y retiraremos el aviso." },
   { p: "¿Guarda datos de los pacientes?", r: "**No.** Todos los cálculos ocurren en tu dispositivo; la app no recoge, almacena ni envía ningún dato. Al cerrar la evaluación, los valores desaparecen." },
   { p: "¿Funciona sin internet?", r: "Sí: una vez instalada (o tras la primera visita), queda guardada en tu dispositivo y funciona **sin conexión**. Internet solo hace falta para recibir actualizaciones." },

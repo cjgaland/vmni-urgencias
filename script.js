@@ -443,7 +443,14 @@ function quizSiguiente() {
 
 /* --- bibliografía comentada --- */
 function pintarBiblio() {
-  document.getElementById("docBiblio").innerHTML = D.biblio.map(b => `
+  document.getElementById("docBiblio").innerHTML = `
+    <div class="card biblio-descarga">
+      <div>
+        <h3>📖 La base científica, completa y descargable</h3>
+        <p>Toda la evidencia y los umbrales que fundamentan la app, con sus referencias — transparencia del proyecto.</p>
+      </div>
+      <a class="btn-primario" href="base-cientifica.pdf" target="_blank" rel="noopener">📥 Ver / descargar PDF</a>
+    </div>` + D.biblio.map(b => `
     <div class="card biblio-item">
       <span class="tipo-badge">${b.tipo}</span>
       <p class="biblio-ref">${b.ref}</p>

@@ -1,6 +1,6 @@
 {
   "version": "0.3",
-  "estado": "PROVISIONAL — valores propuestos en docs/BASE_CIENTIFICA.md pendientes de validación (decisiones D-1 a D-16, §13). No usar en pacientes reales.",
+  "estado": "PROVISIONAL — valores propuestos en docs/BASE_CIENTIFICA.md pendientes de validación (decisiones D-1 a D-16, §14). La sección de fármacos (§13) está validada (27-10-2026).",
 
   "fio2": {
     "nota": "Estimación de FiO2 por dispositivo. D-2 provisional: 4%/L en gafas. D-12 pendiente: fórmulas propias del Vivo.",

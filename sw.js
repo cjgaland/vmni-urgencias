@@ -1,6 +1,6 @@
 /* Service worker — VMNI Urgencias. Precacheo + stale-while-revalidate:
    la app funciona sin conexión y se actualiza sola en segundo plano. */
-const CACHE = "vmni-v2.1.0";
+const CACHE = "vmni-v2.2.0";
 const FICHEROS = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ const FICHEROS = [
   "./iconos/icono-192.png",
   "./iconos/icono-512.png",
   "./iconos/icono-180.png",
+  "./base-cientifica.pdf",
 ];
 
 self.addEventListener("install", e => {

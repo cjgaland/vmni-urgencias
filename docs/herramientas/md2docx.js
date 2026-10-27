@@ -184,12 +184,12 @@ while (i < lines.length) {
   if (h) {
     const lvl = h[1].length;
     const txt = h[2];
-    if (lvl <= 2) inDecisions = CFG.decisiones && /^13\./.test(txt);
+    if (lvl <= 2) inDecisions = CFG.decisiones && /Decisiones abiertas/.test(txt);
     const levels = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3, HeadingLevel.HEADING_4];
     blocks.push(new Paragraph({
       heading: levels[lvl - 1],
       spacing: { before: lvl === 1 ? 420 : 280, after: 140 },
-      pageBreakBefore: CFG.saltosPagina && lvl === 2 && /^(1|3|6|10|13|14)\./.test(txt), // secciones largas en página nueva
+      pageBreakBefore: CFG.saltosPagina && lvl === 2 && /^(1|3|6|10|13|14|15)\./.test(txt), // secciones largas en página nueva
       children: inlineRuns(txt.replace(/\*\*/g, "")),
     }));
     i++; continue;

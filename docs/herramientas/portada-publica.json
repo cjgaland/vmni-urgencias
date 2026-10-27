@@ -1,0 +1,10 @@
+{
+  "t1": "VMNI EN URGENCIAS",
+  "t2": "Base Científica de la aplicación",
+  "desc": "Las guías, la evidencia y los umbrales que fundamentan cada recomendación de la app — edición de divulgación para sus usuarios",
+  "version": "Edición pública — generada el 27 de octubre de 2026",
+  "fecha": "App: cjgaland.github.io/vmni-urgencias · código y proceso de revisión: github.com/cjgaland/vmni-urgencias",
+  "aviso": "Documento divulgativo para transparencia del proyecto. La app es una utilidad de apoyo a la decisión y docencia: no sustituye el criterio del profesional ni los protocolos de cada centro. Los umbrales marcados como provisionales están en proceso de revisión científica externa; el proceso completo de revisión puede consultarse en el repositorio del proyecto.",
+  "saltosPagina": true,
+  "decisiones": false
+}

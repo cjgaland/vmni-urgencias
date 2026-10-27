@@ -5,7 +5,7 @@ Autor: Carlos J. Galán Doval · Coautor y revisor: Enrique Fernández Romero
 Urgencias, Hospital de Montilla (Área de Gestión Sanitaria Sur de Córdoba)
 Fecha: 27 de octubre de 2026
 
-> **Objeto.** Este documento es la fuente de verdad del motor de decisión de la app *VMNI Urgencias*. Ninguna recomendación entrará en la app sin estar recogida y validada aquí. Cada umbral lleva su referencia. Las decisiones aún abiertas se listan en la **sección 13** para su resolución por los autores.
+> **Objeto.** Este documento es la fuente de verdad del motor de decisión de la app *VMNI Urgencias*. Ninguna recomendación entrará en la app sin estar recogida y validada aquí. Cada umbral lleva su referencia. Las decisiones aún abiertas se listan en la **sección 14** para su resolución por los autores.
 >
 > **Aviso.** Documento de apoyo a la decisión clínica. No sustituye el criterio del profesional ni los protocolos del centro.
 
@@ -330,7 +330,29 @@ El simulador de la app mostrará las curvas en modo **genérico** y con "pieles"
 
 ---
 
-## 13. Decisiones abiertas para revisión (Carlos + Enrique)
+## 13. Tratamiento farmacológico por escenario — VALIDADO (27-10-2026)
+
+> **Recomendaciones generales** según guías aceptadas (GesEPOC 2021, GOLD, ESC 2021, GINA/GEMA, BTS). **No sustituyen la valoración individual**: alergias, antecedentes, enfermedades concomitantes, interacciones, función renal/hepática, embarazo, y los protocolos y mapa de resistencias del centro. Dosis orientativas de adulto. **La app aconseja: la decisión de prescribir, ajustar o retirar es siempre del profesional.** Detalle completo en `docs/FARMACOS.md`.
+
+### 13.1 Agudización de EPOC *(GOLD · GesEPOC)*
+Salbutamol ± ipratropio nebulizado (2,5–5 mg + 0,5 mg cada 20–30 min la 1.ª hora, luego /4–6 h; **sin interrumpir la VNI**: malla en T) · **Prednisona 40 mg vo 5 días** (metilprednisolona IV si no vo; mayor eficacia con eosinófilos ≥300) · Antibiótico si purulencia (Anthonisen ≥2), PCR ≥20 **o necesidad de VNI** (que por sí sola lo indica): amoxicilina-clavulánico 875/125 /8 h 5–7 días, ajustado al mapa local · HBPM profiláctica. **Evitar:** metilxantinas de rutina, O₂ sin control.
+
+### 13.2 EAP / IC aguda *(ESC 2021)*
+**Furosemida IV 20–40 mg en bolo** (o 1–2× su dosis oral), repetir/perfusión según respuesta · NTG sl/IV (10–20 µg/min titulando) **solo si TAS >110** (evitar en TAS <100, estenosis aórtica grave, IAM de VD) · **Morfina NO rutinaria** (2,5–5 mg solo disnea/ansiedad refractarias: su uso rutinario se asocia a peor pronóstico) · tratar el desencadenante (SCA, arritmia, crisis HTA) · HBPM.
+
+### 13.3 Crisis asmática grave *(GINA · GEMA)*
+SpO₂ objetivo **93–95%** · salbutamol 4–10 puls./20 min la 1.ª hora (o neb 2,5–5 mg ×3) **+ ipratropio 0,5 mg en la grave** · **corticoide sistémico en la 1.ª hora** (prednisona 40–50 mg vo o hidrocortisona 100–200 mg IV) · **sulfato de magnesio 2 g IV en 20 min** solo en la grave sin respuesta. **Evitar:** sedantes fuera de la UCI.
+
+### 13.4 Sobredosis de depresores *(rama A)*
+**Primero ventilar.** Naloxona 0,04–0,1 mg IV cada 2–3 min **titulando hasta FR ≥10** (no hasta despertar); opioides largos → perfusión (~2/3 de la dosis eficaz/h); vigilancia prolongada · Flumazenilo de uso **excepcional** (0,2 mg IV lentos, máx. 1–2 mg): **contraindicado** en dependencia de BZD, coingesta proconvulsivante o epilepsia.
+
+### 13.5 Coadyuvantes durante la VNI
+Nebulización sin interrumpir la VNI · morfina 2,5–5 mg IV titulada en intolerancia (BTS, solo entorno monitorizado) · HBPM en el encamado · los cuidados de confort de la §10.
+
+### 13.6 Ajustes locales pendientes
+Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo fino de las clases ESC (F-2); el resto de decisiones F-3…F-7 quedaron resueltas con la validación del documento de fármacos.
+
+## 14. Decisiones abiertas para revisión (Carlos + Enrique)
 
 > En la versión Word de este documento, cada decisión aparece como **formulario de revisión**: casillas «Aceptamos la propuesta» / «La rechazamos» y un espacio para escribir la decisión propia. Lo acordado se incorporará aquí y pasará al motor de la app.
 
@@ -355,7 +377,7 @@ El simulador de la app mostrará las curvas en modo **genérico** y con "pieles"
 
 ---
 
-## 14. Bibliografía
+## 15. Bibliografía
 
 1. ATS. Noninvasive Respiratory Support for Adult Patients with Acute Respiratory Failure: An Official American Thoracic Society Clinical Practice Guideline. Am J Respir Crit Care Med 2026;212:2135. doi:10.1093/ajrccm/aamag302.
 2. Rochwerg B et al. Official ERS/ATS clinical practice guidelines: noninvasive ventilation for acute respiratory failure. Eur Respir J 2017;50:1602426.
@@ -377,12 +399,15 @@ El simulador de la app mostrará las curvas en modo **genérico** y con "pieles"
 18. Carratalá JM (coord.). Foster: Manual de ventilación mecánica no invasiva y alto flujo. 2020.
 19. Manual de VMNI del HUGCR; Fundamentos de VMNI (grupo VNI de SEMES); Neumosur (caps. 13-14, 3ª ed.).
 20. Thys F, Liistro G et al. FiO2 estimada en ventiladores sin mezclador (tabla reproducida en Rev Am Med Resp 2021).
-21. Cano Ballesteros JC. VNI en la IRA en urgencias: aplicabilidad y pronóstico. Tesis doctoral UCM, 2019.
-22. Carrera Cueva C et al. Cap. 1309 Ventilación Mecánica No Invasiva (manual de urgencias, "RespVMNI").
+21. GesEPOC 2021 — síndrome de agudización de la EPOC. Arch Bronconeumol 2022;58:159-170.
+22. GINA. Global Strategy for Asthma Management and Prevention (edición vigente). ginasthma.org.
+23. GEMA — Guía Española para el Manejo del Asma (edición vigente). gemasma.org.
+24. Cano Ballesteros JC. VNI en la IRA en urgencias: aplicabilidad y pronóstico. Tesis doctoral UCM, 2019.
+25. Carrera Cueva C et al. Cap. 1309 Ventilación Mecánica No Invasiva (manual de urgencias, "RespVMNI").
 
 ---
 
-## 15. Correcciones al borrador inicial
+## 16. Correcciones al borrador inicial
 
 1. **FiO2 gafas nasales:** «0,21 + 0,3×L/min» → **0,21 + 0,03–0,04×L/min** (D-2).
 2. **HCO3:** se pedía decidir categorías vs absoluto → **valor absoluto** (necesario para pH esperado/Winter), con categorías solo visuales.

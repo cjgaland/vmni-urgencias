@@ -411,6 +411,13 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .explica-quiz{border-radius:11px;padding:12px 15px;margin-top:14px;font-size:.92rem}
 .explica-quiz.bien{background:var(--ok-fondo);border:1px solid #CBE5CF}
 .explica-quiz.mal{background:var(--rojo-fondo);border:1px solid #EACFCF}
+.biblio-descarga{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  margin-bottom:14px;border-top:4px solid var(--acento);
+}
+.biblio-descarga h3{color:var(--primario);font-size:1.05rem;margin-bottom:4px}
+.biblio-descarga p{color:var(--texto-suave);font-size:.88rem}
+.biblio-descarga a{text-decoration:none;flex-shrink:0}
 .biblio-item{margin-bottom:12px;position:relative}
 .tipo-badge{
   position:absolute;top:14px;right:16px;font-size:.64rem;font-weight:800;letter-spacing:.08em;
