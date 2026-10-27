@@ -34,8 +34,75 @@ const Sim = (() => {
     eap: { R: 9, C: 26, pmus: 8, frPac: 28, tEsfuerzo: 0.8, carga: 1.5, paco2: 35, shunt: 0.22, recluta: 0.6 },
   };
 
+  /* ---------- modos ventilatorios (parque real: Vivo 50/60, V60, VITAE 40) ----------
+     trigger: el paciente puede disparar ciclos · respaldo: hay FR mínima de rescate
+     tiFijo: cicla a espiración por tiempo (Ti fijo), no por % de flujo
+     mandos: controles visibles · asinc: asincronías que aplican en el modo */
+  const MODOS = {
+    cpap: {
+      nombre: "CPAP", trigger: false, respaldo: false, tiFijo: false,
+      mandos: ["ctlEpap", "ctlFio2"],
+      asinc: ["normal", "fuga"],
+      docencia: {
+        ves: "Una sola línea de presión casi plana al nivel de CPAP, con pequeñas oscilaciones: cae un poco cuando el paciente inspira y sube levemente al espirar. El flujo y el volumen los marca solo el paciente.",
+        porque: "La CPAP no da ciclos: mantiene una presión continua que recluta alvéolos y mejora la oxigenación (EAP) sin soporte inspiratorio. Toda la ventilación corre a cargo del paciente.",
+        tocar: "Ajusta el nivel de CPAP (5–12 cmH₂O habituales en el EAP) y la FiO₂. Si el paciente hipoventila o retiene CO₂, la CPAP no basta: pasa a binivel.",
+      },
+    },
+    s: {
+      nombre: "Binivel S", trigger: true, respaldo: false, tiFijo: false,
+      mandos: ["ctlIpap", "ctlEpap", "ctlRampa", "ctlCiclado", "ctlFio2", "ctlTrigger", "ctlTi"],
+      asinc: ["normal", "fuga", "inefectivo", "autociclado", "doble", "tardio"],
+      docencia: {
+        ves: "Ciclos solo cuando el paciente dispara: cada esfuerzo (deflexión) abre una presurización hasta la IPAP. Si el paciente deja de disparar, NO hay respaldo: verás la apnea y saltarán las alarmas.",
+        porque: "En modo S (espontáneo) el ventilador asiste todos los esfuerzos válidos pero no impone frecuencia: sin esfuerzo no hay ciclo.",
+        tocar: "IPAP/EPAP y trigger como en S/T. Si hay riesgo de apnea o hipoventilación (sedación, fatiga, encefalopatía), usa S/T con FR de respaldo.",
+      },
+    },
+    st: {
+      nombre: "Binivel S/T", trigger: true, respaldo: true, tiFijo: false,
+      mandos: ["ctlIpap", "ctlEpap", "ctlFr", "ctlRampa", "ctlCiclado", "ctlFio2", "ctlTrigger", "ctlTi"],
+      asinc: ["normal", "fuga", "inefectivo", "autociclado", "doble", "tardio"],
+      docencia: {
+        ves: "Ciclos disparados por el paciente (deflexión de disparo, presión en meseta, flujo desacelerado) y, si tarda más de lo que marca la FR de respaldo, ciclos de rescate por tiempo.",
+        porque: "El modo S/T asiste cada esfuerzo y garantiza una frecuencia mínima: es el modo de elección en la insuficiencia respiratoria hipercápnica.",
+        tocar: "IPAP para ventilar (CO₂), EPAP para oxigenar y compensar autoPEEP, FR de respaldo 2–3 por debajo de la del paciente, rampa y ciclado según confort. Juega con el perfil: en EPOC la espiración es lenta; en EAP el volumen es pequeño (compliance baja).",
+      },
+    },
+    t: {
+      nombre: "Binivel T", trigger: false, respaldo: true, tiFijo: true,
+      mandos: ["ctlIpap", "ctlEpap", "ctlFr", "ctlRampa", "ctlFio2", "ctlTi"],
+      asinc: ["normal", "fuga"],
+      docencia: {
+        ves: "Ciclos a intervalos exactamente regulares con Ti fijo, haga lo que haga el paciente. Si respira activo (como estos perfiles), verás muescas en la espiración y desacople: lucha paciente-máquina.",
+        porque: "El modo T (controlado) ignora el trigger: manda la máquina. Solo resulta cómodo con el paciente pasivo (sedación, fatiga extrema, apnea).",
+        tocar: "FR y Ti fijan toda la ventilación: ajusta el Ti a ~1/3 del ciclo. Si el paciente lucha contra la máquina, vuelve a S/T antes que sedar para «adaptarlo».",
+      },
+    },
+    pcv: {
+      nombre: "PCV", trigger: true, respaldo: true, tiFijo: true,
+      mandos: ["ctlIpap", "ctlEpap", "ctlFr", "ctlRampa", "ctlFio2", "ctlTrigger", "ctlTi"],
+      asinc: ["normal", "fuga", "inefectivo", "autociclado"],
+      docencia: {
+        ves: "Presurización hasta la IPAP con Ti fijo: el ciclo lo puede iniciar el paciente o el tiempo, pero el final lo decide siempre el reloj, no el flujo.",
+        porque: "La presión controlada asegura el tiempo inspiratorio aunque haya fugas o en restrictivos (cifoescoliosis, obesidad), donde el ciclado por flujo se queda corto o es errático.",
+        tocar: "Ti fijo según la patología (más largo en restrictivos), IPAP/EPAP como en binivel y FR de seguridad. El trigger sigue activo: el paciente puede adelantar ciclos.",
+      },
+    },
+    avaps: {
+      nombre: "AVAPS", trigger: true, respaldo: true, tiFijo: false,
+      mandos: ["ctlIpap", "ctlEpap", "ctlFr", "ctlRampa", "ctlCiclado", "ctlFio2", "ctlTrigger", "ctlTi", "ctlVtDiana"],
+      asinc: ["normal", "fuga", "inefectivo", "autociclado", "doble", "tardio"],
+      docencia: {
+        ves: "Igual que un S/T, pero la IPAP «flota»: sube o baja sola, ciclo a ciclo, persiguiendo el volumen objetivo. Mira moverse el mando IPAP.",
+        porque: "AVAPS es presión de soporte con volumen medio asegurado: garantiza el Vt (p. ej. 8 ml/kg de peso ideal) aunque cambien la mecánica o el esfuerzo. Útil en obesidad-hipoventilación y EPOC crónico.",
+        tocar: "Fija el Vt objetivo y deja trabajar al algoritmo; vigila que la IPAP resultante sea tolerable y las fugas estén controladas. Los cambios son lentos: no es un modo de rescate rápido.",
+      },
+    },
+  };
+
   /* ---------- estado ---------- */
-  let tema = "generico", perfil = "epoc", asinc = "normal";
+  let tema = "generico", perfil = "epoc", asinc = "normal", modo = "st";
   let docente = true, examen = false, revelado = false;
   let ipap = 15, epap = 5, frResp = 14, rampa = 2, ciclado = 25;
   let fio2 = 0.30, trigger = 2, ti = 1.5, spo2Act = 96;
@@ -51,6 +118,7 @@ const Sim = (() => {
   let fase = "exp", tFase = 0, tUltimoInsp = -9;
   let flujoPico = 0, pawAct = 5, pplvEnd = 0;
   let esfuerzoT0 = -9, esfuerzoFalla = false, dobleHecho = false;
+  let inspPorPaciente = false, pmusPrev = 0;
   let Vinsp = 0, VdispBase = 0, picoCiclo = 0, fugaMedia = 0, tiReal = 0;
   let frMedida = 0, ieTxt = "—", ciclos = 0;
 
@@ -196,6 +264,7 @@ const Sim = (() => {
   /* ---------- ciclo del ventilador ---------- */
   function iniciarInsp(tAbs, disparadoPorPaciente) {
     fase = "insp"; tFase = 0; flujoPico = 0; Vinsp = 0;
+    inspPorPaciente = disparadoPorPaciente;
     if (tUltimoInsp > 0 && tAbs > tUltimoInsp + 0.4) {
       frMedida = Math.round(60 / (tAbs - tUltimoInsp));
       const texp = tAbs - tUltimoInsp - tiReal;
@@ -209,6 +278,7 @@ const Sim = (() => {
 
   function paso(dt) {
     const P = PERFILES[perfil];
+    const M = MODOS[modo];
     const T = 60 / Math.max(frResp, 6);
     const PS = ipap - epap;
     const tiMax = ti;
@@ -222,11 +292,28 @@ const Sim = (() => {
 
     let flujoLs = 0; // L/s del paciente
 
-    if (fase === "insp") {
+    if (modo === "cpap") {
+      // CPAP: presión continua, sin ciclos del ventilador. El inicio de cada
+      // esfuerzo hace de «ciclo» para los numéricos (FR, Vte).
+      if (pmusPrev <= 0 && pmus > 0) {
+        if (tUltimoInsp > 0 && t > tUltimoInsp + 0.4) frMedida = Math.round(60 / (t - tUltimoInsp));
+        tUltimoInsp = t; ciclos++; Vinsp = 0; VdispBase = V;
+        picoCiclo = epap; ieTxt = "—";
+      }
+      pmusPrev = pmus;
+      // sin soporte inspiratorio todo el trabajo es del paciente: el esfuerzo
+      // eficaz es mayor que la pmus de referencia de los perfiles asistidos
+      flujoLs = (epap + pmus * 2.2 - Palv) / P.R;
+      // la turbina compensa, pero la demanda deja su huella en la presión
+      const pawObj = epap - 0.45 * pmus + (flujoLs < 0 ? Math.min(1.2, -flujoLs * 0.9) : 0);
+      pawAct += (pawObj - pawAct) * Math.min(1, dt / 0.08);
+      if (flujoLs > 0) Vinsp += flujoLs * dt;
+      fase = "exp"; // nunca hay fase inspiratoria de máquina
+    } else if (fase === "insp") {
       const rt = RT[rampa];
       pawAct = epap + PS * (1 - Math.exp(-tFase / rt));
       // deflexión de disparo al inicio si lo inició el paciente
-      if (tFase < 0.09 && pmus > 0) pawAct -= 1.2 * (1 - tFase / 0.09);
+      if (inspPorPaciente && tFase < 0.09 && pmus > 0) pawAct -= 1.2 * (1 - tFase / 0.09);
       // espiración activa al final (ciclado tardío)
       if (asinc === "tardio" && tFase > 1.35) {
         pawAct += 2.8 * Math.min(1, (tFase - 1.35) / 0.8);
@@ -237,7 +324,8 @@ const Sim = (() => {
       if (f > flujoPico) flujoPico = f;
       Vinsp += flujoLs * dt;
 
-      const cicladoOk = tFase > 0.3 && f < flujoPico * cicl;
+      // T y PCV ciclan por tiempo (Ti fijo); el resto por % de flujo con Ti máximo
+      const cicladoOk = !M.tiFijo && tFase > 0.3 && f < flujoPico * cicl;
       if (cicladoOk || tFase >= tiMax) {
         tiReal = tFase; picoCiclo = pawAct;
         // AVAPS: la IPAP «flota» persiguiendo el Vt objetivo
@@ -248,10 +336,10 @@ const Sim = (() => {
           const rI = document.getElementById("rIpap"), oI = document.getElementById("oIpap");
           if (rI) { rI.value = ipap; oI.textContent = ipap; }
         }
-        if (asinc === "tardio" && tFase >= tiMax && t - ultimaAnot > 2.5) alarma(0, "Ciclado tardío: sobrepresión y espiración activa");
+        if (asinc === "tardio" && !M.tiFijo && tFase >= tiMax && t - ultimaAnot > 2.5) alarma(0, "Ciclado tardío: sobrepresión y espiración activa");
         fase = "exp"; tFase = 0;
         // doble disparo: el esfuerzo continúa tras el ciclado
-        if (asinc === "doble" && !dobleHecho && pmus > 1.5 && tiReal < 1.05 && Math.random() < 0.8) {
+        if (asinc === "doble" && M.trigger && !dobleHecho && pmus > 1.5 && tiReal < 1.05 && Math.random() < 0.8) {
           dobleHecho = true;
           iniciarInsp(t, true); fase = "insp";
           if (t - ultimaAnot > 2.5) alarma(0, "Doble disparo: dos ciclos sin espiración");
@@ -264,13 +352,18 @@ const Sim = (() => {
       if (flujoLs > 0 && pmus <= 0.1) flujoLs = 0;
       // disparo
       const hayEsfuerzo = pmus > 0.4;
-      const backup = (t - tUltimoInsp) >= T;
-      const auto = asinc === "autociclado" && Math.random() < dt * Math.max(0, 5 - trigger) * 0.18;
-      if ((hayEsfuerzo && puedeDisparar() && tFase > 0.35) || backup || auto) {
-        iniciarInsp(t, hayEsfuerzo && !backup && !auto);
-      } else if (hayEsfuerzo && !puedeDisparar() && tFase > 0.3 && t - ultimaAnot > 2.5) {
+      const disparoPac = M.trigger && hayEsfuerzo && puedeDisparar() && tFase > 0.35;
+      const backup = M.respaldo && (t - tUltimoInsp) >= T;
+      const auto = M.trigger && asinc === "autociclado" && Math.random() < dt * Math.max(0, 5 - trigger) * 0.18;
+      if (disparoPac || backup || auto) {
+        iniciarInsp(t, disparoPac && !backup && !auto);
+      } else if (M.trigger && hayEsfuerzo && !puedeDisparar() && tFase > 0.3 && t - ultimaAnot > 2.5) {
         alarma(1, "Esfuerzo inefectivo: muesca sin ciclo");
         ultimaAnot = t; // la anotación ya actualiza, pero evitamos repetir en el mismo esfuerzo
+      } else if (!M.trigger && modo === "t" && hayEsfuerzo && tFase > 0.3 && t - ultimaAnot > 4) {
+        alarma(1, "Modo T: esfuerzo ignorado (desacople)");
+      } else if (modo === "s" && tUltimoInsp > 0 && t - tUltimoInsp > 6 && t - ultimaAnot > 5) {
+        alarma(0, "Apnea: en modo S no hay FR de respaldo");
       }
     }
 
@@ -320,6 +413,8 @@ const Sim = (() => {
     // SpO2 simulada (modelo puro en Motor.spo2Simulada, testeado en Node)
     const spo2Obj = Motor.spo2Simulada(PERFILES[perfil], fio2, epap, fugaMedia).spo2;
     spo2Act += (spo2Obj - spo2Act) * 0.15;
+    // sin ciclos recientes (p. ej. apnea en modo S): la FR medida cae en vivo
+    if (ciclos > 4 && tUltimoInsp > 0 && t - tUltimoInsp > 60 / 8) frMedida = Math.round(60 / (t - tUltimoInsp));
     // alarmas de parámetro (tras el transitorio inicial)
     const al = {
       Vte: ciclos > 4 && vte > 0 && vte < 200,
@@ -392,13 +487,23 @@ const Sim = (() => {
   }
 
   function datosCabecera() {
-    document.getElementById("simDatos").textContent =
-      `${avaps ? `AVAPS→${vtDiana} ml · ` : ""}IPAP ${ipap} · EPAP ${epap} · FiO₂ ${Math.round(fio2 * 100)}% · Ciclado ${ciclado}% · Ti ${String(ti).replace(".", ",")}s`;
+    const M = MODOS[modo];
+    const tiTxt = String(ti).replace(".", ",");
+    const fio2Txt = `FiO₂ ${Math.round(fio2 * 100)}%`;
+    let s;
+    if (modo === "cpap") {
+      s = `CPAP ${epap} cmH₂O · ${fio2Txt}`;
+    } else {
+      s = `${avaps ? `Vt diana ${vtDiana} ml · ` : ""}IPAP ${ipap} · EPAP ${epap}`;
+      if (M.respaldo) s += ` · FR ${frResp}`;
+      s += M.tiFijo ? ` · Ti ${tiTxt}s` : ` · Ciclado ${ciclado}% · Ti máx ${tiTxt}s`;
+      s += ` · ${fio2Txt}`;
+    }
+    document.getElementById("simDatos").textContent = `${M.nombre} — ${s}`;
   }
 
-  /* ---------- textos docentes ---------- */
+  /* ---------- textos docentes (las curvas normales se explican por modo, en MODOS) ---------- */
   const DOCENCIA = {
-    normal: { ves: "Deflexión de disparo, presión en meseta, flujo desacelerado que cae hasta el criterio de ciclado y volumen que vuelve a cero.", porque: "Paciente y ventilador están sincronizados: cada esfuerzo dispara un ciclo y la espiración es pasiva y completa.", tocar: "Nada. Juega con el perfil de paciente: en EPOC la espiración es lenta (constante de tiempo larga); en EAP el volumen es pequeño con presiones normales (compliance baja)." },
     fuga: { ves: "La línea de flujo no vuelve a cero (queda desplazada hacia arriba), el volumen no cierra el ciclo y la presión se vuelve inestable.", porque: "Parte del flujo se escapa por la interfaz: el sensor lo mide como flujo inspiratorio continuo y el trigger y el ciclado se vuelven erráticos.", tocar: "Primero la interfaz: reajustar, cambiar talla o tipo, parches. Después, bajar presiones a lo mínimo eficaz. La fuga es la causa nº1 de asincronía." },
     inefectivo: { ves: "Muescas en el flujo espiratorio (pequeñas ondas positivas) con ligera caída de presión, SIN ciclo del ventilador detrás.", porque: "El esfuerzo del paciente no vence la carga (autoPEEP en el EPOC) o el trigger es poco sensible: el músculo trabaja pero el ventilador no lo ve.", tocar: "SUBE LA EPAP de 1–2 en 1–2 (contrarresta la autoPEEP; pruébalo con el deslizador y verás desaparecer las muescas), sensibiliza el trigger y evita la sobreasistencia (IPAP excesiva)." },
     autociclado: { ves: "Ciclos extra sin deflexión de disparo previa y a ritmo irregular, no precedidos de esfuerzo en el flujo.", porque: "El ventilador confunde artefactos (fugas, agua en la tubuladura, oscilaciones cardiacas) con esfuerzos del paciente.", tocar: "Reduce la fuga, revisa la tubuladura y baja la sensibilidad del trigger un punto. Evita sedar para «frenar» un autociclado." },
@@ -414,8 +519,10 @@ const Sim = (() => {
       panel.innerHTML = "";
       return;
     }
-    const d = DOCENCIA[asinc];
-    const nombre = { normal: "Curvas normales", fuga: "Fuga", inefectivo: "Esfuerzo inefectivo", autociclado: "Autociclado", doble: "Doble disparo", tardio: "Ciclado tardío" }[asinc];
+    const d = asinc === "normal" ? MODOS[modo].docencia : DOCENCIA[asinc];
+    const nombre = asinc === "normal"
+      ? `Curvas normales en ${MODOS[modo].nombre}`
+      : { fuga: "Fuga", inefectivo: "Esfuerzo inefectivo", autociclado: "Autociclado", doble: "Doble disparo", tardio: "Ciclado tardío" }[asinc];
     p.innerHTML = `${examen ? "🎓 Era: " : ""}<strong>${nombre}.</strong> ${docente ? "" : d.ves}`;
     panel.innerHTML = docente ? `
       <div class="doc-bloque"><label>👁 Qué ves</label><p>${d.ves}</p></div>
@@ -500,12 +607,45 @@ const Sim = (() => {
 
   /* ---------- API y controles ---------- */
   function setAsincronia(a) {
+    // si llega una asincronía que no aplica en el modo actual (p. ej. desde
+    // Docencia), volvemos al S/T, donde aplican todas
+    if (!MODOS[modo].asinc.includes(a)) setModo("st");
     asinc = a; examen = false; revelado = false;
     fugaMedia = 0;
     aplicarPreset(a);
     pintarDocente();
     aplicarGuia();
     datosCabecera();
+  }
+
+  function setModo(m) {
+    if (!MODOS[m]) return;
+    modo = m;
+    const M = MODOS[m];
+    avaps = m === "avaps";
+    fase = "exp"; tFase = 0.5; dobleHecho = false; pmusPrev = 0; pawAct = epap;
+    document.querySelectorAll('[data-grupo="modo"] .chip').forEach(c =>
+      c.classList.toggle("sel", c.dataset.v === m));
+    // mandos: solo se muestran los que procede ajustar en el modo
+    ["ctlIpap", "ctlEpap", "ctlFr", "ctlRampa", "ctlCiclado", "ctlFio2", "ctlTrigger", "ctlTi", "ctlVtDiana"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = M.mandos.includes(id) ? "" : "none";
+    });
+    document.getElementById("lblEpap").textContent = m === "cpap" ? "CPAP" : "EPAP";
+    document.getElementById("lblTi").textContent = M.tiFijo ? "Ti fijo" : "Ti máximo";
+    // asincronías: solo los chips que aplican en el modo
+    document.querySelectorAll(".asincronias .chip").forEach(c => {
+      c.style.display = M.asinc.includes(c.dataset.a) ? "" : "none";
+    });
+    const btnEx = document.getElementById("btnExamen");
+    if (btnEx) btnEx.style.display = M.asinc.length > 2 ? "" : "none";
+    if (!M.asinc.includes(asinc) || examen) {
+      document.querySelectorAll(".asincronias .chip").forEach(c =>
+        c.classList.toggle("sel", c.dataset.a === "normal"));
+      setAsincronia("normal");
+    } else {
+      pintarDocente(); aplicarGuia(); datosCabecera();
+    }
   }
 
   function setTema(tm) {
@@ -523,7 +663,7 @@ const Sim = (() => {
   function setPerfil(p) { perfil = p; V = 0; }
 
   function examenNuevo() {
-    const opciones = ["fuga", "inefectivo", "autociclado", "doble", "tardio"];
+    const opciones = MODOS[modo].asinc.filter(a => a !== "normal");
     asinc = opciones[Math.floor(Math.random() * opciones.length)];
     examen = true; revelado = false; fugaMedia = 0;
     aplicarPreset(asinc);
@@ -557,7 +697,7 @@ const Sim = (() => {
     if (activo) return;
     activo = true; bucle.t0 = null;
     ajustarLienzo();
-    if (!iniciado) { iniciado = true; setTema(tema); programarEsfuerzo(0); datosCabecera(); pintarDocente(); aplicarGuia(); }
+    if (!iniciado) { iniciado = true; setTema(tema); programarEsfuerzo(0); setModo(modo); }
     raf = requestAnimationFrame(bucle);
   }
   function pausar() { activo = false; if (raf) cancelAnimationFrame(raf); }
@@ -588,6 +728,8 @@ const Sim = (() => {
       c.parentElement.querySelectorAll(".chip").forEach(z => z.classList.remove("sel"));
       c.classList.add("sel"); setPerfil(c.dataset.v);
     }));
+  document.querySelectorAll('[data-grupo="modo"] .chip').forEach(c =>
+    c.addEventListener("click", () => setModo(c.dataset.v)));
   const btnSon = document.getElementById("btnSonido");
   if (btnSon) btnSon.addEventListener("click", () => {
     sonidoOn = !sonidoOn;
@@ -595,14 +737,8 @@ const Sim = (() => {
     if (sonidoOn) beep(false); // confirmación audible
   });
   liga("rVtDiana", "oVtDiana", v => { vtDiana = v; });
-  const tglA = document.getElementById("tglAvaps");
-  if (tglA) tglA.addEventListener("change", () => {
-    avaps = tglA.checked;
-    document.getElementById("ctlVtDiana").style.display = avaps ? "" : "none";
-    datosCabecera();
-  });
   const tgl = document.getElementById("tglDocente");
   if (tgl) tgl.addEventListener("change", () => { docente = tgl.checked; pintarDocente(); aplicarGuia(); });
 
-  return { activar, pausar, setAsincronia, examenNuevo, revelar, otroExamen: examenNuevo };
+  return { activar, pausar, setAsincronia, setModo, examenNuevo, revelar, otroExamen: examenNuevo };
 })();
