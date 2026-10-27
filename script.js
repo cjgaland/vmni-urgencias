@@ -795,6 +795,12 @@ if ("serviceWorker" in navigator) {
           if (nuevo.state === "installed" && navigator.serviceWorker.controller) avisarActualizacion(nuevo);
         });
       });
+      // El navegador solo busca versión nueva al CARGAR la página; con la app
+      // abierta (instalada) nadie comprueba. Forzamos la comprobación al volver
+      // a primer plano y cada 30 minutos, para que el aviso llegue sin reabrir.
+      const comprobar = () => { reg.update().catch(() => {}); };
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) comprobar(); });
+      setInterval(comprobar, 30 * 60 * 1000);
     }).catch(() => {});
     let recargando = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
