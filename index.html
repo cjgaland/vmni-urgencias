@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VMNI Urgencias</title>
 <meta name="description" content="Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva en Urgencias">
+<meta name="theme-color" content="#0F4C5C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="iconos/icono-192.png">
+<link rel="apple-touch-icon" href="iconos/icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VMNI">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,7 +31,7 @@
     <button data-s="problemas" onclick="irA('problemas')">Problemas</button>
     <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
   </nav>
-  <span class="badge-boceto">BOCETO v0.2</span>
+  <span class="badge-boceto">v1.0 BETA</span>
 </header>
 
 <main>
@@ -311,12 +318,18 @@
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — v0.2 boceto · 2026
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — v1.0 beta · 2026<br>
+  <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 
 <script src="motor.js"></script>
 <script src="datos/docencia.js"></script>
 <script src="sim.js"></script>
 <script src="script.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
 </body>
 </html>

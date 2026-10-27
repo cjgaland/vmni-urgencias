@@ -342,6 +342,7 @@ input[type=range]{width:100%;accent-color:var(--acento)}
   text-align:center;color:var(--texto-suave);font-size:.78rem;
   padding:22px 16px 30px;border-top:1px solid var(--borde);background:#fff;
 }
+.pie-aviso{font-size:.68rem;font-style:italic;opacity:.8}
 
 /* ---------- responsive ---------- */
 @media (max-width:860px){

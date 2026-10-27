@@ -1,0 +1,16 @@
+{
+  "name": "VMNI Urgencias — Ventilación Mecánica No Invasiva",
+  "short_name": "VMNI",
+  "description": "Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva en Urgencias: evaluación guiada, parámetros con evidencia, simulador de gráficas y docencia.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F4F8F9",
+  "theme_color": "#0F4C5C",
+  "icons": [
+    { "src": "iconos/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "iconos/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
