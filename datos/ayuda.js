@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.1",
+    titulo: "Tratamiento farmacológico, evolución simulada y modo alumno",
+    texto: "Tras la validación del documento de fármacos, el resultado de la evaluación incluye la tarjeta **💊 Tratamiento médico recomendado** por escenario (GesEPOC, GOLD, ESC, GINA/GEMA), siempre con el aviso de **individualizar** (alergias, antecedentes, concomitancias, protocolos del centro). En los **casos**, los fármacos se registran como eventos con dosis prefijadas editables y el informe añade su **checklist** (broncodilatador en 30 min, corticoide en 1 h, diurético en el EAP…). Los casos **docentes** estrenan **⚗️ Simular evolución**: tú decides qué administras y la app genera la siguiente reevaluación según el soporte y los fármacos clave (nunca disponible en casos reales: es docencia, no predicción). Los ejemplos ficticios añaden el **🎓 modo alumno** por etapas: piensa qué harías y revela lo que pasó. Y la evaluación reconoce **obesidad** y **hernia diafragmática** con sus avisos específicos.",
+  },
+  {
     version: "v2.0",
     titulo: "Modo CASOS: evolución, informe y ficheros",
     texto: "Nueva sección **🗂 Casos**: desde cualquier evaluación puedes **iniciar un caso anónimo** (solo edad, sexo y talla; tiempos relativos, nunca fechas) e ir registrando en su línea temporal **reevaluaciones** (valoradas por el motor, con HACOR y criterios de fracaso), **cambios de parámetros**, **cuidados** y **notas**. Al final, un **informe imprimible** compara la situación basal con la final, recoge la cronología completa y pasa un **checklist automático** de lo hecho y lo no registrado (gasometría en los primeros 90 min, protección nasal, escalada ante fracaso…). Los casos se **guardan y cargan como ficheros .json** que viven solo en tu dispositivo, y se incluyen **tres casos ficticios de ejemplo** —siempre marcados como tales— para aprender. La Evaluación pide ahora **talla y sexo** (opcionales) para darte el **Vt objetivo en mililitros** sobre el **peso ideal** — nunca el real: el pulmón no engorda. Y la SpO₂ simulada del simulador queda cubierta por tests automáticos.",
@@ -89,7 +94,11 @@ const MANUAL_AYUDA = [
       {
         titulo: "De la evaluación al informe",
         texto: "Haz la evaluación y pulsa **🗂 Iniciar caso** en el resultado: la situación basal queda guardada y se abre la **línea temporal**, donde añades reevaluaciones (el motor las valora al momento), cambios de parámetros, cuidados y notas, siempre con **tiempos relativos** (t+60′). Al cerrar el caso con su destino, el **informe** compara basal→final, lista la cronología y pasa un **checklist de lo hecho y lo no registrado**; imprímelo o guárdalo en PDF con el botón 🖨.",
-        cajas: [{ titulo: "🔒 Anonimato por diseño", items: [
+        cajas: [{ titulo: "💊⚗️🎓 Fármacos, evolución y modo alumno", items: [
+          "**Fármacos como eventos:** elige el tratamiento del escenario (dosis prefijada editable) y el informe comprobará los tiempos clave (broncodilatador ≤30 min, corticoide ≤1 h…).",
+          "**⚗️ Simular evolución** (solo casos docentes): la app genera la siguiente gasometría según el soporte y los fármacos clave que hayas registrado. Es docencia: jamás predice pacientes reales.",
+          "**🎓 Modo alumno** en los ejemplos: el caso se revela por etapas; decide tú antes de ver qué pasó.",
+        ] }, { titulo: "🔒 Anonimato por diseño", items: [
           "**Sin identificadores:** solo edad en años, sexo y talla; ni nombres, ni fechas, ni número de historia — tampoco los escribas en el título o las notas.",
           "**Fichero .json local:** el caso se guarda y carga como fichero en TU dispositivo; la app no lo envía a ningún sitio.",
           "**Ejemplos ficticios:** tres casos inventados (siempre marcados «CASO FICTICIO · DOCENTE») para practicar la lectura de evoluciones.",

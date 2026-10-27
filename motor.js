@@ -178,7 +178,7 @@
     if (cls.rama === "hipercapnico") {
       if (e.sospecha === "asma" || (resp.includes("asma") && !resp.includes("epoc"))) return "asma";
       if (resp.includes("neuromuscular")) return "neuromuscular";
-      if (resp.includes("sho") || resp.includes("restrictivo")) return "sho_restrictivo";
+      if (resp.includes("sho") || resp.includes("restrictivo") || resp.includes("obesidad") || resp.includes("hernia_diafragmatica")) return "sho_restrictivo";
       return "epoc_hipercapnico";
     }
     if (cls.rama === "eap") return "eap";
@@ -193,6 +193,11 @@
     const circ = ap.circunstancias || [];
     const alertas = [];
     const refs = [];
+    // modificadores anatómicos: avisos que aplican a cualquier soporte
+    const anatomicas = () => {
+      if (resp.includes("obesidad")) alertas.push("Obesidad importante: EPAP inicial 8–10 (carga torácica), posible vía aérea difícil (avisar si IOT) y HBPM con dosis ajustada.");
+      if (resp.includes("hernia_diafragmatica")) alertas.push("Hernia diafragmática/eventración: parénquima reducido — Vt en el rango bajo (≈6 ml/kg ideal), Ti 1,2–1,5 s y SNG precoz si distensión gástrica.");
+    };
 
     if (cls.rama === "iot") {
       return {
@@ -249,12 +254,14 @@
           ? ["LET: VNI/TAFCN como techo terapéutico por equipo experto, con reevaluación precoz y objetivo de confort."]
           : ["VNI solo excepcionalmente (equipo experto, UCI, reevaluación inmediata).", "Preparar IOT: la demora aumenta la mortalidad en el fallo hipoxémico de novo."];
       }
+      anatomicas();
       if (otros.includes("inmunodepresion")) alertas.push(R.modificadores.inmunodepresion);
       if (e.sospecha === "neumonia" && !otros.includes("ic") && !prefiereBinivel) alertas.push(R.modificadores.neumonia_sin_comorbilidad);
       return r;
     }
 
     if (cls.rama === "eap") {
+      anatomicas();
       const r = { tipo: "cpap", escenario: "eap", titulo: "Iniciar CPAP precoz", parametros: esc.parametros, titulacion: esc.titulacion.slice(), evidencia: esc.evidencia, alertas };
       if (esNum(c.pco2) && c.pco2 > 45) {
         r.titulo = "EAP con hipercapnia: iniciar binivel";
@@ -277,6 +284,7 @@
         parametros: esc.parametros, titulacion: esc.titulacion.slice(),
         evidencia: esc.evidencia, alertas,
       };
+      anatomicas();
       alertas.push(`Gravedad: ${cls.gravedad.texto} (pH ${c.ph}). ${cls.gravedad.accion}.`);
       if (cls.gravedad.nivel === "critica" && !cls.let) r.tipo = "binivel_critico";
       if (cls.subtipo === "C3") alertas.push("Componente metabólico (C3): buscar hipoperfusión/sepsis/cetoacidosis además del soporte ventilatorio.");

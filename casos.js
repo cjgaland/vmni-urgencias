@@ -23,6 +23,26 @@ const Casos = (() => {
     const ult = caso.eventos.length ? Math.max(...caso.eventos.map(e => e.t)) : 0;
     return ult + 30;
   }
+  function escenarioId() {
+    const r = caso.basal.resumen;
+    return r.escenarioId ||
+      ({ hipercapnico: "epoc_hipercapnico", eap: "eap", hipoxemico: "hipoxemico", sobredosis: "sobredosis" }[r.rama]) ||
+      "hipoxemico";
+  }
+  const esDocente = () => caso.tipo !== "real" || caso.ejemplo;
+  // modo alumno: solo son visibles los eventos hasta la etapa revelada
+  function eventosVisibles() {
+    const orden = caso.eventos.slice().sort((a, b) => a.t - b.t);
+    if (!caso.alumno) return { eventos: orden, cierreVisible: true, quedan: 0 };
+    const reevs = orden.filter(e => e.tipo === "reevaluacion");
+    const n = Math.min(caso.alumno.etapa, reevs.length);
+    const tLimite = n === 0 ? -1 : reevs[n - 1].t;
+    return {
+      eventos: orden.filter(e => e.t <= tLimite),
+      cierreVisible: n >= reevs.length,
+      quedan: reevs.length - n,
+    };
+  }
   const etiquetaTipo = () => caso.ejemplo
     ? `<span class="etiq-caso ficticio">CASO FICTICIO · DOCENTE</span>`
     : `<span class="etiq-caso ${caso.tipo}">${caso.tipo === "real" ? "CASO REAL (anonimizado)" : "CASO DOCENTE"}</span>`;
@@ -56,6 +76,7 @@ const Casos = (() => {
             <div class="icono doc">🎭</div><h3>${esc(c.titulo)}</h3>
             <p>${esc(c.meta.escenario)} · ${c.meta.edad} años · ${c.eventos.length} eventos</p>
             <span class="fix">CASO FICTICIO · DOCENTE</span>
+            <div style="margin-top:10px"><button class="btn-sec btn-mini" onclick="event.stopPropagation(); Casos.cargarEjemplo(${i}, true)">🎓 Modo alumno</button></div>
           </article>`).join("")}
       </div>
       <input type="file" id="ficheroCaso" accept=".json,application/json" style="display:none" onchange="Casos.importar(this.files[0])">`;
@@ -106,12 +127,15 @@ const Casos = (() => {
   function pintarActivo() {
     vista = "activo";
     const r = caso.basal.resumen;
+    const vis = eventosVisibles();
     const linea = ev => {
-      const iconos = { reevaluacion: "🧪", parametros: "🎛", cuidado: "🛏", nota: "📝" };
+      const iconos = { reevaluacion: "🧪", parametros: "🎛", cuidado: "🛏", nota: "📝", farmaco: "💊" };
       let cuerpo = "";
-      if (ev.tipo === "reevaluacion") {
+      if (ev.tipo === "farmaco") {
+        cuerpo = `<strong>${esc(ev.datos.nombre)}</strong> — ${esc(ev.datos.dosis)}${ev.datos.nota ? ` <small>(${esc(ev.datos.nota)})</small>` : ""}`;
+      } else if (ev.tipo === "reevaluacion") {
         const v = ev.veredicto || {};
-        cuerpo = `pH ${f1(ev.datos.ph)} · pCO₂ ${f1(ev.datos.pco2)} · FR ${f1(ev.datos.fr)} · SpO₂ ${f1(ev.datos.spo2)}%${ev.hacor !== undefined ? ` · HACOR ${ev.hacor}` : ""}
+        cuerpo = `${ev.datos.simulada ? `<span class="etiq-sim">⚗️ simulada</span> ` : ""}pH ${f1(ev.datos.ph)} · pCO₂ ${f1(ev.datos.pco2)} · FR ${f1(ev.datos.fr)} · SpO₂ ${f1(ev.datos.spo2)}%${ev.hacor !== undefined ? ` · HACOR ${ev.hacor}` : ""}
           <div class="ev-veredicto ${v.veredicto || ""}">${esc(v.resumen || v.texto || "")}</div>`;
       } else if (ev.tipo === "parametros") {
         cuerpo = `${esc(ev.datos.modo)} · EPAP ${f1(ev.datos.epap)} · IPAP ${f1(ev.datos.ipap)} · FiO₂ ${esc(ev.datos.fio2)}${ev.datos.nota ? ` — ${esc(ev.datos.nota)}` : ""}`;
@@ -135,12 +159,20 @@ const Casos = (() => {
       </div>
 
       <div class="card">
-        <h3>Línea temporal</h3>
+        <h3>Línea temporal${caso.alumno ? ` <span class="etiq-caso ficticio">🎓 MODO ALUMNO · etapa ${caso.alumno.etapa}</span>` : ""}</h3>
         <div class="timeline">
           <div class="ev basal"><span class="ev-t">t+0′</span><span class="ev-icono">🩺</span><div class="ev-cuerpo"><strong>${esc(r.clasif)}</strong> — ${esc(r.titulo)}</div></div>
-          ${caso.eventos.slice().sort((a, b) => a.t - b.t).map(linea).join("")}
-          ${caso.cierre ? `<div class="ev cierre"><span class="ev-t">t+${caso.cierre.t}′</span><span class="ev-icono">🏁</span><div class="ev-cuerpo"><strong>${esc(caso.cierre.destino)}</strong>${caso.cierre.comentario ? ` — ${esc(caso.cierre.comentario)}` : ""}</div></div>` : ""}
+          ${vis.eventos.map(linea).join("")}
+          ${caso.cierre && vis.cierreVisible ? `<div class="ev cierre"><span class="ev-t">t+${caso.cierre.t}′</span><span class="ev-icono">🏁</span><div class="ev-cuerpo"><strong>${esc(caso.cierre.destino)}</strong>${caso.cierre.comentario ? ` — ${esc(caso.cierre.comentario)}` : ""}</div></div>` : ""}
         </div>
+        ${caso.alumno ? `
+        <div class="alumno-panel">
+          <p>🎓 <strong>¿Qué harías ahora?</strong> Decide parámetros, fármacos y cuidados (puedes anotarlos como eventos) antes de ver qué pasó.</p>
+          <div class="botonera" style="margin-top:10px">
+            <button class="btn-sec btn-mini" onclick="Casos.salirAlumno()">Salir del modo alumno</button>
+            ${vis.quedan > 0 ? `<button class="btn-primario" onclick="Casos.revelarEtapa()">Revelar siguiente etapa (${vis.quedan} restantes) →</button>` : `<button class="btn-primario" onclick="Casos.salirAlumno()">Caso completo revelado: ver todo →</button>`}
+          </div>
+        </div>` : ""}
       </div>
 
       ${caso.cierre ? "" : `
@@ -148,9 +180,11 @@ const Casos = (() => {
         <h3>Añadir evento</h3>
         <div class="chips" style="margin-bottom:12px">
           <button class="chip" onclick="Casos.formulario('reevaluacion')">🧪 Reevaluación</button>
+          <button class="chip" onclick="Casos.formulario('farmaco')">💊 Fármaco</button>
           <button class="chip" onclick="Casos.formulario('parametros')">🎛 Cambio de parámetros</button>
           <button class="chip" onclick="Casos.formulario('cuidado')">🛏 Cuidado / confort</button>
           <button class="chip" onclick="Casos.formulario('nota')">📝 Nota</button>
+          ${esDocente() ? `<button class="chip" onclick="Casos.simularEvolucion()">⚗️ Simular evolución (+30′)</button>` : ""}
           <button class="chip alerta" onclick="Casos.formulario('cierre')">🏁 Cerrar caso</button>
         </div>
         <div id="formEvento"></div>
@@ -196,6 +230,20 @@ const Casos = (() => {
           ${["Cabecera a 30–45° y cuello sin flexión", "Protección del puente nasal (hidrocoloide)", "Pausa programada e hidratación", "Nebulización sin interrumpir la VNI", "SNG por distensión/vómitos", "Rotación de interfaz / revisión de apoyos"]
             .map(c => `<button class="chip" onclick="Casos.addCuidado('${c.replace(/'/g, "\\'")}')">${c}</button>`).join("")}
         </div>`,
+      farmaco: `
+        <p class="farmacos-descargo" style="margin-bottom:10px">⚠️ ${esc(FARMACOS.descargo)}</p>
+        <div class="fila-campos">${campoT}
+          <div class="campo ancho"><label>Fármaco</label>
+            <select id="evFarmaco" onchange="Casos.prefijarDosis()">
+              ${(FARMACOS.escenarios[escenarioId()]?.items || []).map((it, i) => `<option value="${i}">${esc(it.nombre)}</option>`).join("")}
+              <option value="otro">Otro…</option>
+            </select>
+          </div>
+          <div class="campo ancho"><label>Nombre (si «otro»)</label><input id="evFarmacoNombre" placeholder="—"></div>
+          <div class="campo ancho"><label>Dosis / pauta</label><input id="evDosis"></div>
+          <div class="campo ancho"><label>Nota</label><input id="evFarmacoNota" placeholder="opcional"></div>
+        </div>
+        <div class="botonera"><span></span><button class="btn-primario" onclick="Casos.addFarmaco()">Añadir →</button></div>`,
       nota: `
         <div class="fila-campos">${campoT}
           <div class="campo ancho"><label>Texto</label><input id="evNota" placeholder="observación libre (sin datos identificativos)"></div>
@@ -213,7 +261,71 @@ const Casos = (() => {
         <div class="botonera"><span></span><button class="btn-primario" onclick="Casos.cerrarCaso()">Cerrar caso →</button></div>`,
     };
     $("formEvento").innerHTML = forms[tipo];
+    if (tipo === "farmaco") prefijarDosis();
   }
+
+  function prefijarDosis() {
+    const sel = $("evFarmaco").value;
+    const items = FARMACOS.escenarios[escenarioId()]?.items || [];
+    if (sel !== "otro" && items[+sel]) {
+      $("evDosis").value = items[+sel].dosis;
+      $("evFarmacoNota").value = items[+sel].nota || "";
+    } else { $("evDosis").value = ""; $("evFarmacoNota").value = ""; }
+  }
+  function addFarmaco() {
+    const sel = $("evFarmaco").value;
+    const items = FARMACOS.escenarios[escenarioId()]?.items || [];
+    const base = sel !== "otro" ? items[+sel] : null;
+    const nombre = base ? base.nombre : ($("evFarmacoNombre").value.trim() || "Fármaco");
+    caso.eventos.push({
+      t: nv("evT") ?? tSugerido(), tipo: "farmaco",
+      datos: { id: base ? base.id : "otro", nombre, dosis: $("evDosis").value.trim(), nota: $("evFarmacoNota").value.trim() },
+    });
+    guardar(); pintar();
+  }
+
+  /* evolución simulada (SOLO docente): trayectoria según soporte y fármacos clave */
+  function simularEvolucion() {
+    if (!esDocente()) return;
+    const escId = escenarioId();
+    const tray = FARMACOS.evolucion[escId] || FARMACOS.evolucion.defecto;
+    const clave = FARMACOS.escenarios[escId]?.clave || [];
+    const dados = new Set(caso.eventos.filter(e => e.tipo === "farmaco").map(e => e.datos.id));
+    const farmacosOk = clave.length === 0 || clave.every(id => dados.has(id));
+    const vniOk = caso.eventos.some(e => e.tipo === "parametros");
+    const ritmo = (farmacosOk && vniOk) ? tray.completo : (farmacosOk || vniOk) ? tray.parcial : tray.sinSoporte;
+
+    const reevs = caso.eventos.filter(e => e.tipo === "reevaluacion").sort((a, b) => a.t - b.t);
+    const ult = reevs[reevs.length - 1];
+    const r = caso.basal.resumen;
+    const base = ult ? ult.datos : { ph: r.ph, pco2: r.pco2, fr: r.fr, gcs: r.gcs, fc: r.fc, spo2: caso.basal.entradas?.clinica?.spo2 ?? 90, fio2: 0.28 };
+    const ruido = x => x * (0.8 + Math.random() * 0.4);
+    const paso = 30; // minutos
+    const d = {
+      ph: Math.round(Math.min(7.45, Math.max(6.95, (base.ph ?? 7.3) + ruido(ritmo.ph))) * 100) / 100,
+      pco2: Math.round(Math.max(36, (base.pco2 ?? 50) + ruido(ritmo.pco2))),
+      fr: Math.round(Math.min(44, Math.max(12, (base.fr ?? 28) + ruido(ritmo.fr)))),
+      gcs: Math.min(15, (base.gcs ?? 15) + ((farmacosOk && vniOk) ? 1 : ritmo.ph < 0 ? -1 : 0)),
+      fc: Math.round(Math.min(150, Math.max(55, (base.fc ?? 100) + (ritmo.fr * 2)))),
+      spo2: Math.round(Math.min(97, Math.max(70, (base.spo2 ?? 90) + ruido(ritmo.spo2)))),
+      fio2: base.fio2 ?? 0.28,
+      simulada: true,
+    };
+    let pafi;
+    if (d.spo2 <= 97 && d.fio2) pafi = Math.round((d.spo2 / d.fio2 - 64) / 0.84);
+    const v = Motor.evaluarRespuesta({ ph: r.ph, pco2: r.pco2, fr: r.fr, gcs: r.gcs }, { ...d, pafi });
+    const h = Motor.hacor({ fc: d.fc, ph: d.ph, gcs: d.gcs, pafi, fr: d.fr });
+    const etiqueta = (farmacosOk && vniOk) ? "con soporte y tratamiento completos" : (farmacosOk || vniOk) ? "con soporte PARCIAL (falta VNI o fármacos clave)" : "SIN soporte registrado";
+    caso.eventos.push({
+      t: tSugerido(), tipo: "reevaluacion", datos: d,
+      veredicto: { veredicto: v.veredicto, resumen: `⚗️ Evolución simulada ${etiqueta}. ${v.texto}`, menores: v.menores },
+      hacor: h ? h.total : undefined,
+    });
+    guardar(); pintar();
+  }
+
+  function revelarEtapa() { caso.alumno.etapa++; guardar(); pintar(); }
+  function salirAlumno() { delete caso.alumno; guardar(); pintar(); }
 
   function addReevaluacion() {
     const d = { ph: nv("evPh"), pco2: nv("evPco2"), fr: nv("evFr"), gcs: nv("evGcs"), fc: nv("evFc"), spo2: nv("evSpo2"), fio2: nv("evFio2") };
@@ -263,7 +375,18 @@ const Casos = (() => {
     const escalada = huboFracaso && ((caso.cierre && /uci|invasiva|iot/i.test(caso.cierre.destino)) ||
       evs.some(e => e.t >= tFracaso && /iot|uci|intubaci|escala/i.test(JSON.stringify(e.datos).toLowerCase())));
     const na = { estado: "na", icono: "—" }, si = { estado: "si", icono: "✓" }, no = { estado: "no", icono: "✗" };
+    const farmacos = evs.filter(e => e.tipo === "farmaco");
+    const dado = (id, tMax) => farmacos.some(e => e.datos.id === id && (tMax === undefined || e.t <= tMax));
+    const escId = escenarioId();
+    const extraFarmacos = [];
+    if (escId === "epoc_hipercapnico" || escId === "asma") {
+      extraFarmacos.push({ texto: "Broncodilatador en los primeros 30 minutos", ...(dado("broncodilatador", 30) ? si : no) });
+      extraFarmacos.push({ texto: "Corticoide sistémico en la primera hora", ...(dado("corticoide", 60) ? si : no) });
+    }
+    if (escId === "eap") extraFarmacos.push({ texto: "Diurético de asa administrado", ...(dado("diuretico") ? si : no) });
+    if (escId === "sobredosis") extraFarmacos.push({ texto: "Naloxona titulada registrada", ...(dado("naloxona") ? si : no) });
     return [
+      ...extraFarmacos,
       { texto: "Gasometría de control en los primeros 90 minutos", ...(reevs.some(e => e.t <= 90) ? si : no) },
       { texto: "Reevaluación tras el último cambio de parámetros", ...(params.length === 0 ? na : (reevs.some(e => e.t > params[params.length - 1].t) ? si : no)) },
       { texto: "Protección del puente nasal registrada", ...(cuidados.some(c => c.includes("nasal")) ? si : no) },
@@ -300,12 +423,14 @@ const Casos = (() => {
           <div class="timeline">
             <div class="ev basal"><span class="ev-t">t+0′</span><span class="ev-icono">🩺</span><div class="ev-cuerpo"><strong>${esc(r.clasif)}</strong> — ${esc(r.titulo)}</div></div>
             ${caso.eventos.slice().sort((a, b) => a.t - b.t).map(ev => {
-              const iconos = { reevaluacion: "🧪", parametros: "🎛", cuidado: "🛏", nota: "📝" };
+              const iconos = { reevaluacion: "🧪", parametros: "🎛", cuidado: "🛏", nota: "📝", farmaco: "💊" };
               let c = ev.tipo === "reevaluacion"
-                ? `pH ${f1(ev.datos.ph)} · pCO₂ ${f1(ev.datos.pco2)} · FR ${f1(ev.datos.fr)} — <em>${esc(ev.veredicto?.veredicto || "")}</em>`
+                ? `${ev.datos.simulada ? "⚗️ " : ""}pH ${f1(ev.datos.ph)} · pCO₂ ${f1(ev.datos.pco2)} · FR ${f1(ev.datos.fr)} — <em>${esc(ev.veredicto?.veredicto || "")}</em>`
                 : ev.tipo === "parametros"
                   ? `${esc(ev.datos.modo)} · EPAP ${f1(ev.datos.epap)} · IPAP ${f1(ev.datos.ipap)} · FiO₂ ${esc(ev.datos.fio2)}${ev.datos.nota ? ` — ${esc(ev.datos.nota)}` : ""}`
-                  : esc(ev.datos.texto);
+                  : ev.tipo === "farmaco"
+                    ? `<strong>${esc(ev.datos.nombre)}</strong> — ${esc(ev.datos.dosis)}`
+                    : esc(ev.datos.texto);
               return `<div class="ev"><span class="ev-t">t+${ev.t}′</span><span class="ev-icono">${iconos[ev.tipo]}</span><div class="ev-cuerpo">${c}</div></div>`;
             }).join("")}
             ${caso.cierre ? `<div class="ev cierre"><span class="ev-t">t+${caso.cierre.t}′</span><span class="ev-icono">🏁</span><div class="ev-cuerpo"><strong>${esc(caso.cierre.destino)}</strong>${caso.cierre.comentario ? ` — ${esc(caso.cierre.comentario)}` : ""}</div></div>` : ""}
@@ -333,7 +458,9 @@ const Casos = (() => {
       if (!confirm("Vas a guardar un CASO REAL anonimizado.\n\nComprueba que no hay ningún dato identificativo en títulos ni notas (nombres, fechas, nº de historia). El fichero queda SOLO en tu dispositivo; trátalo como documentación clínica.\n\n¿Continuar?")) return;
     }
     const slug = caso.titulo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "caso";
-    const blob = new Blob([JSON.stringify(caso, null, 2)], { type: "application/json" });
+    const limpio = JSON.parse(JSON.stringify(caso));
+    delete limpio.alumno; // el estado del modo alumno no viaja en el fichero
+    const blob = new Blob([JSON.stringify(limpio, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `caso-vmni-${slug}.json`;
@@ -352,12 +479,19 @@ const Casos = (() => {
     };
     lector.readAsText(fichero);
   }
-  function cargarEjemplo(i) {
+  function cargarEjemplo(i, alumno) {
     caso = JSON.parse(JSON.stringify(CASOS_EJEMPLO[i]));
+    if (alumno) caso.alumno = { etapa: 0 };
     guardar(); vista = "activo"; pintar();
   }
 
-  function verInforme() { vista = "informe"; pintar(); }
+  function verInforme() {
+    if (caso.alumno) {
+      if (!confirm("El informe muestra el caso COMPLETO (se acaba el modo alumno). ¿Continuar?")) return;
+      delete caso.alumno; guardar();
+    }
+    vista = "informe"; pintar();
+  }
 
-  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo };
+  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, addFarmaco, prefijarDosis, simularEvolucion, revelarEtapa, salirAlumno, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo };
 })();

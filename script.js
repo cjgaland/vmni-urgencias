@@ -142,6 +142,7 @@ function calcular() {
     entradas: e,
     resumen: {
       rama: cls.rama, subtipo: cls.subtipo || "", clasif: clasifTexto,
+      escenarioId: r.recomendacion.escenario || (cls.rama === "sobredosis" ? "sobredosis" : null),
       gravedad: cls.gravedad ? cls.gravedad.texto : "",
       titulo: r.recomendacion.titulo, tipo: r.recomendacion.tipo,
       ph: r.calculos.ph, pco2: r.calculos.pco2, fr: e.clinica.fr, gcs: e.clinica.gcs,
@@ -246,7 +247,27 @@ function htmlResultado(r) {
       <button class="btn-primario" onclick="irA('seguimiento')">Iniciar seguimiento ⏱</button>
     </div>
     <p class="provisional">Reglas clínicas v${r.reglasVersion} — ${r.estado}</p>
-  </div>`;
+  </div>
+  ${htmlFarmacos(rec, cls)}`;
+}
+
+function htmlFarmacos(rec, cls) {
+  const escId = rec.escenario || (cls.rama === "sobredosis" ? "sobredosis" : null);
+  const f = escId && FARMACOS.escenarios[escId];
+  if (!f) return "";
+  return `
+  <details class="card farmacos-card">
+    <summary>💊 Tratamiento médico recomendado <small>(recomendaciones generales — individualizar siempre)</small></summary>
+    <div class="farmacos-cuerpo">
+      <p class="farmacos-descargo">⚠️ ${FARMACOS.descargo}</p>
+      ${f.items.map(it => `
+        <div class="farmaco-item">
+          <strong>${it.nombre}</strong> — ${it.dosis}
+          <small>${it.nota} · <em>${it.ref}</em></small>
+        </div>`).join("")}
+      ${f.noHacer.length ? `<div class="farmaco-no"><strong>🚫 Evitar:</strong> ${f.noHacer.join(" · ")}</div>` : ""}
+    </div>
+  </details>`;
 }
 
 /* ---------- seguimiento ---------- */

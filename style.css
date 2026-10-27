@@ -421,6 +421,28 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .biblio-com{color:var(--texto-suave);font-size:.88rem;margin-top:6px}
 @media (max-width:600px){.glos-fila{grid-template-columns:1fr;gap:2px}}
 
+/* ---------- fármacos ---------- */
+.farmacos-card{margin-top:14px;overflow:hidden;padding:0}
+.farmacos-card summary{
+  cursor:pointer;list-style:none;padding:15px 18px;font-weight:700;color:var(--primario);font-size:1rem;
+}
+.farmacos-card summary::-webkit-details-marker{display:none}
+.farmacos-card summary small{display:block;font-weight:500;color:var(--texto-suave);font-size:.78rem;margin-top:2px}
+.farmacos-card[open] summary{border-bottom:1px solid var(--borde)}
+.farmacos-cuerpo{padding:14px 18px 18px}
+.farmacos-descargo{
+  font-size:.8rem;color:#8a5a1d;background:var(--alerta-fondo);border:1px solid #F0DCC2;
+  border-left:4px solid var(--ambar);border-radius:9px;padding:9px 12px;margin-bottom:12px;
+}
+.farmaco-item{padding:8px 0;border-bottom:1px dashed var(--borde);font-size:.92rem}
+.farmaco-item:last-of-type{border-bottom:none}
+.farmaco-item small{display:block;color:var(--texto-suave);margin-top:2px}
+.farmaco-no{
+  margin-top:12px;font-size:.85rem;color:var(--rojo);background:var(--rojo-fondo);
+  border-radius:9px;padding:8px 12px;
+}
+:root[data-tema="oscuro"] .farmacos-descargo{background:var(--alerta-fondo);border-color:#4A3D1E;color:#E0B46A}
+
 /* ---------- modo casos ---------- */
 .caso-cab{margin-bottom:14px}
 .caso-titulo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -446,6 +468,11 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .ev-veredicto.favorable{color:var(--ok)}
 .ev-veredicto.vigilar{color:var(--ambar)}
 .ev-veredicto.fracaso{color:var(--rojo)}
+.etiq-sim{font-size:.68rem;font-weight:800;color:#8a5a1d;background:#FFF0C2;border-radius:6px;padding:1px 7px}
+.alumno-panel{
+  margin-top:14px;background:var(--alerta-fondo);border:1px dashed var(--ambar);
+  border-radius:11px;padding:12px 15px;font-size:.92rem;
+}
 .inf-sub{color:var(--secundario);margin:18px 0 8px;font-size:.95rem}
 .inf-sub small{color:var(--texto-suave);font-weight:500}
 .tabla-informe{width:100%;border-collapse:collapse;font-size:.9rem}

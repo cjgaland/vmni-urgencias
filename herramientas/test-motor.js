@@ -114,6 +114,14 @@ caso("ENM hipercápnico → escenario neuromuscular con 'no retrasar IOT'", () =
   esperar(r.recomendacion.titulacion.some(t => t.includes("NO retrasar")), "aviso IOT");
 });
 
+caso("Modificadores anatómicos: obesidad → escenario SHO con sus alertas; hernia diafragmática avisa de Vt bajo", () => {
+  const r1 = Motor.evaluar(base({ antecedentes: { respiratorios: ["epoc", "obesidad"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.29, pco2: 62, po2: 58, hco3: 30, lactato: 12 } }));
+  esperar(r1.recomendacion.escenario === "sho_restrictivo", r1.recomendacion.escenario);
+  esperar(r1.recomendacion.alertas.some(a => a.includes("Obesidad")), "alerta obesidad");
+  const r2 = Motor.evaluar(base({ antecedentes: { respiratorios: ["hernia_diafragmatica"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.31, pco2: 55, po2: 60, hco3: 27, lactato: 12 } }));
+  esperar(r2.recomendacion.alertas.some(a => a.includes("Hernia diafragmática")), "alerta hernia");
+});
+
 caso("Peso ideal y Vt objetivo: varón 170 cm → 66 kg → 396–528 ml (y la mujer pesa 4,5 kg menos)", () => {
   const c = Motor.calculos({ tipo: "arterial", ph: 7.35, pco2: 42 }, { spo2: 94, talla: 170, sexo: "v" }, 0.21);
   esperar(c.pesoIdeal === 66 && c.vtObjetivo[0] === 396 && c.vtObjetivo[1] === 528, `${c.pesoIdeal} kg, ${c.vtObjetivo}`);
