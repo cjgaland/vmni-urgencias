@@ -281,12 +281,21 @@
 <section id="docencia" class="pantalla">
   <div class="cabecera-seccion"><h2>Docencia</h2>
   <p class="sub-seccion">Píldoras con rigor: de los fundamentos a la evidencia.</p></div>
-  <div class="grid-modulos">
-    <article class="card modulo"><div class="icono doc">🫁</div><h3>Fundamentos de la VMNI</h3><p>CPAP vs binivel, presión de soporte, autoPEEP y cómo descarga la musculatura.</p></article>
-    <article class="card modulo"><div class="icono doc">🎭</div><h3>Interfaces</h3><p>Oronasal, facial total, helmet: elección, fugas y protección cutánea.</p></article>
-    <article class="card modulo"><div class="icono doc">⚙️</div><h3>Modos y respiradores</h3><p>S/T, PCV, AVAPS. Vivo 50/60, V60, VITAE 40 y AirVo del área.</p></article>
-    <article class="card modulo"><div class="icono doc">📚</div><h3>La evidencia en 1 minuto</h3><p>NNT 5 para evitar una intubación en EPOC. Las cifras que conviene recordar.</p></article>
+  <div class="chips doc-tabs" id="docTabs">
+    <button class="chip sel" data-t="temas">📖 Temas</button>
+    <button class="chip" data-t="glosario">🔤 Glosario</button>
+    <button class="chip" data-t="quiz">🎯 Ponte a prueba</button>
+    <button class="chip" data-t="biblio">📚 Bibliografía</button>
   </div>
+  <div id="docTemas"></div>
+  <div id="docGlosario" class="oculto">
+    <div class="card">
+      <input id="busGlosario" class="buscador" placeholder="Busca una sigla o un término… (p. ej. EPAP, HACOR, Winter)">
+      <div id="listaGlosario"></div>
+    </div>
+  </div>
+  <div id="docQuiz" class="oculto"></div>
+  <div id="docBiblio" class="oculto"></div>
 </section>
 
 </main>
@@ -305,6 +314,7 @@
 </footer>
 
 <script src="motor.js"></script>
+<script src="datos/docencia.js"></script>
 <script src="sim.js"></script>
 <script src="script.js"></script>
 </body>

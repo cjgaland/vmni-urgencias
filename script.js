@@ -266,3 +266,121 @@ function prefillSeguimiento() {
   set("sPh0", BASAL.ph); set("sPco20", BASAL.pco2); set("sFr0", BASAL.fr); set("sGcs0", BASAL.gcs);
 }
 
+/* ==================== DOCENCIA ==================== */
+const D = DOCENCIA_DATA;
+
+/* --- pestañas --- */
+document.querySelectorAll("#docTabs .chip").forEach(ch => {
+  ch.addEventListener("click", () => {
+    document.querySelectorAll("#docTabs .chip").forEach(c => c.classList.remove("sel"));
+    ch.classList.add("sel");
+    ["temas", "glosario", "quiz", "biblio"].forEach(tb => {
+      document.getElementById("doc" + tb[0].toUpperCase() + tb.slice(1)).classList.toggle("oculto", tb !== ch.dataset.t);
+    });
+  });
+});
+
+/* --- temas --- */
+function pintarTemas() {
+  document.getElementById("docTemas").innerHTML = `<div class="grid-modulos">` + D.temas.map(tm => `
+    <article class="card modulo" onclick="abrirTema('${tm.id}')">
+      <div class="icono doc">${tm.icono}</div><h3>${tm.titulo}</h3><p>${tm.resumen}</p>
+    </article>`).join("") + `</div>`;
+}
+function abrirTema(id) {
+  const tm = D.temas.find(x => x.id === id);
+  document.getElementById("docTemas").innerHTML = `
+    <div class="card tema-detalle">
+      <button class="btn-sec btn-mini" onclick="pintarTemas()">← Volver a los temas</button>
+      <h3 class="tema-titulo">${tm.icono} ${tm.titulo}</h3>
+      ${tm.bloques.map(b => `<div class="doc-bloque ancho"><label>${b.t}</label><p>${b.p}</p></div>`).join("")}
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+/* --- glosario --- */
+function pintarGlosario(filtro = "") {
+  const f = filtro.trim().toLowerCase();
+  const filas = D.glosario
+    .filter(([s, d]) => !f || s.toLowerCase().includes(f) || d.toLowerCase().includes(f))
+    .map(([s, d]) => `<div class="glos-fila"><strong>${s}</strong><span>${d}</span></div>`).join("");
+  document.getElementById("listaGlosario").innerHTML = filas || `<p class="sin-resultados">Sin resultados para «${filtro}».</p>`;
+}
+document.getElementById("busGlosario").addEventListener("input", e => pintarGlosario(e.target.value));
+
+/* --- ponte a prueba --- */
+const QUIZ_N = 10;
+let quiz = null;
+function quizInicio() {
+  document.getElementById("docQuiz").innerHTML = `
+    <div class="card quiz-portada">
+      <h3>🎯 Ponte a prueba</h3>
+      <p>${QUIZ_N} preguntas aleatorias de un banco de ${D.preguntas.length}, basadas en la Base Científica del proyecto. Cada respuesta se corrige al momento con su explicación y su referencia.</p>
+      <div class="botonera"><span></span><button class="btn-primario" onclick="quizEmpezar()">Empezar →</button></div>
+    </div>`;
+}
+function quizEmpezar() {
+  const idx = [...D.preguntas.keys()];
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  quiz = { orden: idx.slice(0, QUIZ_N), i: 0, aciertos: 0 };
+  quizPregunta();
+}
+function quizPregunta() {
+  const p = D.preguntas[quiz.orden[quiz.i]];
+  document.getElementById("docQuiz").innerHTML = `
+    <div class="card">
+      <div class="quiz-progreso">Pregunta ${quiz.i + 1} de ${QUIZ_N} · Aciertos: ${quiz.aciertos}</div>
+      <h3 class="quiz-q">${p.q}</h3>
+      <div class="quiz-opciones">
+        ${p.o.map((op, i) => `<button class="opcion" onclick="quizResponder(${i})">${"ABCD"[i]}. ${op}</button>`).join("")}
+      </div>
+      <div id="quizFeedback"></div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+function quizResponder(i) {
+  const p = D.preguntas[quiz.orden[quiz.i]];
+  const ok = i === p.c;
+  if (ok) quiz.aciertos++;
+  document.querySelectorAll("#docQuiz .opcion").forEach((b, bi) => {
+    b.disabled = true;
+    if (bi === p.c) b.classList.add("correcta");
+    else if (bi === i) b.classList.add("incorrecta");
+  });
+  document.getElementById("quizFeedback").innerHTML = `
+    <div class="explica-quiz ${ok ? "bien" : "mal"}">
+      <strong>${ok ? "✅ Correcto." : "❌ No es esa."}</strong> ${p.e}
+    </div>
+    <div class="botonera"><span></span><button class="btn-primario" onclick="quizSiguiente()">${quiz.i + 1 < QUIZ_N ? "Siguiente →" : "Ver resultado →"}</button></div>`;
+}
+function quizSiguiente() {
+  quiz.i++;
+  if (quiz.i < QUIZ_N) return quizPregunta();
+  const pct = Math.round(quiz.aciertos / QUIZ_N * 100);
+  const msg = pct >= 90 ? "Nivel experto: listo para enseñar VMNI." :
+    pct >= 70 ? "Muy bien: dominas lo esencial; repasa las que fallaste." :
+    pct >= 50 ? "Vas en camino: revisa los temas y el simulador, y repite." :
+    "Empieza por los Temas y el simulador de asincronías, y vuelve a intentarlo.";
+  document.getElementById("docQuiz").innerHTML = `
+    <div class="card quiz-portada">
+      <h3>Resultado: ${quiz.aciertos} / ${QUIZ_N} (${pct}%)</h3>
+      <p>${msg}</p>
+      <div class="botonera">
+        <button class="btn-sec" onclick="irA('simulador')">Ir al simulador</button>
+        <button class="btn-primario" onclick="quizEmpezar()">Repetir con otras preguntas ↻</button>
+      </div>
+    </div>`;
+}
+
+/* --- bibliografía comentada --- */
+function pintarBiblio() {
+  document.getElementById("docBiblio").innerHTML = D.biblio.map(b => `
+    <div class="card biblio-item">
+      <span class="tipo-badge">${b.tipo}</span>
+      <p class="biblio-ref">${b.ref}</p>
+      <p class="biblio-com">${b.com}</p>
+    </div>`).join("");
+}
+
+pintarTemas(); pintarGlosario(); quizInicio(); pintarBiblio();
+

@@ -276,6 +276,49 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .problema p{color:var(--texto-suave);font-size:.86rem;margin-bottom:9px}
 .problema .fix{font-size:.82rem;font-weight:700;color:var(--acento)}
 
+/* ---------- docencia ---------- */
+.doc-tabs{margin-bottom:16px}
+.buscador{
+  width:100%;border:1.5px solid var(--borde);border-radius:11px;padding:11px 14px;
+  font-size:1rem;margin-bottom:12px;background:#fff;color:var(--texto);
+}
+.buscador:focus{outline:none;border-color:var(--acento);box-shadow:0 0 0 3px rgba(42,127,142,.15)}
+.glos-fila{
+  display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:baseline;
+  padding:8px 4px;border-bottom:1px solid var(--borde);font-size:.9rem;
+}
+.glos-fila:last-child{border-bottom:none}
+.glos-fila strong{color:var(--secundario)}
+.sin-resultados{color:var(--texto-suave);font-style:italic;padding:10px 4px}
+.tema-detalle .tema-titulo{color:var(--primario);font-size:1.25rem;margin:14px 0 12px}
+.doc-bloque.ancho label{font-size:.8rem}
+.doc-bloque.ancho p{font-size:.93rem}
+.quiz-portada h3{color:var(--primario);font-size:1.25rem;margin-bottom:8px}
+.quiz-portada p{color:var(--texto-suave)}
+.quiz-progreso{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-suave);margin-bottom:10px}
+.quiz-q{color:var(--primario);font-size:1.1rem;margin-bottom:14px}
+.quiz-opciones{display:flex;flex-direction:column;gap:8px}
+.opcion{
+  text-align:left;border:1.5px solid var(--borde);background:#fff;border-radius:11px;
+  padding:11px 15px;font-size:.95rem;color:var(--texto);cursor:pointer;transition:.15s;
+}
+.opcion:hover:not(:disabled){border-color:var(--acento);background:var(--acento-claro)}
+.opcion:disabled{cursor:default;opacity:.85}
+.opcion.correcta{border-color:var(--ok);background:var(--ok-fondo);font-weight:700;opacity:1}
+.opcion.incorrecta{border-color:var(--rojo);background:var(--rojo-fondo);opacity:1}
+.explica-quiz{border-radius:11px;padding:12px 15px;margin-top:14px;font-size:.92rem}
+.explica-quiz.bien{background:var(--ok-fondo);border:1px solid #CBE5CF}
+.explica-quiz.mal{background:var(--rojo-fondo);border:1px solid #EACFCF}
+.biblio-item{margin-bottom:12px;position:relative}
+.tipo-badge{
+  position:absolute;top:14px;right:16px;font-size:.64rem;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;background:var(--acento-claro);color:var(--secundario);
+  border-radius:999px;padding:4px 10px;
+}
+.biblio-ref{font-weight:600;color:var(--primario);font-size:.92rem;padding-right:86px}
+.biblio-com{color:var(--texto-suave);font-size:.88rem;margin-top:6px}
+@media (max-width:600px){.glos-fila{grid-template-columns:1fr;gap:2px}}
+
 /* ---------- nav móvil / pie ---------- */
 .nav-movil{display:none}
 .pie{

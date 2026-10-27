@@ -13,7 +13,9 @@ const Sim = (() => {
   const W = 720, H = 430;
   cv.width = W * dpr; cv.height = H * dpr;
   ctx.scale(dpr, dpr);
-  const PXS = 78; // píxeles por segundo
+  const PXS = 78;            // píxeles por segundo
+  const X0 = 46, X1 = W - 26; // márgenes del área de trazado (escala izq., unidades dcha.)
+  const HB = H - 20;          // reserva inferior para el eje de tiempo
 
   /* ---------- vistas (temas) ---------- */
   const TEMAS = {
@@ -41,7 +43,7 @@ const Sim = (() => {
   const RT = { 1: 0.07, 2: 0.18, 3: 0.38 };
 
   let activo = false, raf = null;
-  let t = 0, x = 0, prev = null;
+  let t = 0, x = X0, prev = null;
   let bandas = [];
 
   // modelo
@@ -58,27 +60,64 @@ const Sim = (() => {
     const T = TEMAS[tema];
     const n = T.trazas || 3;
     const defs = [
-      { nombre: "Presión", unidad: "cmH₂O", min: -2, max: 34 },
-      { nombre: "Flujo", unidad: "L/min", min: -75, max: 75 },
-      { nombre: "Volumen", unidad: "ml", min: 0, max: 800 },
+      { nombre: "Presión", unidad: "cmH₂O", min: -2, max: 34, ticks: [0, 10, 20, 30] },
+      { nombre: "Flujo", unidad: "L/min", min: -75, max: 75, ticks: [-60, 0, 60] },
+      { nombre: "Volumen", unidad: "ml", min: 0, max: 800, ticks: [0, 400, 800] },
     ].slice(0, n);
-    const alto = Math.floor((H - 18 - n * 22) / n);
+    const alto = Math.floor((HB - 18 - n * 22) / n);
     bandas = defs.map((d, i) => Object.assign({}, d, { y0: 18 + i * (alto + 22), alto }));
   }
 
   const yDe = (b, v) => b.y0 + b.alto - ((Math.max(b.min, Math.min(b.max, v)) - b.min) / (b.max - b.min)) * b.alto;
 
+  // rejilla del área de trazado (se redibuja también bajo la barra de barrido)
+  function rejilla() {
+    const T = TEMAS[tema];
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 5]);
+    for (let gx = X0; gx <= X1; gx += PXS) {
+      ctx.strokeStyle = T.grid; ctx.beginPath(); ctx.moveTo(gx, 14); ctx.lineTo(gx, HB); ctx.stroke();
+    }
+    bandas.forEach(b => {
+      b.ticks.forEach(v => {
+        ctx.strokeStyle = v === 0 && b.min < 0 ? T.cero : T.grid;
+        ctx.beginPath(); ctx.moveTo(X0, yDe(b, v)); ctx.lineTo(X1, yDe(b, v)); ctx.stroke();
+      });
+    });
+    ctx.setLineDash([]);
+  }
+
   function fondo() {
     const T = TEMAS[tema];
     ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
-    ctx.lineWidth = 1;
-    for (let gx = 0; gx < W; gx += PXS) { ctx.strokeStyle = T.grid; ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    rejilla();
+    ctx.fillStyle = T.rotulo;
     bandas.forEach(b => {
-      ctx.strokeStyle = T.grid; ctx.beginPath(); ctx.moveTo(0, b.y0 + b.alto); ctx.lineTo(W, b.y0 + b.alto); ctx.stroke();
-      if (b.min < 0) { ctx.strokeStyle = T.cero; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(0, yDe(b, 0)); ctx.lineTo(W, yDe(b, 0)); ctx.stroke(); ctx.setLineDash([]); }
-      ctx.fillStyle = T.rotulo; ctx.font = "600 11px -apple-system, sans-serif";
-      ctx.fillText(`${b.nombre} (${b.unidad})`, 10, b.y0 + 2);
+      // nombre del parámetro (izquierda, sobre la banda)
+      ctx.font = "700 11px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(b.nombre, X0, b.y0 - 5);
+      // escala numérica (izquierda)
+      ctx.font = "600 9px -apple-system, sans-serif";
+      ctx.textAlign = "right";
+      b.ticks.forEach(v => ctx.fillText(String(v), X0 - 6, yDe(b, v) + 3));
+      // unidades (derecha, en vertical)
+      ctx.save();
+      ctx.translate(W - 8, b.y0 + b.alto / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = "center";
+      ctx.font = "600 9.5px -apple-system, sans-serif";
+      ctx.fillText(b.unidad, 0, 0);
+      ctx.restore();
     });
+    // eje de tiempo
+    ctx.font = "600 9px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    for (let s = 0; s * PXS <= X1 - X0 - 84; s += 2) ctx.fillText(String(s), X0 + s * PXS, H - 6);
+    ctx.textAlign = "right";
+    ctx.font = "600 10px -apple-system, sans-serif";
+    ctx.fillText("Tiempo (s)", X1, H - 6);
+    ctx.textAlign = "left";
   }
 
   /* ---------- paciente: esfuerzos ---------- */
@@ -198,7 +237,7 @@ const Sim = (() => {
     if (!docente || (examen && !revelado)) return;
     ultimaAnot = t;
     const b = bandas[Math.min(bandaIdx, bandas.length - 1)];
-    anots.push({ x: Math.min(x + 6, W - 10), y: b.y0 + b.alto / 2, texto, hasta: t + 3.2 });
+    anots.push({ x: Math.min(x + 6, X1 - 12), y: b.y0 + b.alto / 2, texto, hasta: t + 3.2 });
     if (anots.length > 4) anots.shift();
   }
   function pintarAnots() {
@@ -211,7 +250,7 @@ const Sim = (() => {
       ctx.beginPath(); ctx.arc(a.x, a.y, 16, 0, Math.PI * 2); ctx.stroke();
       ctx.font = "700 11px -apple-system, sans-serif";
       const ancho = ctx.measureText(a.texto).width;
-      const tx = a.x + 22 + ancho > W - 8 ? a.x - ancho - 26 : a.x + 22;
+      const tx = a.x + 22 + ancho > X1 - 8 ? a.x - ancho - 26 : a.x + 22;
       ctx.fillStyle = T.claro ? "rgba(255,255,255,.88)" : "rgba(0,0,0,.6)";
       ctx.fillRect(tx - 4, a.y - 16, ancho + 8, 16);
       ctx.fillStyle = color;
@@ -249,11 +288,15 @@ const Sim = (() => {
     for (let k = 0; k < pasos; k++) {
       const sub = dtReal / pasos;
       t += sub; x += sub * PXS;
-      if (x >= W) { x = 0; prev = null; }
+      if (x >= X1) { x = X0; prev = null; }
       const vals = paso(sub);
 
       ctx.fillStyle = T.bg;
-      ctx.fillRect(x + 1, 0, 14, H);
+      ctx.fillRect(x + 1, 12, 14, HB - 12);
+      ctx.save();
+      ctx.beginPath(); ctx.rect(x + 1, 12, 14, HB - 12); ctx.clip();
+      rejilla();
+      ctx.restore();
 
       if (prev) {
         bandas.forEach((b, bi) => {
@@ -318,7 +361,7 @@ const Sim = (() => {
   function setTema(tm) {
     tema = tm;
     const T = TEMAS[tm];
-    calcBandas(); prev = null; x = 0; fondo();
+    calcBandas(); prev = null; x = X0; fondo();
     document.getElementById("temaNombre").textContent = T.nombre;
     const mon = document.getElementById("monitor");
     mon.style.background = T.panel; mon.style.borderColor = T.panel;
