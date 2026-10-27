@@ -1,0 +1,10 @@
+{
+  "t1": "TRATAMIENTO FARMACOLÓGICO",
+  "t2": "VMNI Urgencias · Sección de fármacos",
+  "desc": "Recomendaciones generales por escenario según guías nacionales e internacionales (GesEPOC, GEMA, GOLD, GINA, ESC, BTS)",
+  "version": "Versión 0.1 — BORRADOR para validación científica",
+  "fecha": "27 de octubre de 2026",
+  "aviso": "Recomendaciones generales: NO sustituyen la valoración individual del paciente (alergias, antecedentes, enfermedades concomitantes, interacciones, función renal/hepática, embarazo). Dosis orientativas de adulto. Este contenido no entrará en la app hasta su validación por Enrique Fernández Romero (decisiones F-1 a F-7).",
+  "saltosPagina": false,
+  "decisiones": false
+}
