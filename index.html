@@ -215,6 +215,16 @@
         <button class="chip" data-v="vitae">VITAE 40</button>
       </div>
     </div>
+    <div class="sim-grupo"><label>Modo</label>
+      <div class="chips" data-grupo="modo">
+        <button class="chip" data-v="cpap">CPAP</button>
+        <button class="chip" data-v="s">S</button>
+        <button class="chip sel" data-v="st">S/T</button>
+        <button class="chip" data-v="t">T</button>
+        <button class="chip" data-v="pcv">PCV</button>
+        <button class="chip" data-v="avaps">AVAPS</button>
+      </div>
+    </div>
     <div class="sim-grupo"><label>Paciente</label>
       <div class="chips" data-grupo="perfil">
         <button class="chip" data-v="normal">Pulmón normal</button>
@@ -240,17 +250,14 @@
 
     <div class="card controles">
       <h3>Parámetros</h3>
-      <div class="control"><label>IPAP <output id="oIpap">15</output> cmH₂O</label><input type="range" id="rIpap" min="8" max="30" value="15"></div>
-      <div class="control"><label>EPAP <output id="oEpap">5</output> cmH₂O</label><input type="range" id="rEpap" min="4" max="12" value="5"></div>
-      <div class="control"><label>FR respaldo <output id="oFr">14</output> rpm</label><input type="range" id="rFr" min="8" max="24" value="14"></div>
-      <div class="control"><label>Rampa <output id="oRampa">media</output></label><input type="range" id="rRampa" min="1" max="3" value="2"></div>
-      <div class="control"><label>Ciclado espiratorio <output id="oCiclado">25</output>%</label><input type="range" id="rCiclado" min="10" max="60" value="25"></div>
-      <div class="control"><label>FiO₂ <output id="oFio2Sim">30</output> %</label><input type="range" id="rFio2" min="21" max="100" step="1" value="30"></div>
-      <div class="control"><label>Trigger (flujo) <output id="oTrigger">2</output> L/min</label><input type="range" id="rTrigger" min="1" max="8" value="2"></div>
-      <div class="control"><label>Ti máximo <output id="oTi">1,5</output> s</label><input type="range" id="rTi" min="0.6" max="2.5" step="0.1" value="1.5"></div>
-      <div class="fila-docente" style="margin:10px 0 2px">
-        <label class="conmutador"><input type="checkbox" id="tglAvaps"><span></span> AVAPS (volumen asegurado)</label>
-      </div>
+      <div class="control" id="ctlIpap"><label><span id="lblIpap">IPAP</span> <output id="oIpap">15</output> cmH₂O</label><input type="range" id="rIpap" min="8" max="30" value="15"></div>
+      <div class="control" id="ctlEpap"><label><span id="lblEpap">EPAP</span> <output id="oEpap">5</output> cmH₂O</label><input type="range" id="rEpap" min="4" max="12" value="5"></div>
+      <div class="control" id="ctlFr"><label>FR respaldo <output id="oFr">14</output> rpm</label><input type="range" id="rFr" min="8" max="24" value="14"></div>
+      <div class="control" id="ctlRampa"><label>Rampa <output id="oRampa">media</output></label><input type="range" id="rRampa" min="1" max="3" value="2"></div>
+      <div class="control" id="ctlCiclado"><label>Ciclado espiratorio <output id="oCiclado">25</output>%</label><input type="range" id="rCiclado" min="10" max="60" value="25"></div>
+      <div class="control" id="ctlFio2"><label>FiO₂ <output id="oFio2Sim">30</output> %</label><input type="range" id="rFio2" min="21" max="100" step="1" value="30"></div>
+      <div class="control" id="ctlTrigger"><label>Trigger (flujo) <output id="oTrigger">2</output> L/min</label><input type="range" id="rTrigger" min="1" max="8" value="2"></div>
+      <div class="control" id="ctlTi"><label><span id="lblTi">Ti máximo</span> <output id="oTi">1,5</output> s</label><input type="range" id="rTi" min="0.6" max="2.5" step="0.1" value="1.5"></div>
       <div class="control" id="ctlVtDiana" style="display:none"><label>Vt objetivo <output id="oVtDiana">450</output> ml</label><input type="range" id="rVtDiana" min="300" max="700" step="10" value="450"></div>
       <h3>Asincronías</h3>
       <div class="chips asincronias">
@@ -263,7 +270,7 @@
       </div>
       <div class="fila-docente">
         <label class="conmutador"><input type="checkbox" id="tglDocente" checked><span></span> Modo docente</label>
-        <button class="btn-sec btn-mini" onclick="Sim.examenNuevo()">🎓 Examen</button>
+        <button class="btn-sec btn-mini" id="btnExamen" onclick="Sim.examenNuevo()">🎓 Examen</button>
       </div>
       <div class="pista" id="pista">Curvas normales.</div>
     </div>
