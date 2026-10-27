@@ -6,6 +6,59 @@ const DOCENCIA_DATA = {
   /* ---------------- TEMAS ---------------- */
   temas: [
     {
+      id: "volumenes", icono: "📏", titulo: "Volúmenes y capacidades pulmonares",
+      resumen: "VT, VRI, VRE, VR… y por qué le importan a la VMNI.",
+      espirograma: true,
+      bloques: [
+        { t: "Los cuatro volúmenes", p: "Todo el aire del pulmón se reparte en cuatro volúmenes que no se solapan: <strong>volumen corriente (VT)</strong>, lo que mueves en una respiración tranquila (~500 ml, 6–8 ml/kg ideal); <strong>volumen de reserva inspiratoria (VRI)</strong>, lo que aún cabe tras una inspiración normal (~3.000 ml); <strong>volumen de reserva espiratoria (VRE)</strong>, lo que aún puedes expulsar tras una espiración normal (~1.100 ml); y <strong>volumen residual (VR)</strong>, lo que nunca sale (~1.200 ml) y mantiene el pulmón abierto." },
+        { t: "Las capacidades: sumas con nombre propio", p: "<strong>Capacidad vital (CV = VT+VRI+VRE</strong>, ~4.600 ml): todo lo movilizable. <strong>Capacidad inspiratoria (CI = VT+VRI)</strong>. <strong>Capacidad residual funcional (CRF = VRE+VR</strong>, ~2.300 ml): el aire que queda al final de una espiración tranquila — el «colchón» donde ocurre el intercambio gaseoso entre respiraciones. <strong>Capacidad pulmonar total (CPT = CV+VR</strong>, ~5.800 ml). Juega con el espirograma de abajo: respira, haz una inspiración máxima y una espiración máxima, y ve cómo se acotan." },
+        { t: "Por qué le importan a la VMNI", p: "La <strong>EPAP/CPAP «defiende» la CRF</strong>: recluta alveolos y evita el colapso al final de la espiración — por eso mejora la oxigenación en el EAP (que ahoga la CRF en agua) y en la obesidad (que la aplasta desde fuera). En el <strong>EPOC</strong>, el atrapamiento infla el VR y desplaza la respiración a volúmenes altos e ineficientes (autoPEEP). En los <strong>restrictivos</strong> (cifoscoliosis, hernias diafragmáticas, fibrosis), la CPT está recortada: volúmenes pequeños, presiones proporcionalmente mayores y Ti más largos.", cajas: [{ titulo: "💡 Para recordar", items: [
+          "**CRF** = la reserva de oxigenación. La EPAP trabaja aquí.",
+          "**VR alto** = atrapamiento (EPOC). **CPT baja** = restricción.",
+          "El **Vt objetivo en VNI (6–8 ml/kg ideal)** es ~el VT fisiológico: más no es mejor (>9,5 ml/kg se asocia a fracaso en el hipoxémico).",
+        ] }] },
+      ],
+    },
+    {
+      id: "flujos", icono: "🌬️", titulo: "Flujos y curva flujo-volumen",
+      resumen: "PEF, FEV1 y la limitación al flujo del obstructivo.",
+      bloques: [
+        { t: "Los flujos que medimos", p: "El <strong>pico de flujo espiratorio (PEF)</strong> es la velocidad máxima al inicio de la espiración forzada (útil para graduar la crisis asmática). El <strong>FEV1</strong> es el volumen espirado en el primer segundo; su cociente con la capacidad vital forzada (<strong>FEV1/FVC &lt;0,7</strong>) define la obstrucción." },
+        { t: "La curva flujo-volumen cuenta la enfermedad", p: "En el <strong>obstructivo</strong>, la rama espiratoria se vuelve <strong>cóncava («excavada»)</strong>: por mucho que apriete, el flujo está limitado porque la vía aérea pequeña se colapsa — es la <em>limitación al flujo espiratorio</em>. En el <strong>restrictivo</strong> la curva es una miniatura de la normal: flujos proporcionalmente conservados sobre volúmenes pequeños." },
+        { t: "Del laboratorio a la cabecera", p: "La limitación al flujo explica la clínica del EPOC agudizado con una cadena que ves en el simulador: espirar le cuesta <strong>tiempo</strong> (constante de tiempo larga) → si la frecuencia sube, el tiempo espiratorio no da → <strong>atrapamiento y autoPEEP</strong> → esfuerzos inefectivos. Por eso en el obstructivo buscamos <strong>I:E 1:2–1:4</strong>, frecuencias contenidas y EPAP que contrarreste la autoPEEP.", cajas: [{ titulo: "💡 Para recordar", items: [
+          "**Obstructivo:** el problema es SACAR el aire. Dale tiempo espiratorio.",
+          "**Restrictivo:** el problema es METERLO. Dale presión y Ti suficientes, acepta volúmenes menores.",
+          "FR alta en un EPOC ventilado = menos tiempo de vaciado = más autoPEEP. A veces «menos es más».",
+        ] }] },
+      ],
+    },
+    {
+      id: "mecanica", icono: "⚖️", titulo: "Mecánica: compliance, resistencia y τ",
+      resumen: "Las dos perillas del pulmón y su constante de tiempo.",
+      bloques: [
+        { t: "Compliance: lo blando que es el globo", p: "<strong>C = ΔV/ΔP</strong>: cuántos ml entran por cada cmH₂O (normal ~50–100 ml/cmH₂O). <strong>Baja</strong> en EAP, fibrosis, obesidad y restricciones torácicas: con la misma presión entra menos aire → volúmenes pequeños, presiones altas. <strong>Alta</strong> en el enfisema (pulmón «flácido»): se llena fácil… y se vacía fatal." },
+        { t: "Resistencia: lo estrecha que es la pajita", p: "<strong>R = ΔP/flujo</strong> (cmH₂O/L/s). Sube con el broncospasmo, las secreciones y la vía aérea pequeña enferma. Con R alta, el mismo gradiente de presión mueve menos flujo: la rampa parece «lenta» y la espiración se eterniza." },
+        { t: "τ = R × C: la constante de tiempo", p: "El pulmón se vacía de forma exponencial: en <strong>una τ se vacía el 63%</strong>, y hacen falta <strong>~3τ para vaciarse del todo</strong>. EPOC típico: R 17 × C 0,048 L/cmH₂O → τ ≈ 0,8 s → necesita ~2,5 s de espiración. Si el tiempo espiratorio real es menor (FR alta, Ti largo), cada ciclo deja un poco de aire dentro: <strong>autoPEEP</strong>. En el simulador lo ves en el volumen que no vuelve a cero con el perfil EPOC.", cajas: [{ titulo: "💡 Para recordar", items: [
+          "**τ corta** (EAP, restrictivo): vaciado rápido, tolera frecuencias altas.",
+          "**τ larga** (EPOC): necesita espiración larga. Texp < 3τ = atrapamiento.",
+          "La **autoPEEP es una carga de disparo**: el paciente debe «pagarla» antes de activar el trigger — por eso la EPAP la compensa.",
+        ] }] },
+      ],
+    },
+    {
+      id: "intercambio", icono: "🔄", titulo: "Intercambio gaseoso",
+      resumen: "V/Q, shunt, espacio muerto y por qué la PS barre CO₂.",
+      bloques: [
+        { t: "El pulmón perfecto no existe: V/Q", p: "El intercambio depende de que ventilación (V) y perfusión (Q) coincidan. <strong>Shunt</strong>: sangre que pasa por alveolos no ventilados (EAP, neumonía, atelectasia) → hipoxemia que responde mal a la FiO₂ y bien a la presión (reclutamiento). <strong>Espacio muerto</strong>: aire que ventila alveolos no perfundidos (TEP, enfisema) → el CO₂ sube aunque se ventile mucho." },
+        { t: "El CO₂ obedece a la ventilación alveolar", p: "<strong>PaCO₂ ∝ producción de CO₂ / ventilación alveolar</strong> (VA = FR × [Vt − espacio muerto]). De ahí que la <strong>presión de soporte barra CO₂</strong>: sube el Vt con el mismo esfuerzo → más VA → baja la PaCO₂. Y de ahí también que las mascarillas con mucho espacio muerto o la EPAP &lt;4 «roben» ventilación eficaz (reinhalación)." },
+        { t: "La hiperoxia en el hipercápnico: tres mecanismos", p: "Oxigenar al 100% a un EPOC retenedor sube la PaCO₂ por: ① <strong>empeora el V/Q</strong> (quita la vasoconstricción hipóxica donde no conviene), ② <strong>efecto Haldane</strong> (la hemoglobina oxigenada suelta CO₂ a plasma) y ③ en menor medida, deprime el estímulo hipóxico. Por eso el objetivo es <strong>SpO₂ 88–92%</strong>, no «cuanto más mejor».", cajas: [{ titulo: "💡 Para recordar", items: [
+          "**Hipoxemia que responde a presión** (EPAP/CPAP) = problema de shunt/reclutamiento.",
+          "**Hipercapnia** = problema de ventilación alveolar → presión de soporte.",
+          "El pulsioxímetro no ve el CO₂: una SpO₂ bonita puede esconder una pCO₂ de 90 con O₂ suplementario.",
+        ] }] },
+      ],
+    },
+    {
       id: "fundamentos", icono: "🫁", titulo: "Fundamentos de la VMNI",
       resumen: "Qué hace de verdad la presión positiva y cuándo pensar en ella.",
       bloques: [
@@ -178,6 +231,9 @@ const DOCENCIA_DATA = {
     { tipo: "Revisión", ref: "Masip J et al. Indications and practical approach to non-invasive ventilation in acute heart failure. Eur Heart J 2018;39:17-25.", com: "La mejor revisión práctica del EAP: cuándo CPAP, cuándo binivel, y el matiz prehospitalario (CPAP por sencillez; binivel si hipercapnia)." },
     { tipo: "Manual", ref: "Artacho R et al. Manual de Soporte Respiratorio (+ material didáctico del curso).", com: "El manual «de casa» (Montilla): asincronías con sus firmas en las curvas y su corrección, programación por escenarios, helmet. El simulador de esta app reproduce sus figuras 14-17 en movimiento." },
     { tipo: "Manual", ref: "Carratalá JM (coord.). Foster: Manual de ventilación mecánica no invasiva y alto flujo. 2020.", com: "Pautas finas de titulación (CPAP de 2 en 2 cada 5-10 min; gasometrías a 1, 8-12 y 24 h), monitorización de enfermería y tabla de asincronías. Complementa a la BTS en lo operativo." },
+    { tipo: "Guía", ref: "GesEPOC 2021 — Diagnóstico y tratamiento del síndrome de agudización de la EPOC. Arch Bronconeumol 2022;58:159-170.", com: "La guía española de la agudización: broncodilatación como base, corticoide si ingreso (mejor con eosinófilos ≥300), y antibiótico guiado por purulencia, PCR ≥20 o necesidad de soporte ventilatorio — que por sí sola ya lo indica." },
+    { tipo: "Guía", ref: "GINA. Global Strategy for Asthma Management and Prevention (edición vigente). ginasthma.org.", com: "El marco internacional de la crisis asmática: SABA + ipratropio en la grave, corticoide sistémico en la primera hora, SpO₂ objetivo 93-95% y sulfato de magnesio (2 g IV en 20 min) reservado para la crisis grave que no responde." },
+    { tipo: "Guía", ref: "GEMA — Guía Española para el Manejo del Asma (edición vigente). gemasma.org.", com: "La contraparte española de GINA, con las pautas y dosis adaptadas a nuestro medio. Referencia para la sección de fármacos de la app (pendiente de validación)." },
   ],
 };
 if (typeof module !== "undefined" && module.exports) module.exports = DOCENCIA_DATA;

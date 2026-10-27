@@ -32,7 +32,7 @@
     <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
-  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.1 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.2 BETA</span>
 </header>
 
 <main>
@@ -211,6 +211,7 @@
       <div class="monitor-head">
         <span class="led"></span> <span id="temaNombre">VMNI · Genérico</span>
         <span class="sim-datos" id="simDatos"></span>
+        <button id="btnSonido" class="btn-sonido" title="Silenciar/activar las alarmas">🔔</button>
       </div>
       <div class="sim-cuerpo">
         <canvas id="ondas" width="720" height="430"></canvas>
@@ -334,7 +335,7 @@
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.1 beta</a> · 2026<br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.2 beta</a> · 2026<br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 
@@ -342,6 +343,7 @@
 <script src="datos/docencia.js"></script>
 <script src="datos/ayuda.js"></script>
 <script src="sim.js"></script>
+<script src="espiro.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

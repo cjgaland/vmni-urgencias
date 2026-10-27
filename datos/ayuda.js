@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v1.2",
+    titulo: "Fisiología respiratoria, espirograma animado y alarmas",
+    texto: "La **Docencia** crece con cuatro temas nuevos de fisiología (**volúmenes y capacidades** con un **espirograma animado interactivo**, flujos y curva flujo-volumen, mecánica con la constante de tiempo, e intercambio gaseoso) y **navegación entre temas** con flechas ← → sin volver al índice. El **simulador** estrena **alarmas**: cuando la FR, el volumen corriente o la fuga se salen de rango, el parámetro parpadea en **rojo** y suena un **beep** (silenciable con el botón 🔔 del monitor). La bibliografía incorpora las guías de tratamiento farmacológico (GesEPOC, GINA, GEMA).",
+  },
+  {
     version: "v1.1",
     titulo: "Ayuda, control de versiones y aviso de actualización",
     texto: "La app estrena este apartado de **Ayuda** con el **Manual del Usuario**, el **Control de Versiones** y las **Preguntas Frecuentes**. Además, cuando publiquemos una versión nueva, la app instalada te avisará con un mensaje para que pulses **Actualizar ahora** y la recibas al instante, sin reinstalar nada.",
@@ -44,6 +49,7 @@ const MANUAL_AYUDA = [
           "**Asincronías:** actívalas y fíjate en las anotaciones rojas sobre las curvas y en las fichas 👁 qué ves · ⚙️ por qué · 🛠 qué tocar.",
           "**Guías interactivas:** en las asincronías corregibles se ilumina en ámbar el deslizador implicado con el valor sugerido; al alcanzarlo se pone verde y la curva se normaliza.",
           "**🎓 Modo examen:** la app elige una asincronía al azar sin decirte cuál; diagnostícala mirando las curvas y pulsa Revelar.",
+          "**🔔 Alarmas:** si la FR, el Vte o la fuga se salen de rango, el parámetro parpadea en rojo y suena un beep; silencia o reactiva el sonido con el botón 🔔 del monitor.",
         ] }],
       },
     ],

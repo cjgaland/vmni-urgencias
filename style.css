@@ -256,6 +256,10 @@ main{max-width:1380px;margin:0 auto;padding:26px 22px 50px}
 }
 .led{width:9px;height:9px;border-radius:50%;background:#44E07E;box-shadow:0 0 8px #44E07E}
 .sim-datos{margin-left:auto;color:#6FA8B3;font-weight:500;font-variant-numeric:tabular-nums}
+.btn-sonido{background:none;border:none;font-size:1.05rem;cursor:pointer;padding:2px 4px;opacity:.9}
+.btn-sonido:hover{opacity:1;transform:scale(1.1)}
+.num.alarma strong,.num.alarma label{animation:parpadeo 1s infinite}
+@keyframes parpadeo{50%{opacity:.35}}
 #ondas{display:block;width:100%;height:auto}
 .controles h3{color:var(--primario);font-size:.95rem;margin:4px 0 10px;text-transform:uppercase;letter-spacing:.06em;font-size:.8rem}
 .controles h3:not(:first-child){margin-top:18px}
@@ -308,6 +312,14 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .glos-fila strong{color:var(--secundario)}
 .sin-resultados{color:var(--texto-suave);font-style:italic;padding:10px 4px}
 .tema-detalle .tema-titulo{color:var(--primario);font-size:1.25rem;margin:14px 0 12px}
+.tema-cab{display:flex;justify-content:space-between;align-items:center}
+.tema-indice{font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--texto-suave);text-transform:uppercase}
+.tema-nav{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--borde);flex-wrap:wrap;
+}
+.espiro-marco{margin-top:14px;border:1px solid var(--borde);border-radius:12px;padding:12px;background:#fff}
+.espiro-marco canvas{display:block;max-width:100%;margin:6px 0}
 .doc-bloque.ancho label{font-size:.8rem}
 .doc-bloque.ancho p{font-size:.93rem}
 .quiz-portada h3{color:var(--primario);font-size:1.25rem;margin-bottom:8px}

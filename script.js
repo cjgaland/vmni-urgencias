@@ -7,6 +7,7 @@ function irA(id) {
   document.querySelectorAll("[data-s]").forEach(b => b.classList.toggle("activo", b.dataset.s === id));
   window.scrollTo({ top: 0, behavior: "instant" });
   if (id === "simulador") Sim.activar(); else Sim.pausar();
+  if (id !== "docencia" && typeof Espiro !== "undefined") Espiro.pausar();
   if (id === "seguimiento") prefillSeguimiento();
 }
 
@@ -282,20 +283,44 @@ document.querySelectorAll("#docTabs .chip").forEach(ch => {
 
 /* --- temas --- */
 function pintarTemas() {
+  if (typeof Espiro !== "undefined") Espiro.pausar();
   document.getElementById("docTemas").innerHTML = `<div class="grid-modulos">` + D.temas.map(tm => `
     <article class="card modulo" onclick="abrirTema('${tm.id}')">
       <div class="icono doc">${tm.icono}</div><h3>${tm.titulo}</h3><p>${tm.resumen}</p>
     </article>`).join("") + `</div>`;
 }
 function abrirTema(id) {
-  const tm = D.temas.find(x => x.id === id);
+  if (typeof Espiro !== "undefined") Espiro.pausar();
+  const idx = D.temas.findIndex(x => x.id === id);
+  const tm = D.temas[idx];
+  const ant = D.temas[idx - 1], sig = D.temas[idx + 1];
+  const bloqueHtml = b => `<div class="doc-bloque ancho"><label>${b.t}</label><p>${b.p}</p>
+    ${(b.cajas || []).map(c => `<div class="caja-ayuda"><label>${c.titulo}</label><ul>${c.items.map(i => `<li>${i.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")}</li>`).join("")}</ul></div>`).join("")}</div>`;
+  const nav = `
+    <div class="tema-nav">
+      ${ant ? `<button class="btn-sec btn-mini" onclick="abrirTema('${ant.id}')">← ${ant.titulo}</button>` : "<span></span>"}
+      <span class="tema-indice">${idx + 1} de ${D.temas.length}</span>
+      ${sig ? `<button class="btn-sec btn-mini" onclick="abrirTema('${sig.id}')">${sig.titulo} →</button>` : "<span></span>"}
+    </div>`;
   document.getElementById("docTemas").innerHTML = `
     <div class="card tema-detalle">
-      <button class="btn-sec btn-mini" onclick="pintarTemas()">← Volver a los temas</button>
+      <div class="tema-cab"><button class="btn-sec btn-mini" onclick="pintarTemas()">⌂ Todos los temas</button>
+      <span class="tema-indice">${idx + 1} de ${D.temas.length}</span></div>
       <h3 class="tema-titulo">${tm.icono} ${tm.titulo}</h3>
-      ${tm.bloques.map(b => `<div class="doc-bloque ancho"><label>${b.t}</label><p>${b.p}</p></div>`).join("")}
+      ${tm.bloques.map(bloqueHtml).join("")}
+      ${tm.espirograma ? `
+        <div class="espiro-marco">
+          <p class="sub">Espirograma interactivo</p>
+          <canvas id="espiroCanvas"></canvas>
+          <div class="botonera" style="justify-content:flex-start;gap:10px">
+            <button class="btn-sec btn-mini" onclick="Espiro.maniobrar('insp')">⬆ Inspiración máxima</button>
+            <button class="btn-sec btn-mini" onclick="Espiro.maniobrar('esp')">⬇ Espiración máxima</button>
+          </div>
+        </div>` : ""}
+      ${nav}
     </div>`;
   window.scrollTo({ top: 0, behavior: "instant" });
+  if (tm.espirograma) Espiro.montar();
 }
 
 /* --- glosario --- */

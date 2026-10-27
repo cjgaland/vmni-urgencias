@@ -50,7 +50,34 @@ const Sim = (() => {
   let flujoPico = 0, pawAct = 5, pplvEnd = 0;
   let esfuerzoT0 = -9, esfuerzoFalla = false, dobleHecho = false;
   let Vinsp = 0, VdispBase = 0, picoCiclo = 0, fugaMedia = 0, tiReal = 0;
-  let frMedida = 0, ieTxt = "—";
+  let frMedida = 0, ieTxt = "—", ciclos = 0;
+
+  /* ---------- alarmas: beep por Web Audio + numéricos en rojo ---------- */
+  let sonidoOn = true, audioCtx = null, ultimoBeepParam = -9, ultimoBeepEvt = -9;
+  function beep(doble) {
+    if (!sonidoOn) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const tono = (t, f) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        o.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.16, t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+        o.start(t); o.stop(t + 0.17);
+      };
+      const t0 = audioCtx.currentTime;
+      tono(t0, 880);
+      if (doble) tono(t0 + 0.19, 660);
+    } catch (e) { /* sin audio disponible */ }
+  }
+  // evento puntual (asincronía detectada): beep corto + anotación docente
+  function alarma(bandaIdx, texto) {
+    if (t - ultimoBeepEvt > 2.4) { ultimoBeepEvt = t; beep(false); }
+    anotar(bandaIdx, texto);
+  }
   let ultimaAnot = -9;
 
   /* ---------- geometría de bandas ---------- */
@@ -163,8 +190,9 @@ const Sim = (() => {
       if (tiReal > 0.2 && texp > 0.1) ieTxt = `1:${(texp / tiReal).toFixed(1).replace(".", ",")}`;
     }
     tUltimoInsp = tAbs; dobleHecho = false;
+    ciclos++;
     VdispBase = V;
-    if (!disparadoPorPaciente && asinc === "autociclado" && t - ultimaAnot > 2.5) anotar(0, "Autociclado: sin esfuerzo previo");
+    if (!disparadoPorPaciente && asinc === "autociclado" && t - ultimaAnot > 2.5) alarma(0, "Autociclado: sin esfuerzo previo");
   }
 
   function paso(dt) {
@@ -200,13 +228,13 @@ const Sim = (() => {
       const cicladoOk = tFase > 0.3 && f < flujoPico * cicl;
       if (cicladoOk || tFase >= tiMax) {
         tiReal = tFase; picoCiclo = pawAct;
-        if (asinc === "tardio" && tFase >= tiMax && t - ultimaAnot > 2.5) anotar(0, "Ciclado tardío: sobrepresión y espiración activa");
+        if (asinc === "tardio" && tFase >= tiMax && t - ultimaAnot > 2.5) alarma(0, "Ciclado tardío: sobrepresión y espiración activa");
         fase = "exp"; tFase = 0;
         // doble disparo: el esfuerzo continúa tras el ciclado
         if (asinc === "doble" && !dobleHecho && pmus > 1.5 && tiReal < 1.05 && Math.random() < 0.8) {
           dobleHecho = true;
           iniciarInsp(t, true); fase = "insp";
-          if (t - ultimaAnot > 2.5) anotar(0, "Doble disparo: dos ciclos sin espiración");
+          if (t - ultimaAnot > 2.5) alarma(0, "Doble disparo: dos ciclos sin espiración");
         }
       }
     } else {
@@ -221,7 +249,7 @@ const Sim = (() => {
       if ((hayEsfuerzo && puedeDisparar() && tFase > 0.35) || backup || auto) {
         iniciarInsp(t, hayEsfuerzo && !backup && !auto);
       } else if (hayEsfuerzo && !puedeDisparar() && tFase > 0.3 && t - ultimaAnot > 2.5) {
-        anotar(1, "Esfuerzo inefectivo: muesca sin ciclo");
+        alarma(1, "Esfuerzo inefectivo: muesca sin ciclo");
         ultimaAnot = t; // la anotación ya actualiza, pero evitamos repetir en el mismo esfuerzo
       }
     }
@@ -269,6 +297,14 @@ const Sim = (() => {
   let ultimoNum = 0;
   function pintarNumericos() {
     const vte = Math.round(Vinsp * 1000 / 10) * 10;
+    // alarmas de parámetro (tras el transitorio inicial)
+    const al = {
+      Vte: ciclos > 4 && vte > 0 && vte < 200,
+      FR: ciclos > 4 && frMedida > 0 && (frMedida > 30 || frMedida < 8),
+      Fuga: fugaMedia > 20,
+    };
+    const hayAlarma = al.Vte || al.FR || al.Fuga;
+    if (hayAlarma && t - ultimoBeepParam > 2.2) { ultimoBeepParam = t; beep(true); }
     const datos = [
       ["Ppico", picoCiclo ? picoCiclo.toFixed(0) : "—", "cmH₂O"],
       ["PEEP", epap, "cmH₂O"],
@@ -278,10 +314,19 @@ const Sim = (() => {
       ["Fuga", Math.round(fugaMedia), "L/min"],
     ];
     const T = TEMAS[tema];
-    document.getElementById("numericos").innerHTML = datos.map(d =>
-      `<div class="num" style="color:${T.numTxt}"><label style="color:${T.cabecera}">${d[0]}</label><strong>${d[1]}</strong><small>${d[2]}</small></div>`
-    ).join("");
+    const rojo = T.claro ? "#C62828" : "#FF5252";
+    document.getElementById("numericos").innerHTML = datos.map(d => {
+      const enAlarma = al[d[0]];
+      return `<div class="num${enAlarma ? " alarma" : ""}" style="color:${enAlarma ? rojo : T.numTxt}">
+        <label style="color:${enAlarma ? rojo : T.cabecera}">${d[0]}${enAlarma ? " ⚠" : ""}</label>
+        <strong>${d[1]}</strong><small>${d[2]}</small></div>`;
+    }).join("");
     document.getElementById("numericos").style.background = T.panel;
+    const led = document.querySelector("#monitor .led");
+    if (led) {
+      led.style.background = hayAlarma ? "#FF5252" : "#44E07E";
+      led.style.boxShadow = hayAlarma ? "0 0 10px #FF5252" : "0 0 8px #44E07E";
+    }
   }
 
   /* ---------- bucle ---------- */
@@ -495,6 +540,12 @@ const Sim = (() => {
       c.parentElement.querySelectorAll(".chip").forEach(z => z.classList.remove("sel"));
       c.classList.add("sel"); setPerfil(c.dataset.v);
     }));
+  const btnSon = document.getElementById("btnSonido");
+  if (btnSon) btnSon.addEventListener("click", () => {
+    sonidoOn = !sonidoOn;
+    btnSon.textContent = sonidoOn ? "🔔" : "🔕";
+    if (sonidoOn) beep(false); // confirmación audible
+  });
   const tgl = document.getElementById("tglDocente");
   if (tgl) tgl.addEventListener("change", () => { docente = tgl.checked; pintarDocente(); aplicarGuia(); });
 
