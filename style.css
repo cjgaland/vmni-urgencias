@@ -199,8 +199,40 @@ main{max-width:1060px;margin:0 auto;padding:26px 18px 50px}
 .claves li{margin-bottom:6px}
 
 /* ---------- simulador ---------- */
+.sim-barra{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:14px}
+.sim-grupo>label{display:block;font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--texto-suave);margin-bottom:6px}
 .sim-layout{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
-.monitor{background:#0B1E24;border-color:#0B1E24;padding:0;overflow:hidden}
+.monitor{background:#0B1E24;border-color:#0B1E24;padding:0;overflow:hidden;transition:background .25s}
+.sim-cuerpo{display:flex;align-items:stretch}
+.sim-cuerpo canvas{flex:1;min-width:0}
+.numericos{
+  width:112px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-around;
+  padding:10px 8px;gap:4px;
+}
+.num{text-align:center;line-height:1.15}
+.num label{display:block;font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.num strong{font-size:1.25rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.num small{display:block;font-size:.58rem;opacity:.7}
+.sim-disclaimer{font-size:.66rem;font-style:italic;padding:7px 14px 10px;color:#5f7881}
+.fila-docente{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px}
+.conmutador{display:flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;cursor:pointer}
+.conmutador input{display:none}
+.conmutador span{
+  width:36px;height:20px;border-radius:999px;background:#C9D6DA;position:relative;transition:.2s;flex-shrink:0;
+}
+.conmutador span::after{
+  content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;
+}
+.conmutador input:checked + span{background:var(--acento)}
+.conmutador input:checked + span::after{left:18px}
+.btn-mini{padding:6px 12px;font-size:.82rem;border-radius:9px}
+.docente-panel{margin-top:10px}
+.doc-bloque{
+  background:#fff;border:1px solid var(--borde);border-left:4px solid var(--acento);
+  border-radius:10px;padding:9px 12px;margin-bottom:8px;
+}
+.doc-bloque label{font-size:.68rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--acento)}
+.doc-bloque p{font-size:.84rem;color:var(--texto);margin-top:3px}
 .monitor-head{
   display:flex;align-items:center;gap:9px;color:#9FD4DE;font-size:.85rem;font-weight:600;
   padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);
