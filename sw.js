@@ -1,6 +1,6 @@
 /* Service worker — VMNI Urgencias. Precacheo + stale-while-revalidate:
    la app funciona sin conexión y se actualiza sola en segundo plano. */
-const CACHE = "vmni-v1.0.1";
+const CACHE = "vmni-v1.1.0";
 const FICHEROS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const FICHEROS = [
   "./sim.js",
   "./datos/reglas.json",
   "./datos/docencia.js",
+  "./datos/ayuda.js",
   "./manifest.webmanifest",
   "./iconos/icono-192.png",
   "./iconos/icono-512.png",
@@ -17,7 +18,13 @@ const FICHEROS = [
 ];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHEROS)).then(() => self.skipWaiting()));
+  // no hacemos skipWaiting aquí: la versión nueva espera a que el usuario
+  // pulse «Actualizar» en el aviso de la app
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHEROS)));
+});
+
+self.addEventListener("message", e => {
+  if (e.data === "SALTAR_ESPERA") self.skipWaiting();
 });
 
 self.addEventListener("activate", e => {

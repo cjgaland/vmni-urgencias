@@ -1,0 +1,102 @@
+/* ====== VMNI Urgencias · Ayuda: manual, control de versiones y FAQ ======
+   Mismo patrón que las demás apps de la casa (Manual / Control de Versiones / FAQ). */
+
+const CAMBIOS_AYUDA = [
+  {
+    version: "v1.1",
+    titulo: "Ayuda, control de versiones y aviso de actualización",
+    texto: "La app estrena este apartado de **Ayuda** con el **Manual del Usuario**, el **Control de Versiones** y las **Preguntas Frecuentes**. Además, cuando publiquemos una versión nueva, la app instalada te avisará con un mensaje para que pulses **Actualizar ahora** y la recibas al instante, sin reinstalar nada.",
+  },
+  {
+    version: "v1.0",
+    titulo: "Lanzamiento inicial (beta)",
+    texto: "Primera versión completa: **Evaluación** guiada del fallo respiratorio con clasificación automática y recomendación de parámetros (reglas provisionales pendientes de validación científica), **inicio rápido** para EAP y EPOC hipercápnico, **Simulador** fisiológico de gráficas con perfiles de paciente, vistas tipo Vivo/V60/VITAE, cinco asincronías con guías interactivas y modo examen, **Seguimiento** de la respuesta a la hora con criterios de fracaso y HACOR, módulo de **Docencia** (temas, glosario, cuestionario y bibliografía comentada) e instalación como **app de móvil y ordenador** con funcionamiento sin conexión.",
+  },
+];
+
+const MANUAL_AYUDA = [
+  {
+    icono: "🩺", titulo: "Evaluación del paciente",
+    secciones: [
+      {
+        titulo: "La evaluación completa, en 4 pasos",
+        texto: "Pulsa **Evaluación completa** en la pantalla de inicio y rellena los pasos: **Antecedentes** (toca las etiquetas que apliquen), **Clínica** (constantes, GCS y sospecha clínica principal), **Gasometría** (elige arterial o venosa y apunta la FiO₂ que lleva el paciente) y pulsa **Calcular**. La app clasifica el fallo respiratorio, te propone modo y parámetros iniciales y te avisa de las banderas rojas.",
+        cajas: [{ titulo: "💡 Aspectos clave", items: [
+          "**Inicio rápido:** en EAP o EPOC hipercápnico evidentes, los botones ⚡ de la portada saltan directos a la gasometría.",
+          "**Gasometría venosa:** la app corrige el pH (+0,03) y te recuerda que la pCO₂ venosa solo sirve para descartar (<45).",
+          "**FiO₂ estimada:** cambia el dispositivo (gafas, Ventimask, reservorio, Vivo…) y verás la FiO₂ calculada al momento.",
+          "**Criterios de IOT:** si marcas alguno, la app no te propone VNI: te manda a intubación/UCI (o a la rama paliativa si hay LET).",
+        ] }],
+      },
+      {
+        titulo: "Leer el resultado",
+        texto: "La tarjeta superior es la **clasificación** (con PaFi, SaFi, pH esperado, láctico y HACOR); la inferior, la **recomendación**: modo, parámetros en fichas grandes, pauta de titulación y alertas en rojo. Desde ahí puedes saltar al **simulador** o iniciar el **seguimiento**.",
+      },
+    ],
+  },
+  {
+    icono: "📈", titulo: "Simulador de gráficas",
+    secciones: [
+      {
+        titulo: "Un respirador de juguete… con física de verdad",
+        texto: "Elige la **vista** (genérico, Vivo 50/60, V60 o VITAE 40) y el **perfil de paciente** (pulmón normal, EPOC o EAP/restrictivo). Las curvas de presión, flujo y volumen salen de un modelo con resistencia y compliance reales: lo que muevas en los deslizadores tiene consecuencias coherentes.",
+        cajas: [{ titulo: "💡 Sácale partido", items: [
+          "**Asincronías:** actívalas y fíjate en las anotaciones rojas sobre las curvas y en las fichas 👁 qué ves · ⚙️ por qué · 🛠 qué tocar.",
+          "**Guías interactivas:** en las asincronías corregibles se ilumina en ámbar el deslizador implicado con el valor sugerido; al alcanzarlo se pone verde y la curva se normaliza.",
+          "**🎓 Modo examen:** la app elige una asincronía al azar sin decirte cuál; diagnostícala mirando las curvas y pulsa Revelar.",
+        ] }],
+      },
+    ],
+  },
+  {
+    icono: "⏱", titulo: "Seguimiento de la respuesta",
+    secciones: [
+      {
+        titulo: "La hora de la verdad",
+        texto: "Tras iniciar la VNI, vuelve a **Seguimiento** con la gasometría de control: si vienes de una evaluación, los valores basales ya están puestos. Introduce los datos a la hora y pulsa **Valorar respuesta**: verás la evolución de pH, FR y pCO₂, el HACOR y el veredicto (favorable, vigilar o criterios de fracaso con la pauta de escalada).",
+      },
+    ],
+  },
+  {
+    icono: "🎓", titulo: "Docencia",
+    secciones: [
+      {
+        titulo: "Cuatro pestañas para aprender y repasar",
+        texto: "**Temas** (fundamentos, interfaces, modos y respiradores del área, la evidencia en 1 minuto), **Glosario** con buscador, **Ponte a prueba** (10 preguntas aleatorias autocorregidas con explicación y referencia) y **Bibliografía comentada** con el porqué de cada fuente.",
+      },
+    ],
+  },
+  {
+    icono: "📲", titulo: "Instalación y actualizaciones",
+    secciones: [
+      {
+        titulo: "Llévala en el móvil y en el ordenador",
+        texto: "La app se instala desde el navegador, sin tiendas de aplicaciones, y **funciona sin conexión** una vez instalada.",
+        cajas: [
+          { titulo: "📱 En el móvil", items: [
+            "**Android (Chrome):** abre la app, toca el menú ⋮ y elige **Instalar aplicación** (o «Añadir a pantalla de inicio»).",
+            "**iPhone (Safari):** botón Compartir → **Añadir a pantalla de inicio**.",
+          ] },
+          { titulo: "💻 En el ordenador (Chrome/Edge)", items: [
+            "Abre la app y pulsa el **icono de instalar** (un monitor con una flecha) a la derecha de la barra de direcciones, o menú ⋮ → **Transmitir, guardar y compartir → Instalar**. Quedará como una app más, con su icono en el dock/barra de tareas.",
+          ] },
+          { titulo: "🔄 Actualizaciones", items: [
+            "Cuando publiquemos una versión nueva, la app te mostrará un aviso: pulsa **Actualizar ahora** y se recargará ya actualizada. Lo que trae cada versión está en la pestaña **Control de Versiones**.",
+          ] },
+        ],
+      },
+    ],
+  },
+];
+
+const FAQ_AYUDA = [
+  { p: "¿La app decide por mí?", r: "No. Es una **utilidad de apoyo a la decisión** con fines también docentes: te acerca los umbrales y la evidencia, pero la decisión clínica es siempre del profesional, con el paciente delante y los protocolos del centro en la mano." },
+  { p: "¿De dónde salen las recomendaciones?", r: "De un documento de base científica construido sobre las guías ATS 2026, ERS/ATS 2017, BTS 2016, el consenso español SEPAR/SEMICYUC/SEMES 2021, GOLD, ESC 2021, las revisiones Cochrane y los manuales de referencia. Cada umbral del motor lleva su referencia (puedes verlas en Docencia → Bibliografía)." },
+  { p: "¿Por qué pone «reglas provisionales»?", r: "Porque la revisión científica final del documento (16 decisiones concretas, como techos de EPAP o unidades del láctico) está **pendiente de validación** por el coautor. Cuando se cierre, publicaremos una versión con las reglas definitivas y retiraremos el aviso." },
+  { p: "¿Guarda datos de los pacientes?", r: "**No.** Todos los cálculos ocurren en tu dispositivo; la app no recoge, almacena ni envía ningún dato. Al cerrar la evaluación, los valores desaparecen." },
+  { p: "¿Funciona sin internet?", r: "Sí: una vez instalada (o tras la primera visita), queda guardada en tu dispositivo y funciona **sin conexión**. Internet solo hace falta para recibir actualizaciones." },
+  { p: "¿Cómo sé que tengo la última versión?", r: "La versión aparece en el pie de la app y aquí, en Control de Versiones. Si hay una nueva, te saldrá el aviso 🔄 para actualizar con un toque; también se actualiza sola al reabrirla con conexión." },
+  { p: "¿Puedo compartirla?", r: "Claro: pásale el enlace a cualquier compañero. No necesita cuentas ni instalación obligatoria — el navegador basta." },
+];
+
+if (typeof module !== "undefined" && module.exports) module.exports = { CAMBIOS_AYUDA, MANUAL_AYUDA, FAQ_AYUDA };

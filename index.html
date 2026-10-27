@@ -30,8 +30,9 @@
     <button data-s="simulador" onclick="irA('simulador')">Simulador</button>
     <button data-s="problemas" onclick="irA('problemas')">Problemas</button>
     <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
+    <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
-  <span class="badge-boceto">v1.0 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.1 BETA</span>
 </header>
 
 <main>
@@ -306,6 +307,20 @@
   <div id="docBiblio" class="oculto"></div>
 </section>
 
+<!-- ===================== AYUDA ===================== -->
+<section id="ayuda" class="pantalla">
+  <div class="cabecera-seccion"><h2>❓ Ayuda</h2>
+  <p class="sub-seccion">Manual del usuario, control de versiones y preguntas frecuentes.</p></div>
+  <div class="chips doc-tabs" id="ayudaTabs">
+    <button class="chip sel" data-t="Manual">📘 Manual del Usuario</button>
+    <button class="chip" data-t="Versiones">🧾 Control de Versiones</button>
+    <button class="chip" data-t="Faq">💬 FAQ</button>
+  </div>
+  <div id="ayudaManual"></div>
+  <div id="ayudaVersiones" class="oculto"></div>
+  <div id="ayudaFaq" class="oculto"></div>
+</section>
+
 </main>
 
 <nav class="nav-movil">
@@ -314,22 +329,19 @@
   <button data-s="simulador" onclick="irA('simulador')"><span>〰️</span>Simular</button>
   <button data-s="problemas" onclick="irA('problemas')"><span>🛠️</span>Problemas</button>
   <button data-s="docencia" onclick="irA('docencia')"><span>🎓</span>Docencia</button>
+  <button data-s="ayuda" onclick="irA('ayuda')"><span>❓</span>Ayuda</button>
 </nav>
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — v1.0 beta · 2026<br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.1 beta</a> · 2026<br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 
 <script src="motor.js"></script>
 <script src="datos/docencia.js"></script>
+<script src="datos/ayuda.js"></script>
 <script src="sim.js"></script>
 <script src="script.js"></script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
-}
-</script>
 </body>
 </html>

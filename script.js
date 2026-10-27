@@ -384,3 +384,97 @@ function pintarBiblio() {
 
 pintarTemas(); pintarGlosario(); quizInicio(); pintarBiblio();
 
+/* ==================== AYUDA (patrón de la casa: Manual / Versiones / FAQ) ==================== */
+const negrita = t => t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+
+document.querySelectorAll("#ayudaTabs .chip").forEach(ch => {
+  ch.addEventListener("click", () => {
+    document.querySelectorAll("#ayudaTabs .chip").forEach(c => c.classList.remove("sel"));
+    ch.classList.add("sel");
+    ["Manual", "Versiones", "Faq"].forEach(tb => {
+      document.getElementById("ayuda" + tb).classList.toggle("oculto", tb !== ch.dataset.t);
+    });
+  });
+});
+function abrirAyuda(tab) {
+  irA("ayuda");
+  const chip = document.querySelector(`#ayudaTabs .chip[data-t="${tab}"]`);
+  if (chip) chip.click();
+}
+
+function pintarVersiones() {
+  document.getElementById("ayudaVersiones").innerHTML = `<div class="version-lista">` +
+    CAMBIOS_AYUDA.map((c, i) => `
+      <div class="version-tarjeta${i === 0 ? " actual" : ""}">
+        <div class="version-num"><small>Versión</small><b>${c.version}</b></div>
+        <div class="version-cuerpo">
+          <h4>${i === 0 ? "Última actualización — " : ""}${c.titulo}</h4>
+          <p>${negrita(c.texto)}</p>
+        </div>
+      </div>`).join("") + `</div>`;
+}
+
+function pintarManual() {
+  document.getElementById("ayudaManual").innerHTML = `
+    <div class="card manual-cabecera"><h3>📘 Guía de uso de la aplicación</h3>
+    <p>Toca cada bloque para desplegarlo. La letra pequeña clínica está en <strong>Docencia</strong>; esto es el «cómo se usa».</p></div>` +
+    MANUAL_AYUDA.map((b, i) => `
+      <details class="manual-bloque"${i === 0 ? " open" : ""}>
+        <summary>${b.icono} ${b.titulo}</summary>
+        <div class="manual-cuerpo">
+          ${b.secciones.map(s => `
+            <h4>${s.titulo}</h4>
+            <p>${negrita(s.texto)}</p>
+            ${(s.cajas || []).map(c => `
+              <div class="caja-ayuda"><label>${c.titulo}</label>
+                <ul>${c.items.map(it => `<li>${negrita(it)}</li>`).join("")}</ul>
+              </div>`).join("")}
+          `).join("")}
+        </div>
+      </details>`).join("");
+}
+
+function pintarFaq() {
+  document.getElementById("ayudaFaq").innerHTML = FAQ_AYUDA.map(f => `
+    <details class="manual-bloque faq">
+      <summary>💬 ${f.p}</summary>
+      <div class="manual-cuerpo"><p>${negrita(f.r)}</p></div>
+    </details>`).join("");
+}
+
+pintarManual(); pintarVersiones(); pintarFaq();
+
+/* ==================== PWA: registro y aviso de actualización ==================== */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").then(reg => {
+      if (reg.waiting) avisarActualizacion(reg.waiting);
+      reg.addEventListener("updatefound", () => {
+        const nuevo = reg.installing;
+        if (!nuevo) return;
+        nuevo.addEventListener("statechange", () => {
+          if (nuevo.state === "installed" && navigator.serviceWorker.controller) avisarActualizacion(nuevo);
+        });
+      });
+    }).catch(() => {});
+    let recargando = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (recargando) return;
+      recargando = true;
+      location.reload();
+    });
+  });
+}
+function avisarActualizacion(sw) {
+  if (document.querySelector(".banner-actualizacion")) return;
+  const b = document.createElement("div");
+  b.className = "banner-actualizacion";
+  b.innerHTML = `<span>🔄 Hay una <strong>nueva versión</strong> de la app disponible.</span>
+    <button class="btn-actualizar">Actualizar ahora</button>`;
+  b.querySelector("button").addEventListener("click", () => {
+    sw.postMessage("SALTAR_ESPERA");
+    b.querySelector("button").textContent = "Actualizando…";
+  });
+  document.body.appendChild(b);
+}
+

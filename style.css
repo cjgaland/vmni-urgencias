@@ -344,6 +344,66 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 }
 .pie-aviso{font-size:.68rem;font-style:italic;opacity:.8}
 
+/* ---------- ayuda: manual, versiones y FAQ ---------- */
+.enlace-version{color:var(--acento);font-weight:700;text-decoration:none}
+.enlace-version:hover{text-decoration:underline}
+.manual-cabecera h3{color:var(--primario);margin-bottom:6px}
+.manual-cabecera p{color:var(--texto-suave);font-size:.9rem}
+.manual-bloque{
+  background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);
+  box-shadow:var(--sombra);margin-top:12px;overflow:hidden;
+}
+.manual-bloque summary{
+  cursor:pointer;list-style:none;padding:15px 18px;font-size:1.02rem;font-weight:700;color:var(--primario);
+  display:flex;align-items:center;gap:6px;
+}
+.manual-bloque summary::-webkit-details-marker{display:none}
+.manual-bloque summary::after{content:"▾";margin-left:auto;color:var(--acento);transition:.2s}
+.manual-bloque[open] summary::after{transform:rotate(180deg)}
+.manual-bloque[open] summary{border-bottom:1px solid var(--borde)}
+.manual-cuerpo{padding:14px 18px 18px}
+.manual-cuerpo h4{color:var(--secundario);margin:10px 0 6px;font-size:.95rem}
+.manual-cuerpo p{font-size:.92rem;color:var(--texto)}
+.caja-ayuda{
+  background:var(--acento-claro);border-left:4px solid var(--acento);border-radius:10px;
+  padding:10px 14px;margin:10px 0;
+}
+.caja-ayuda label{font-size:.78rem;font-weight:800;letter-spacing:.05em;color:var(--secundario)}
+.caja-ayuda ul{margin:6px 0 0 18px}
+.caja-ayuda li{font-size:.88rem;margin-bottom:5px}
+.version-lista{display:flex;flex-direction:column;gap:12px}
+.version-tarjeta{
+  display:flex;gap:16px;align-items:flex-start;
+  background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);
+  box-shadow:var(--sombra);padding:16px 18px;
+}
+.version-tarjeta.actual{border-color:#CBE5CF;background:linear-gradient(160deg,var(--ok-fondo),#fff)}
+.version-num{
+  flex-shrink:0;width:76px;text-align:center;border-radius:12px;padding:9px 4px;
+  background:var(--acento-claro);color:var(--secundario);
+}
+.version-tarjeta.actual .version-num{background:var(--ok);color:#fff}
+.version-num small{display:block;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.version-num b{font-size:1.25rem}
+.version-cuerpo h4{color:var(--primario);font-size:.98rem;margin-bottom:5px}
+.version-tarjeta.actual .version-cuerpo h4{color:var(--ok)}
+.version-cuerpo p{font-size:.9rem;color:var(--texto)}
+
+/* ---------- aviso de actualización PWA ---------- */
+.banner-actualizacion{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;
+  display:flex;align-items:center;gap:14px;max-width:94vw;
+  background:var(--primario);color:#fff;border-radius:14px;
+  padding:12px 18px;font-size:.92rem;box-shadow:0 8px 28px rgba(0,0,0,.35);
+  animation:aparece .3s ease;
+}
+.btn-actualizar{
+  background:#FFD97D;color:var(--primario);border:none;border-radius:9px;
+  padding:8px 16px;font-weight:800;font-size:.88rem;cursor:pointer;white-space:nowrap;
+}
+.btn-actualizar:hover{background:#ffe29b}
+@media (max-width:860px){.banner-actualizacion{bottom:84px}}
+
 /* ---------- responsive ---------- */
 @media (max-width:860px){
   .sim-layout{grid-template-columns:1fr;grid-template-areas:"monitor" "controles" "docente"}
