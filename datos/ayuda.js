@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.5",
+    titulo: "Modos ventilatorios: selector en el simulador y recomendación en la evaluación",
+    texto: "El **simulador** estrena **selector de modo**: CPAP, Binivel S, S/T, T, PCV y AVAPS — los de los respiradores reales del área — y cada modo cambia las **curvas**, los **mandos** que procede ajustar (CPAP sin IPAP ni trigger; S sin FR de respaldo; T con Ti fijo ignorando esfuerzos; PCV ciclada por tiempo) y las **asincronías** que aplican, con su texto docente propio. La **Evaluación** añade al resultado la tarjeta de **modo ventilatorio recomendado** por escenario, con alternativas y en qué respirador del área está, y el **Seguimiento** sugiere **cambios de modo según la evolución** (asincronía persistente, soporte prolongado…) — reglas nuevas documentadas como decisiones D-17 a D-19, PROVISIONALES hasta la revisión científica. La **Docencia** divide los modos en dos temas (11 en total): **pilares** (CPAP/S/S/T/T/PCV) y **avanzados** (AVAPS/iVAPS, PAV, NAVA, PRVC y ASV con su evidencia real y el aviso de seguridad de la ASV en insuficiencia cardiaca — SERVE-HF), con 5 preguntas nuevas (49) y bibliografía ampliada. Los casos arreglan además la navegación: «Volver al caso», botón «☰ Todos los casos» y reapertura de casos archivados.",
+  },
+  {
     version: "v2.4",
     titulo: "Diagnóstico ácido-base en vivo y espirograma a medida",
     texto: "La **Evaluación** interpreta ahora la gasometría mientras la tecleas: bajo el paso 3 aparece el **diagnóstico ácido-base** al instante (acidosis/alcalosis, respiratoria/metabólica, aguda, crónica o crónica agudizada, compensaciones por pH esperado y Winter), también con gasometría venosa (pH corregido). La **Docencia** estrena el tema **🧪 Gasometría: análisis y diagnóstico** (lectura sistemática en 4 pasos, con sus trampas) y 4 preguntas nuevas en el cuestionario (44 en total). Y el **espirograma interactivo** se hace personal: elige **sexo, edad y talla** y verás los **valores teóricos** de todos los volúmenes y capacidades (peso ideal ARDSNet, capacidad vital de Knudson, volumen residual ECSC/ERS) con el gráfico **reescalado a esa persona**; además se arregla el corte visual que hacían las maniobras de inspiración y espiración máximas, que ahora fluyen sin reiniciar el trazado.",
