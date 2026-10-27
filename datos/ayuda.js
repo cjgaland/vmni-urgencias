@@ -5,7 +5,7 @@ const CAMBIOS_AYUDA = [
   {
     version: "v2.6",
     titulo: "Pantalla de bienvenida",
-    texto: "La app se abre ahora con una **portada de presentación**: el logo, qué es la aplicación, el **aviso de apoyo a la decisión** (no sustituye el criterio del profesional), la **autoría** (Carlos J. Galán Doval, con Enrique Fernández Romero como coautor y revisor científico) y el botón **Entrar →**. Los enlaces directos a secciones (#simulador, #docencia…) siguen llevando directamente a su destino, sin pasar por la portada.",
+    texto: "La app se abre ahora con una **portada de presentación**: el logo, qué es la aplicación, el **aviso de apoyo a la decisión** (no sustituye el criterio del profesional), la **autoría** (Carlos J. Galán Doval, con Enrique Fernández Romero como coautor y revisor científico) y el botón **Entrar →**. Los enlaces directos a secciones (#simulador, #docencia…) siguen llevando directamente a su destino, sin pasar por la portada. Y junto a las 💬 Sugerencias (GitHub) se añade **✉️ Escribir al autor**: un correo directo con el asunto ya preparado, sin necesidad de cuenta alguna.",
   },
   {
     version: "v2.5",
