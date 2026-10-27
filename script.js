@@ -602,6 +602,22 @@ function pintarFaq() {
 
 pintarManual(); pintarVersiones(); pintarFaq();
 
+/* Acordeón global: al abrir un desplegable se cierran sus hermanos del mismo
+   bloque (evita el scroll kilométrico en Ayuda, FAQ y cualquier grupo futuro).
+   Un <details> sin hermanos (p. ej. la tarjeta de fármacos) no se ve afectado. */
+document.addEventListener("toggle", e => {
+  const d = e.target;
+  if (!(d instanceof HTMLDetailsElement) || !d.open || !d.parentElement) return;
+  [...d.parentElement.children].forEach(o => {
+    if (o !== d && o.tagName === "DETAILS" && o.open) o.open = false;
+  });
+  // Si al cerrarse uno de arriba el abierto queda fuera de pantalla, lo reencuadra.
+  requestAnimationFrame(() => {
+    const r = d.getBoundingClientRect();
+    if (r.top < 0) d.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}, true);
+
 /* ==================== HERRAMIENTAS RÁPIDAS ==================== */
 function calcOxi() {
   const po2 = num("cPo2"), spo2 = num("cSpo2"), fio2 = num("cFio2");
