@@ -205,15 +205,45 @@ Equivale a detectar componente metabólico añadido (C3): la app mostrará la de
 
 ---
 
-## 5. Elección de modo
+## 5. Modos ventilatorios en VMNI
 
-| Situación | Modo de elección | Razón |
-|---|---|---|
-| Fallo hipercápnico (EPOC, SHO, restrictivo) | **Binivel S/T** (presión de soporte + EPAP, con FR de respaldo) | Descarga musculatura y barre CO2 (consenso p.81-82) |
-| EAP | **CPAP** (equivalente a binivel; más simple y barata); binivel si hipercapnia/fatiga | ERS/ATS Q2a; Masip 2018 |
-| Hipoxemia de novo | TAFCN 1ª línea; CPAP/VNI (mascarilla o helmet) como alternativa | ATS 2026 PICO1 |
-| Vt insuficiente pese a IPAP alta (SHO, ENM) | Modos con volumen asegurado (AVAPS / volumen garantizado) o PCV | Artacho p.102 |
-| ENM con disparo débil | PCV/controlada (el trigger falla) | BTS rec. 52 |
+> Añadido el 27-10-2026. La recomendación de modo por escenario (§5.3) y las reglas de cambio
+> según evolución (§5.4) alimentan el motor de la app → decisiones abiertas **D-17, D-18 y D-19** (§14).
+
+### 5.1 Los pilares (los modos del día a día)
+
+| Modo | Qué hace | Indicación típica | En el parque del área |
+|---|---|---|---|
+| **CPAP** | Una sola presión continua. No ventila: recluta alveolos, oxigena y descarga el ventrículo izquierdo | EAP (equivalente a binivel en mortalidad e intubación); hipoxemia con shunt reclutable | V60 · Vivo 50/60 · VITAE 40 · Boussignac |
+| **S (espontáneo)** | Binivel puro: el paciente dispara y cicla todos los ciclos (presión de soporte sobre EPAP) | Paciente con estímulo respiratorio fiable; en agudos casi siempre se prefiere S/T (respaldo) | V60 (S) · Vivo 50/60 (PSV sin respaldo) |
+| **S/T (espontáneo-programado)** | Como S, pero con FR de respaldo: si el paciente no dispara en el tiempo programado, la máquina entrega un ciclo controlado por tiempo | **El caballo de batalla del fallo hipercápnico** (EPOC, SHO, restrictivo) — consenso 2021 p.81-82; BTS 2016 | V60 (S/T) · Vivo 50/60 (PSV con FR de respaldo) · VITAE 40 (binivel) |
+| **T (programado)** | Todos los ciclos los inicia y cicla la máquina (FR y Ti fijos); ignora el esfuerzo del paciente | Sin estímulo respiratorio (sedación, encefalopatía profunda) cuando se decide mantener VNI; puente mientras se prepara otra cosa | V60 (PCV con FR fija) · Vivo 50/60 (PCV) |
+| **PCV (controlada por presión)** | Presión inspiratoria con **Ti fijo** programado; asiste los esfuerzos y asegura ciclos si no los hay | ENM con disparo débil (BTS rec. 52); asincronía de ciclado refractaria (el Ti fijo elimina el ciclado por flujo, que la fuga pervierte); restrictivo que necesita Ti largo | V60 (PCV) · Vivo 50/60 (PCV) |
+
+### 5.2 Modos avanzados: qué aportan y qué no
+
+- **AVAPS / iVAPS (presión de soporte con objetivo de volumen).** La IPAP «flota» automáticamente entre un mínimo y un máximo para alcanzar un **Vt medio objetivo** (AVAPS, Philips) o una **ventilación alveolar objetivo** con FR inteligente (iVAPS, ResMed). Matiz clave: el ajuste es **GRADUAL (~1 cmH2O/min en AVAPS), no respiración a respiración** — por eso **no es un modo de rescate agudo**: ante un deterioro brusco responde tarde. Su sitio es la hipoventilación sostenida (SHO, restrictivo) y el soporte prolongado/nocturno. Evidencia: en superobesos con fallo hipercápnico, AVAPS **no mostró ventaja sobre una PS bien titulada** (Murphy, Thorax 2012 [29]). Parque: AVAPS en el V60; «volumen asegurado» en Vivo 50/60; iVAPS no disponible (equipos ResMed).
+- **PAV y NAVA (modos proporcionales al esfuerzo).** Asisten en proporción al esfuerzo instantáneo del paciente (PAV por mecánica estimada; NAVA por la actividad eléctrica diafragmática, catéter Edi). **Mejoran la sincronía** — NAVA reduce el índice de asincronías frente a PS en estudios fisiológicos de VMNI (Piquilloud 2012 [31]) — pero **sin beneficio demostrado en resultados duros** (mortalidad, intubación). PAV+ es hoy casi exclusivo de la ventilación invasiva (la PAV no invasiva se probó en agudos: Gay 2001 [32]); NAVA exige catéter Edi y ventilador Servo (Getinge): **ninguno disponible en el área**. Valor en la app: docente.
+- **PRVC (presión regulada con volumen garantizado).** Controlada por presión que retitula la presión respiración a respiración para garantizar el Vt. Adaptación de la invasiva; **uso residual en VMNI aguda** (la fuga hace poco fiable el Vt medido).
+- **ASV (ventilación servoadaptativa).** Presión de soporte anticíclica (asiste más cuando el paciente ventila menos) diseñada para la respiración periódica / apnea central. ⚠️ **Aviso de seguridad obligatorio en la app:** **contraindicada en la insuficiencia cardiaca con FEVI ≤45% y apnea central predominante** — el ensayo SERVE-HF (Cowie, NEJM 2015 [30]) mostró **exceso de mortalidad cardiovascular** (HR 1,34) en ese grupo. No disponible en Urgencias del área, pero algunos pacientes la llevan domiciliaria (unidades de sueño): ante un EAP/IC descompensada, comprobarlo.
+
+### 5.3 Modo recomendado por escenario clínico (→ decisión abierta D-17)
+
+| Escenario | Modo recomendado | Alternativas / matices | Referencia |
+|---|---|---|---|
+| EAP / IC aguda | **CPAP** | Binivel S/T equivalente (preferirlo si hipercapnia, acidosis o fatiga) | ERS/ATS 2017 Q2a; ESC 2021; Masip 2018; Cochrane 2019 |
+| EPOC hipercápnico (pH <7,35) | **Binivel S/T** | TAFCN si acidemia leve (pH >7,25) con monitorización (ATS 2026); PCV con Ti fijo si asincronía refractaria | BTS 2016; ERS/ATS 2017 Q1b; consenso 2021; GOLD |
+| SHO / restrictivo toracógeno | **Binivel S/T** | PCV con Ti largo (1,2–1,5 s); **± volumen asegurado** si Vt insuficiente pese a IPAP alta o para soporte prolongado/nocturno (no como rescate: ajuste gradual) | BTS 2016 rec. 57; consenso 2021; Murphy 2012 [29] |
+| Neuromuscular | **S/T o PCV con Ti largo** (PCV si disparo débil) | Volumen asegurado para soporte prolongado; no retrasar IOT si falla | BTS 2016 rec. 50–53 |
+| Sin estímulo respiratorio / sedación (VNI mantenida) | **T** (o PCV con FR fija) | Solo en entorno monitorizado con vía aérea vigilada; reevaluar indicación de IOT | BTS 2016; consenso 2021 (criterio operativo) |
+| Hipoxémico de novo | **TAFCN** (1.ª línea) | CPAP (mascarilla o helmet) o binivel según antecedentes | ATS 2026 PICO1 |
+
+### 5.4 Cambio de modo según evolución (→ decisión abierta D-18)
+
+1. **Asincronía persistente** pese a optimizar fugas, trigger, rampa y % de ciclado (§10) → valorar **PCV con Ti fijo** (el ciclado por tiempo es inmune a la fuga).
+2. **Vt insuficiente / hipoventilación persistente** pese a IPAP alta, o **hipoventilación nocturna** con necesidad de soporte prolongado (SHO, restrictivo, ENM) → valorar **volumen asegurado** (AVAPS en V60; volumen asegurado en Vivo 50/60).
+3. **Pérdida del estímulo respiratorio** (sedación, encefalopatía) manteniendo la VNI → **modo T**, y reevaluar la indicación de IOT.
+4. El cambio de modo **nunca sustituye a la escalada**: si se cumplen criterios de fracaso (§8.3), la salida es IOT/UCI, no otro modo.
 
 ---
 
@@ -401,6 +431,9 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 | D-14 | Rama de sobredosis (A) | Validar criterio y fármacos de reversión |
 | D-15 | HCO3 | Valor absoluto confirmado como entrada (necesario para pH esperado y Winter) |
 | D-16 | Gasometría venosa | Validar reglas §2.3 (corrección +0,03 de pH; pCO2 <45 descarta) |
+| D-17 | Modo recomendado por escenario | Tabla §5.3 (EAP → CPAP con binivel equivalente; hipercápnico → S/T; restrictivo/ENM → S/T o PCV con Ti largo ± volumen asegurado; sin estímulo → T; hipoxémico → TAFCN), limitada al parque real y mostrada en la evaluación de la app. ¿Se valida la tabla y la disponibilidad por equipo? |
+| D-18 | Cambio de modo según evolución | Reglas §5.4 integradas en el seguimiento: asincronía refractaria → PCV con Ti fijo · hipoventilación/Vt insuficiente o soporte prolongado-nocturno → volumen asegurado · sin estímulo → T. El cambio de modo nunca sustituye a la escalada (criterios §8.3) |
+| D-19 | Modos avanzados y aviso ASV | Posición propuesta (§5.2): AVAPS/iVAPS no como rescate agudo (ajuste gradual ~1 cmH2O/min; Murphy 2012 sin ventaja sobre PS titulada) · PAV/NAVA solo docente (sin equipos en el área; mejoran sincronía sin beneficio en resultados duros) · PRVC residual · **aviso SERVE-HF obligatorio** (ASV contraindicada en IC con FEVI ≤45% y apnea central). ¿Se valida? |
 
 ---
 
@@ -434,6 +467,10 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 26. Berend K, de Vries APJ, Gans ROB. Physiological approach to assessment of acid-base disturbances. N Engl J Med 2014;371:1434-1445.
 27. Knudson RJ et al. The maximal expiratory flow-volume curve: normal standards, variability, and effects of age. Am Rev Respir Dis 1976;113:587-600.
 28. Quanjer PH et al. Lung volumes and forced ventilatory flows. Official Statement of the European Respiratory Society. Eur Respir J 1993;6(Supl 16):5-40.
+29. Murphy PB et al. Volume targeted versus pressure support non-invasive ventilation in patients with super obesity and chronic respiratory failure: a randomised controlled trial. Thorax 2012;67:727-734.
+30. Cowie MR et al. Adaptive servo-ventilation for central sleep apnea in systolic heart failure (SERVE-HF). N Engl J Med 2015;373:1095-1105.
+31. Piquilloud L et al. Neurally adjusted ventilatory assist improves patient–ventilator interaction during non-invasive ventilation delivered by face mask. Intensive Care Med 2012;38:1624-1631.
+32. Gay PC, Hess DR, Hill NS. Noninvasive proportional assist ventilation for acute respiratory insufficiency: comparison with pressure support ventilation. Am J Respir Crit Care Med 2001;164:1606-1611.
 
 ---
 
@@ -454,6 +491,7 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 |---|---|
 | AP | Antecedentes personales |
 | APACHE II | Acute Physiology and Chronic Health Evaluation II (score de gravedad) |
+| ASV | Ventilación servoadaptativa (adaptive servo-ventilation) |
 | ATS | American Thoracic Society |
 | AVAPS | Average Volume-Assured Pressure Support (presión de soporte con volumen medio asegurado) |
 | BiPAP / binivel | Ventilación con doble nivel de presión (IPAP + EPAP) |
@@ -492,7 +530,9 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 | IPAP | Presión positiva inspiratoria en la vía aérea |
 | I:E | Relación inspiración:espiración |
 | IRA / IRC | Insuficiencia respiratoria aguda / crónica |
+| iVAPS | Intelligent Volume-Assured Pressure Support (ventilación alveolar objetivo, ResMed) |
 | LET | Limitación del esfuerzo terapéutico |
+| NAVA | Neurally Adjusted Ventilatory Assist (asistencia ajustada a la actividad eléctrica diafragmática, catéter Edi) |
 | NNT / NNTB | Número necesario a tratar (para beneficiar) |
 | OR | Odds ratio |
 | PaCO2 / pCO2 | Presión parcial de CO2 (arterial) |
@@ -501,6 +541,7 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 | PAV | Ventilación asistida proporcional |
 | PC / PCV | Ventilación controlada por presión |
 | PEEP / autoPEEP (PEEPi) | Presión positiva al final de la espiración / PEEP intrínseca |
+| PRVC | Presión regulada con volumen garantizado (pressure-regulated volume control) |
 | PS | Presión de soporte (IPAP − EPAP) |
 | PtcCO2 / TcPCO2 | CO2 transcutáneo |
 | ROX | Índice (SpO2/FiO2)/FR para alto flujo |

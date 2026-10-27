@@ -232,10 +232,21 @@ function htmlResultado(r) {
   const avisos = (c.avisos || []).map(a => `<div class="pista" style="margin-top:8px">${a}</div>`).join("");
 
   // --- tarjeta de recomendación ---
+  let modoHtml = "";
+  if (rec.modo) {
+    const m = rec.modo;
+    modoHtml = `
+    <div class="modo-bloque">
+      <label>Modo recomendado${m.decision ? ` <span class="ref">${m.decision}</span>` : ""}</label>
+      <strong>${m.recomendado}</strong>
+      ${m.alternativas && m.alternativas.length ? `<p class="modo-linea"><strong>Alternativas:</strong> ${m.alternativas.join(" · ")}</p>` : ""}
+      ${m.parque ? `<p class="modo-linea modo-parque">📍 En tu área: ${m.parque}</p>` : ""}
+      ${m.ref ? `<p class="modo-linea"><small class="ref">${m.ref}</small></p>` : ""}
+    </div>`;
+  }
   let fichas = "";
   if (rec.parametros) {
     const tiles = [];
-    if (esc) tiles.push(`<div class="param"><label>Modo</label><strong style="font-size:1rem">${esc.modo}</strong></div>`);
     for (const [k, v] of Object.entries(rec.parametros)) {
       if (!FICHAS[k]) continue;
       const val = valorFicha(v);
@@ -259,6 +270,7 @@ function htmlResultado(r) {
   <div class="card recomendacion">
     <p class="etiqueta acc">Recomendación</p>
     <h3>${rec.titulo}${rec.evidencia ? `<small>${rec.evidencia}</small>` : ""}</h3>
+    ${modoHtml}
     ${fichas}
     ${alertas}
     ${claves ? `<ul class="claves">${claves}</ul>` : ""}
@@ -301,7 +313,9 @@ function valorarRespuesta() {
     const cc = Motor.calculos({ tipo: "arterial" }, { spo2 }, fio2);
     pafi1 = cc.pafiDeSafi;
   }
-  const h1 = { ph: num("sPh1"), pco2: num("sPco21"), fr: num("sFr1"), gcs: num("sGcs1"), fc: num("sFc1"), pafi: pafi1 };
+  const marca = id => { const el = document.getElementById(id); return !!(el && el.checked); };
+  const h1 = { ph: num("sPh1"), pco2: num("sPco21"), fr: num("sFr1"), gcs: num("sGcs1"), fc: num("sFc1"), pafi: pafi1,
+    asincronia: marca("sAsincronia"), vtInsuficiente: marca("sVtInsuf"), sinEstimulo: marca("sSinEstimulo") };
   if (h1.ph === undefined || h1.fr === undefined) { alert("Faltan al menos pH y FR a la hora."); return; }
   const r = Motor.evaluarRespuesta(basal, h1);
 
@@ -333,7 +347,13 @@ function valorarRespuesta() {
       <h3>${titulosV[r.veredicto]}</h3>
       <p>${r.texto}</p>
       ${r.menores.length ? `<p style="margin-top:8px"><strong>Criterios menores presentes:</strong> ${r.menores.join(" · ")}</p>` : ""}
-    </div>`;
+    </div>
+    ${r.sugerenciasModo && r.sugerenciasModo.length ? `
+    <div class="card modo-sugerencia">
+      <h3>⚙️ Sugerencia de cambio de modo <small>${r.sugerenciasModo[0].decision}</small></h3>
+      ${r.sugerenciasModo.map(s => `<div class="modo-bloque"><label>${s.etiqueta}</label><p class="modo-linea">${s.sugerencia} <small class="ref">${s.ref}</small></p></div>`).join("")}
+      <p class="provisional">${REGLAS.seguimiento.notaCambioModo} Recomendación PROVISIONAL pendiente de validación (D-18).</p>
+    </div>` : ""}`;
 }
 
 function prefillSeguimiento() {
@@ -451,7 +471,7 @@ document.getElementById("busGlosario").addEventListener("input", e => pintarGlos
 
 /* --- ponte a prueba (con progreso personal en el dispositivo) --- */
 const QUIZ_N = 10;
-const NOMBRES_TEMA = { indicaciones: "Indicaciones", oxigenacion: "Oxigenación", parametros: "Parámetros", seguimiento: "Seguimiento", gasometria: "Gasometría", asincronias: "Asincronías", retirada: "Retirada", evidencia: "Evidencia", interfaces: "Interfaces", farmacos: "Fármacos", fisiologia: "Fisiología", volumenes: "Volúmenes", cuidados: "Cuidados", anatomia: "Anatomía" };
+const NOMBRES_TEMA = { indicaciones: "Indicaciones", oxigenacion: "Oxigenación", parametros: "Parámetros", seguimiento: "Seguimiento", gasometria: "Gasometría", asincronias: "Asincronías", retirada: "Retirada", evidencia: "Evidencia", interfaces: "Interfaces", farmacos: "Fármacos", fisiologia: "Fisiología", volumenes: "Volúmenes", cuidados: "Cuidados", anatomia: "Anatomía", modos: "Modos" };
 let quiz = null;
 let QSTATS = { hechas: 0, aciertos: 0, racha: 0, mejorRacha: 0, falladas: {}, temas: {} };
 try { const s = localStorage.getItem("vmni-quiz"); if (s) QSTATS = Object.assign(QSTATS, JSON.parse(s)); } catch (e) {}

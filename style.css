@@ -223,6 +223,17 @@ main{max-width:1380px;margin:0 auto;padding:26px 22px 50px}
   margin-top:14px;font-size:.72rem;color:var(--texto-suave);font-style:italic;
   border-top:1px dashed var(--borde);padding-top:8px;
 }
+/* bloque de modo recomendado (evaluación) y sugerencia de cambio de modo (seguimiento) */
+.modo-bloque{
+  background:var(--acento-claro);border-left:4px solid var(--acento);border-radius:10px;
+  padding:10px 14px;margin:12px 0 6px;
+}
+.modo-bloque label{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-suave)}
+.modo-bloque>strong{display:block;color:var(--primario);font-size:1.1rem;margin:3px 0 2px}
+.modo-linea{font-size:.88rem;color:var(--texto);margin:4px 0 0}
+.modo-parque{color:var(--secundario);font-weight:600}
+:root[data-tema="oscuro"] .modo-bloque{background:rgba(42,127,142,.16)}
+:root[data-tema="oscuro"] .modo-bloque>strong{color:var(--texto)}
 .kpi.peor span{color:var(--rojo)}
 .etiqueta{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-suave)}
 .etiqueta.acc{color:var(--acento)}
