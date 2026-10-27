@@ -84,6 +84,13 @@
       c.lactato = g.lactato;
       c.lactatoAlto = g.lactato > R.acidoBase.lactatoAltoMgdl;
     }
+    // peso ideal (talla y sexo) → Vt objetivo 6-8 ml/kg IDEAL (el pulmón no engorda:
+    // nunca usar el peso real para el volumen corriente)
+    if (esNum(clinica.talla) && clinica.talla >= 120) {
+      const base = clinica.sexo === "m" ? 45.5 : 50;
+      c.pesoIdeal = red(base + 0.91 * (clinica.talla - 152.4), 1);
+      c.vtObjetivo = [Math.round(c.pesoIdeal * 6), Math.round(c.pesoIdeal * 8)];
+    }
     return c;
   }
 

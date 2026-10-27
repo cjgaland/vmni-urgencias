@@ -79,8 +79,8 @@ const Casos = (() => {
         <div class="fila-campos" style="margin-top:12px">
           <div class="campo ancho"><label>Título del caso</label><input id="ncTitulo" placeholder="p. ej. EPOC agudizado box 3"></div>
           <div class="campo"><label>Edad (años)</label><input type="number" id="ncEdad"></div>
-          <div class="campo"><label>Sexo</label><select id="ncSexo"><option value="v">Varón</option><option value="m">Mujer</option></select></div>
-          <div class="campo"><label>Talla (cm)</label><input type="number" id="ncTalla"></div>
+          <div class="campo"><label>Sexo</label><select id="ncSexo"><option value="v"${ULTIMA_EVAL.entradas.clinica.sexo === "v" ? " selected" : ""}>Varón</option><option value="m"${ULTIMA_EVAL.entradas.clinica.sexo === "m" ? " selected" : ""}>Mujer</option></select></div>
+          <div class="campo"><label>Talla (cm)</label><input type="number" id="ncTalla" value="${ULTIMA_EVAL.entradas.clinica.talla ?? ""}"></div>
           <div class="campo ancho"><label>Tipo</label><select id="ncTipo"><option value="docente">Docente / simulado</option><option value="real">Real (anonimizado)</option></select></div>
         </div>
         <div class="botonera"><button class="btn-sec" onclick="Casos.pintar()">← Cancelar</button>

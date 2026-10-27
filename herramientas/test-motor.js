@@ -114,6 +114,13 @@ caso("ENM hipercápnico → escenario neuromuscular con 'no retrasar IOT'", () =
   esperar(r.recomendacion.titulacion.some(t => t.includes("NO retrasar")), "aviso IOT");
 });
 
+caso("Peso ideal y Vt objetivo: varón 170 cm → 66 kg → 396–528 ml (y la mujer pesa 4,5 kg menos)", () => {
+  const c = Motor.calculos({ tipo: "arterial", ph: 7.35, pco2: 42 }, { spo2: 94, talla: 170, sexo: "v" }, 0.21);
+  esperar(c.pesoIdeal === 66 && c.vtObjetivo[0] === 396 && c.vtObjetivo[1] === 528, `${c.pesoIdeal} kg, ${c.vtObjetivo}`);
+  const m = Motor.calculos({ tipo: "arterial", ph: 7.35, pco2: 42 }, { spo2: 94, talla: 170, sexo: "m" }, 0.21);
+  esperar(m.pesoIdeal === 61.5, `mujer ${m.pesoIdeal} kg`);
+});
+
 console.log("— SpO2 simulada (modelo del simulador) —");
 const PERFILES_SIM = {
   normal: { paco2: 40, shunt: 0.03, recluta: 0.5 },

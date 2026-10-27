@@ -110,6 +110,7 @@ function leerEntradas() {
     antecedentes: { respiratorios: chipsDe("resp"), otros: chipsDe("otros"), circunstancias: chipsDe("circ") },
     clinica: {
       fr: num("iFr"), fc: num("iFc"), tas: num("iTas"), gcs: num("iGcs"), spo2: num("iSpo2"),
+      sexo: document.getElementById("iSexo").value, talla: num("iTalla"),
       trabajo: chipsDe("signos").includes("trabajo") || chipsDe("signos").includes("musculatura"),
       criteriosIot: chipsDe("iot"),
     },
@@ -204,6 +205,7 @@ function htmlResultado(r) {
   if (c.phEsperadoCronico) datos.push(`<span class="dato">pH esp. <strong>${fmt(c.phEsperadoCronico)}</strong></span>`);
   if (c.lactato !== undefined) datos.push(`<span class="dato ${c.lactatoAlto ? "" : "ok"}">Láctico <strong>${c.lactatoAlto ? "alto" : "normal"}</strong></span>`);
   if (r.hacor) datos.push(`<span class="dato ${r.hacor.altoRiesgo ? "" : "ok"}">HACOR <strong>${r.hacor.total}</strong>${r.hacor.altoRiesgo ? " ⚠" : ""}</span>`);
+  if (c.vtObjetivo) datos.push(`<span class="dato">Vt obj. <strong>${c.vtObjetivo[0]}–${c.vtObjetivo[1]} ml</strong> <small>(ideal ${fmt(c.pesoIdeal, 1)} kg)</small></span>`);
 
   const avisos = (c.avisos || []).map(a => `<div class="pista" style="margin-top:8px">${a}</div>`).join("");
 
