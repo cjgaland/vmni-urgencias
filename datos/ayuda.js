@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v1.3",
+    titulo: "Oxigenación simulada, más mandos del respirador y confort",
+    texto: "El simulador cierra el lazo de la oxigenación: nuevo deslizador de **FiO₂** y **SpO₂ simulada** en el panel de numéricos, que responde a la FiO₂, a la **EPAP** (reclutamiento: pruébalo con el perfil EAP) y a las **fugas** (la fuga diluye el oxígeno), con alarma por debajo del 88%. Llegan además los mandos de **trigger** (sensibilidad de disparo) y **Ti máximo**, con guías propias: el **autociclado** se corrige bajando la sensibilidad y el **doble disparo** alargando el Ti, como en la realidad. En **Seguimiento** se estrena el **checklist de confort y cuidados** (cabecera 30–45°, cuello sin flexión, protección nasal, pausas…). Y se arregla el **beep en el móvil**: el sonido se desbloquea con el primer toque en la pantalla.",
+  },
+  {
     version: "v1.2",
     titulo: "Fisiología respiratoria, espirograma animado y alarmas",
     texto: "La **Docencia** crece con cuatro temas nuevos de fisiología (**volúmenes y capacidades** con un **espirograma animado interactivo**, flujos y curva flujo-volumen, mecánica con la constante de tiempo, e intercambio gaseoso) y **navegación entre temas** con flechas ← → sin volver al índice. El **simulador** estrena **alarmas**: cuando la FR, el volumen corriente o la fuga se salen de rango, el parámetro parpadea en **rojo** y suena un **beep** (silenciable con el botón 🔔 del monitor). Llegan además las **🧮 Herramientas rápidas** (PaFi/SaFi, peso ideal y Vt, pH esperado con interpretación, HACOR y FiO₂ estimada, desde la portada) y el **🌙 modo oscuro «de guardia»** (botón de la cabecera; la app recuerda tu elección). La bibliografía incorpora las guías de tratamiento farmacológico (GesEPOC, GINA, GEMA).",
@@ -49,7 +54,8 @@ const MANUAL_AYUDA = [
           "**Asincronías:** actívalas y fíjate en las anotaciones rojas sobre las curvas y en las fichas 👁 qué ves · ⚙️ por qué · 🛠 qué tocar.",
           "**Guías interactivas:** en las asincronías corregibles se ilumina en ámbar el deslizador implicado con el valor sugerido; al alcanzarlo se pone verde y la curva se normaliza.",
           "**🎓 Modo examen:** la app elige una asincronía al azar sin decirte cuál; diagnostícala mirando las curvas y pulsa Revelar.",
-          "**🔔 Alarmas:** si la FR, el Vte o la fuga se salen de rango, el parámetro parpadea en rojo y suena un beep; silencia o reactiva el sonido con el botón 🔔 del monitor.",
+          "**🔔 Alarmas:** si la FR, el Vte, la SpO₂ o la fuga se salen de rango, el parámetro parpadea en rojo y suena un beep; silencia o reactiva el sonido con el botón 🔔 del monitor (en el móvil, el sonido se activa tras tu primer toque en la pantalla).",
+          "**🩸 Oxigenación:** mueve la FiO₂ y la EPAP con el perfil EAP y observa la SpO₂ simulada: la presión recluta (sube la saturación sin subir la FiO₂) y la fuga la diluye.",
         ] }],
       },
     ],
@@ -59,7 +65,7 @@ const MANUAL_AYUDA = [
     secciones: [
       {
         titulo: "La hora de la verdad",
-        texto: "Tras iniciar la VNI, vuelve a **Seguimiento** con la gasometría de control: si vienes de una evaluación, los valores basales ya están puestos. Introduce los datos a la hora y pulsa **Valorar respuesta**: verás la evolución de pH, FR y pCO₂, el HACOR y el veredicto (favorable, vigilar o criterios de fracaso con la pauta de escalada).",
+        texto: "Tras iniciar la VNI, vuelve a **Seguimiento** con la gasometría de control: si vienes de una evaluación, los valores basales ya están puestos. Introduce los datos a la hora y pulsa **Valorar respuesta**: verás la evolución de pH, FR y pCO₂, el HACOR y el veredicto (favorable, vigilar o criterios de fracaso con la pauta de escalada). Debajo tienes el **checklist de confort y cuidados** para ir marcando lo hecho: el confort es parte del tratamiento.",
       },
     ],
   },

@@ -34,7 +34,7 @@
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
   <button id="btnTema" class="btn-tema" title="Modo oscuro / claro">🌙</button>
-  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.2 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.3 BETA</span>
 </header>
 
 <main>
@@ -234,6 +234,9 @@
       <div class="control"><label>FR respaldo <output id="oFr">14</output> rpm</label><input type="range" id="rFr" min="8" max="24" value="14"></div>
       <div class="control"><label>Rampa <output id="oRampa">media</output></label><input type="range" id="rRampa" min="1" max="3" value="2"></div>
       <div class="control"><label>Ciclado espiratorio <output id="oCiclado">25</output>%</label><input type="range" id="rCiclado" min="10" max="60" value="25"></div>
+      <div class="control"><label>FiO₂ <output id="oFio2Sim">30</output> %</label><input type="range" id="rFio2" min="21" max="100" step="1" value="30"></div>
+      <div class="control"><label>Trigger (flujo) <output id="oTrigger">2</output> L/min</label><input type="range" id="rTrigger" min="1" max="8" value="2"></div>
+      <div class="control"><label>Ti máximo <output id="oTi">1,5</output> s</label><input type="range" id="rTi" min="0.6" max="2.5" step="0.1" value="1.5"></div>
       <h3>Asincronías</h3>
       <div class="chips asincronias">
         <button class="chip sel" data-a="normal">Normal</button>
@@ -278,6 +281,21 @@
     <div class="botonera"><span></span><button class="btn-primario" onclick="valorarRespuesta()">Valorar respuesta →</button></div>
   </div>
   <div id="respuestaDinamica"></div>
+
+  <div class="card confort">
+    <h3>🛏 Confort y cuidados — márcalos según los hagas</h3>
+    <div class="lista-confort">
+      <label class="check"><input type="checkbox"><span>Cabecera a <strong>30–45°</strong> y cuello <strong>sin flexión</strong></span></label>
+      <label class="check"><input type="checkbox"><span><strong>Protección del puente nasal</strong> (hidrocoloide) desde el inicio</span></label>
+      <label class="check"><input type="checkbox"><span>Arnés con la <strong>regla de los dos dedos</strong> (sin estrangular la mascarilla)</span></label>
+      <label class="check"><input type="checkbox"><span><strong>Pausas programadas</strong> e hidratación de mucosas</span></label>
+      <label class="check"><input type="checkbox"><span>Nebulización <strong>sin interrumpir la VNI</strong> si es dependiente</span></label>
+      <label class="check"><input type="checkbox"><span>Vigilar <strong>distensión gástrica</strong> (SNG si vómitos) y ojos (fuga hacia arriba)</span></label>
+      <label class="check"><input type="checkbox"><span>Confort térmico; <strong>humidificación activa si &gt;6 h</strong> o secreciones espesas</span></label>
+      <label class="check"><input type="checkbox"><span>Revisar <strong>fugas y puntos de apoyo</strong> en cada visita; rotar interfaz si procede</span></label>
+    </div>
+    <p class="provisional" style="margin-top:10px">El confort es parte del tratamiento: la intolerancia es una de las primeras causas de fracaso de la VNI.</p>
+  </div>
 </section>
 
 <!-- ===================== PROBLEMAS ===================== -->
@@ -409,7 +427,7 @@
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.2 beta</a> · 2026<br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v1.3 beta</a> · 2026<br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
 

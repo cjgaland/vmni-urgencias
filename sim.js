@@ -29,15 +29,16 @@ const Sim = (() => {
 
   /* ---------- perfiles de paciente (R en cmH2O/L/s, C en ml/cmH2O) ---------- */
   const PERFILES = {
-    normal: { R: 10, C: 42, pmus: 5, frPac: 15, tEsfuerzo: 0.9, carga: 1 },
-    epoc: { R: 17, C: 48, pmus: 6, frPac: 22, tEsfuerzo: 0.9, carga: 5 },
-    eap: { R: 9, C: 26, pmus: 8, frPac: 28, tEsfuerzo: 0.8, carga: 1.5 },
+    normal: { R: 10, C: 42, pmus: 5, frPac: 15, tEsfuerzo: 0.9, carga: 1, paco2: 40, shunt: 0.03, recluta: 0.5 },
+    epoc: { R: 17, C: 48, pmus: 6, frPac: 22, tEsfuerzo: 0.9, carga: 5, paco2: 60, shunt: 0.07, recluta: 0.25 },
+    eap: { R: 9, C: 26, pmus: 8, frPac: 28, tEsfuerzo: 0.8, carga: 1.5, paco2: 35, shunt: 0.22, recluta: 0.6 },
   };
 
   /* ---------- estado ---------- */
   let tema = "generico", perfil = "epoc", asinc = "normal";
   let docente = true, examen = false, revelado = false;
   let ipap = 15, epap = 5, frResp = 14, rampa = 2, ciclado = 25;
+  let fio2 = 0.30, trigger = 2, ti = 1.5, spo2Act = 96;
   const RT = { 1: 0.07, 2: 0.18, 3: 0.38 };
 
   let activo = false, raf = null;
@@ -54,11 +55,21 @@ const Sim = (() => {
 
   /* ---------- alarmas: beep por Web Audio + numéricos en rojo ---------- */
   let sonidoOn = true, audioCtx = null, ultimoBeepParam = -9, ultimoBeepEvt = -9;
-  function beep(doble) {
-    if (!sonidoOn) return;
+  // Los navegadores móviles bloquean el audio hasta un gesto del usuario:
+  // desbloqueamos el contexto en la primera interacción con la página.
+  function desbloquearAudio() {
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === "suspended") audioCtx.resume();
+    } catch (e) { /* sin audio disponible */ }
+  }
+  ["pointerdown", "touchstart", "keydown"].forEach(ev =>
+    document.addEventListener(ev, desbloquearAudio, { once: true, passive: true }));
+  function beep(doble) {
+    if (!sonidoOn) return;
+    try {
+      desbloquearAudio();
+      if (!audioCtx || audioCtx.state !== "running") return; // aún sin gesto del usuario
       const tono = (t, f) => {
         const o = audioCtx.createOscillator(), g = audioCtx.createGain();
         o.type = "sine"; o.frequency.value = f;
@@ -176,7 +187,7 @@ const Sim = (() => {
     if (asinc === "inefectivo" && esfuerzoFalla) {
       // carga umbral (autoPEEP) compensable subiendo la EPAP — docente
       const carga = Math.max(0, P.carga - 1.0 * (epap - 4));
-      return P.pmus * 0.45 > carga + 1.2;
+      return P.pmus * 0.45 > carga + 0.9 + 0.15 * trigger;
     }
     return true;
   }
@@ -199,7 +210,7 @@ const Sim = (() => {
     const P = PERFILES[perfil];
     const T = 60 / Math.max(frResp, 6);
     const PS = ipap - epap;
-    const tiMax = asinc === "tardio" ? 2.3 : 1.5;
+    const tiMax = ti;
     const cicl = ciclado / 100;
     const Palv = (V * 1000) / P.C;
     const pmus = pmusEn(t);
@@ -216,8 +227,8 @@ const Sim = (() => {
       // deflexión de disparo al inicio si lo inició el paciente
       if (tFase < 0.09 && pmus > 0) pawAct -= 1.2 * (1 - tFase / 0.09);
       // espiración activa al final (ciclado tardío)
-      if (asinc === "tardio" && tFase > tiMax * 0.75) {
-        pawAct += 2.8 * ((tFase - tiMax * 0.75) / (tiMax * 0.25));
+      if (asinc === "tardio" && tFase > 1.35) {
+        pawAct += 2.8 * Math.min(1, (tFase - 1.35) / 0.8);
       }
       flujoLs = (pawAct + pmus - Palv) / P.R;
       if (flujoLs < 0) flujoLs = 0;
@@ -245,7 +256,7 @@ const Sim = (() => {
       // disparo
       const hayEsfuerzo = pmus > 0.4;
       const backup = (t - tUltimoInsp) >= T;
-      const auto = asinc === "autociclado" && Math.random() < dt * 0.5;
+      const auto = asinc === "autociclado" && Math.random() < dt * Math.max(0, 5 - trigger) * 0.18;
       if ((hayEsfuerzo && puedeDisparar() && tFase > 0.35) || backup || auto) {
         iniciarInsp(t, hayEsfuerzo && !backup && !auto);
       } else if (hayEsfuerzo && !puedeDisparar() && tFase > 0.3 && t - ultimaAnot > 2.5) {
@@ -297,19 +308,30 @@ const Sim = (() => {
   let ultimoNum = 0;
   function pintarNumericos() {
     const vte = Math.round(Vinsp * 1000 / 10) * 10;
+    // SpO2 simulada: FiO2 efectiva (la fuga la diluye), alveolar simplificada,
+    // shunt del perfil reclutable con la EPAP y curva de Severinghaus
+    const P = PERFILES[perfil];
+    const fio2Eff = 0.21 + (fio2 - 0.21) * (1 - Math.min(0.5, fugaMedia / 50));
+    const reclut = Math.min(1, Math.max(0, (epap - 4) / 8));
+    const shuntEff = P.shunt * (1 - P.recluta * reclut);
+    const pao2 = Math.max(28, (fio2Eff * 713 - P.paco2 / 0.8) * (1 - 3.3 * shuntEff));
+    const spo2Obj = Math.min(100, 100 / (1 + 23400 / (pao2 ** 3 + 150 * pao2)));
+    spo2Act += (spo2Obj - spo2Act) * 0.15;
     // alarmas de parámetro (tras el transitorio inicial)
     const al = {
       Vte: ciclos > 4 && vte > 0 && vte < 200,
       FR: ciclos > 4 && frMedida > 0 && (frMedida > 30 || frMedida < 8),
+      "SpO₂": ciclos > 4 && spo2Act < 88,
       Fuga: fugaMedia > 20,
     };
-    const hayAlarma = al.Vte || al.FR || al.Fuga;
+    const hayAlarma = al.Vte || al.FR || al.Fuga || al["SpO₂"];
     if (hayAlarma && t - ultimoBeepParam > 2.2) { ultimoBeepParam = t; beep(true); }
     const datos = [
       ["Ppico", picoCiclo ? picoCiclo.toFixed(0) : "—", "cmH₂O"],
       ["PEEP", epap, "cmH₂O"],
       ["Vte", vte || "—", "ml"],
       ["FR", frMedida || "—", "rpm"],
+      ["SpO₂", Math.round(spo2Act), "%"],
       ["I:E", ieTxt, ""],
       ["Fuga", Math.round(fugaMedia), "L/min"],
     ];
@@ -367,9 +389,8 @@ const Sim = (() => {
   }
 
   function datosCabecera() {
-    const PS = ipap - epap;
     document.getElementById("simDatos").textContent =
-      `IPAP ${ipap} · EPAP ${epap} · PS ${PS} · Ciclado ${ciclado}%`;
+      `IPAP ${ipap} · EPAP ${epap} · FiO₂ ${Math.round(fio2 * 100)}% · Ciclado ${ciclado}% · Ti ${String(ti).replace(".", ",")}s`;
   }
 
   /* ---------- textos docentes ---------- */
@@ -406,32 +427,53 @@ const Sim = (() => {
   /* ---------- guías interactivas: el deslizador que corrige la asincronía ---------- */
   const GUIAS = {
     inefectivo: {
-      control: "rEpap", preset: { id: "rEpap", v: 4 },
+      control: "rEpap",
       texto: "💡 Sube la <strong>EPAP hasta 8</strong> cmH₂O y mira cómo desaparecen las muescas",
       ok: () => epap >= 8,
       logrado: "✅ EPAP 8: los esfuerzos vuelven a disparar — has compensado la autoPEEP.",
     },
     tardio: {
-      control: "rCiclado", preset: { id: "rCiclado", v: 10 },
+      control: "rCiclado",
       texto: "💡 Sube el <strong>ciclado a ≥35%</strong> y el ventilador cortará cuando el paciente quiere espirar",
       ok: () => ciclado >= 35,
       logrado: "✅ Ciclado ≥35%: fin de la sobrepresión — cicla a tiempo.",
     },
     doble: {
-      control: "rCiclado", preset: { id: "rCiclado", v: 45 },
-      texto: "💡 Baja el <strong>ciclado a ≤15%</strong>: alargas la insuflación y el esfuerzo deja de «sobrar»",
-      ok: () => ciclado <= 15,
-      logrado: "✅ Ti más largo que el esfuerzo: se acabó el doble disparo.",
+      control: "rTi",
+      texto: "💡 El Ti máximo se ha quedado corto: <strong>súbelo a ≥1,2 s</strong> y el esfuerzo dejará de «sobrar»",
+      ok: () => ti >= 1.2,
+      logrado: "✅ Ti más largo que el esfuerzo neural: se acabó el doble disparo.",
+    },
+    autociclado: {
+      control: "rTrigger",
+      texto: "💡 El trigger está hipersensible: <strong>baja la sensibilidad a ≥5 L/min</strong> (y reduce la fuga)",
+      ok: () => trigger >= 5,
+      logrado: "✅ Trigger menos sensible: los artefactos ya no disparan ciclos fantasma.",
     },
   };
+  // cada asincronía «estropea» el mando que la causa; normal restaura los ajustes
+  const PRESETS = {
+    normal: { rCiclado: 25, rTi: 1.5, rTrigger: 2 },
+    fuga: {},
+    inefectivo: { rEpap: 4 },
+    autociclado: { rTrigger: 1 },
+    doble: { rTi: 0.7 },
+    tardio: { rCiclado: 10, rTi: 2.4 },
+  };
   function aplicarPreset(a) {
-    const g = GUIAS[a];
-    if (!g || !g.preset) return;
-    const r = document.getElementById(g.preset.id);
-    r.value = g.preset.v;
-    if (g.preset.id === "rEpap") epap = Math.min(g.preset.v, ipap - 2);
-    if (g.preset.id === "rCiclado") ciclado = g.preset.v;
-    document.getElementById(g.preset.id.replace("r", "o")).textContent = r.value;
+    const p = PRESETS[a] || {};
+    for (const [id, v] of Object.entries(p)) {
+      const r = document.getElementById(id);
+      if (!r) continue;
+      r.value = v;
+      if (id === "rEpap") epap = Math.min(v, ipap - 2);
+      if (id === "rCiclado") ciclado = v;
+      if (id === "rTi") ti = v;
+      if (id === "rTrigger") trigger = v;
+      const o = document.getElementById(id.replace("r", "o"));
+      if (o) o.textContent = String(v).replace(".", ",");
+    }
+    datosCabecera();
   }
   function aplicarGuia() {
     document.querySelectorAll(".control").forEach(c => c.classList.remove("guiado"));
@@ -528,6 +570,9 @@ const Sim = (() => {
   liga("rFr", "oFr", v => { frResp = v; });
   liga("rRampa", "oRampa", v => { rampa = v; }, v => ["", "rápida", "media", "lenta"][v]);
   liga("rCiclado", "oCiclado", v => { ciclado = v; });
+  liga("rFio2", "oFio2Sim", v => { fio2 = v / 100; });
+  liga("rTrigger", "oTrigger", v => { trigger = v; });
+  liga("rTi", "oTi", v => { ti = v; }, v => v.toFixed(1).replace(".", ","));
 
   // chips de tema y perfil
   document.querySelectorAll('[data-grupo="tema"] .chip').forEach(c =>

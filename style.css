@@ -341,6 +341,18 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .veredicto h3{margin-bottom:6px;font-size:1.02rem}
 .veredicto p{font-size:.92rem;color:var(--texto)}
 
+/* ---------- checklist de confort ---------- */
+.confort{margin-top:14px}
+.confort h3{color:var(--primario);font-size:1.02rem;margin-bottom:12px}
+.lista-confort{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:8px 18px}
+.check{
+  display:flex;align-items:flex-start;gap:10px;font-size:.9rem;cursor:pointer;
+  padding:7px 10px;border-radius:9px;transition:.15s;
+}
+.check:hover{background:var(--acento-claro)}
+.check input{accent-color:var(--acento);width:17px;height:17px;margin-top:2px;flex-shrink:0}
+.check input:checked + span{color:var(--texto-suave);text-decoration:line-through}
+
 /* ---------- problemas ---------- */
 .lista-problemas{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}
 .problema{cursor:pointer;transition:.18s}
