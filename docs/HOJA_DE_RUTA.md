@@ -62,7 +62,7 @@ Documento de planificación: nada de lo aquí descrito está construido. Orden p
 - **Índice ROX** en Seguimiento cuando el soporte sea alto flujo.
 - **Progreso personal del quiz** (en el dispositivo): preguntas falladas que reaparecen, racha, porcentaje por tema.
 - **Botón de sugerencias** (mailto o issues de GitHub) para que los compañeros reporten erratas y pidan mejoras.
-- **Vídeos de Artacho:** enlazarlos en Docencia **solo con su permiso expreso** (son material con autor).
+- **Vídeos de Artacho:** ~~enlazarlos en Docencia~~ **DESCARTADO (27-10-2026, decisión de Carlos):** no se conoce el origen ni los permisos del material, así que no se publicarán.
 
 ## Orden propuesto
 

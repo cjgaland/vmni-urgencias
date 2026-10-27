@@ -28,7 +28,7 @@
       }
       case "vivo": {
         const v = f.vivoSinMezclador;
-        return { fio2: red(Math.min(v.base + v.porLitro * (valor || 0), v.max)), decision: "D-12", aviso: "Estimación genérica (tabla Thys & Liistro): pendientes las fórmulas propias del Vivo (D-12)." };
+        return { fio2: red(Math.min(v.base + v.porLitro * (valor || 0), v.max)), decision: "D-12", aviso: "Estimación orientativa (tabla de banco Thys & Liistro): la FiO₂ real varía con presiones, fuga y patrón. Titule por SpO₂ y, si el Vivo monta célula de FiO₂, use el valor medido." };
       }
       case "mezclador": case "tafcn": return { fio2: red((valor || 21) / 100) };
       default: return { fio2: f.aire };

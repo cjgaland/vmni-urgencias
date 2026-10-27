@@ -86,7 +86,7 @@ Umbrales relevantes: FR >24 (criterio de inicio en EPOC, ERS/ATS p.6), FR >30 (f
 | Reservorio | 4-5 L/min → 0,60 · 6-7 → 0,70 · 8-9 → 0,80 · ≥10 → 0,90 | Según borrador inicial (coherente con la docencia habitual) |
 | TAFCN (AirVo) | FiO2 programada | Directa |
 | Respirador **con** mezclador (V60, Vivo con módulo O2) | FiO2 programada | Directa |
-| Respirador **sin** mezclador (O2 a caudalímetro) | Tabla Thys & Liistro (abajo) + **fórmulas propias de Carlos para Vivo (pendientes de incorporar)** | La FiO2 real depende de IPAP, flujo de O2, punto de conexión, fuga y patrón ventilatorio |
+| Respirador **sin** mezclador (O2 a caudalímetro) | Tabla Thys & Liistro (abajo). **No existen fórmulas propias del Vivo**: el fabricante no las publica (su manual solo limita el O2 a 15 L/min y recomienda monitorizar) | La FiO2 real depende de IPAP, flujo de O2, punto de conexión, fuga y patrón ventilatorio → la estimación es orientativa; titular por SpO2 y, si el equipo monta célula de FiO2, usar el valor medido |
 
 **FiO2 (%) según flujo de O2 e IPAP** (Thys & Liistro, en Rev Am Med Resp 2021, tabla 2.3.5):
 
@@ -321,7 +321,7 @@ Elección por anatomía, consciencia, claustrofobia y compatibilidad con el circ
 
 | Equipo | Tipo | Notas para la app |
 |---|---|---|
-| **Breas Vivo 50 / Vivo 60** | Ventilador de soporte vital domiciliario/hospitalario, turbina, rama única | Modos PSV/PCV/CPAP (± volumen asegurado). O2 por caudalímetro de serie → FiO2 estimada (tabla §2.4 + **fórmulas de Carlos, pendientes**) |
+| **Breas Vivo 50 / Vivo 60** | Ventilador de soporte vital domiciliario/hospitalario, turbina, rama única | Modos PSV/PCV/CPAP (± volumen asegurado). O2 por caudalímetro de serie → FiO2 estimada con la tabla de banco §2.4 (orientativa); O2 máx. 15 L/min según fabricante; si monta célula de FiO2, prevalece el valor medido |
 | **Philips V60** | Ventilador de VNI hospitalario con mezclador | FiO2 directa; modos CPAP/S/T/PCV/AVAPS; compensación de fugas Auto-Trak. Aparece en los vídeos de Artacho (Práctica 2) |
 | **Hersill VITAE 40** | Ventilador de transporte (sala de críticos) | Verificar modos de VNI/CPAP disponibles y manejo de FiO2 (aire comprimido/Venturi) con el manual del equipo |
 | **AirVo (F&P)** | TAFCN | Flujo/FiO2/temperatura directos (§6.4) |
@@ -369,7 +369,7 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 | D-9 | Objetivo SpO2 no hipercápnico | 92–96% propuesto (Foster usa ~93% en CPAP; algún texto 85–89% en binivel hipoxémico) |
 | D-10 | Vt objetivo | 6–8 ml/kg ideal (propuesto) vs 5–7 (Foster) vs ≥7 (Inicio VMNI); alarma >9,5 |
 | D-11 | Pauta de gasometrías | 1 h + 4–6 h + 24 h (propuesta, consenso) vs variantes de los manuales |
-| D-12 | Fórmulas FiO2 del Vivo | **Carlos las aporta** y sustituyen/complementan la tabla genérica §2.4 |
+| D-12 | FiO2 estimada en el Vivo | **Reformulada (27-10-2026):** no existen fórmulas propias (ni de Carlos ni del fabricante). Propuesta: mantener la tabla de banco §2.4 como estimación orientativa, titular siempre por SpO2 objetivo y, si el equipo monta célula de FiO2, usar el valor medido. ¿Se valida este enfoque? |
 | D-13 | TAFCN en el algoritmo | ¿Incluimos el AirVo como rama propia (ATS 2026 lo exige en hipoxémico y en hipercapnia leve)? Propuesta: sí |
 | D-14 | Rama de sobredosis (A) | Validar criterio y fármacos de reversión |
 | D-15 | HCO3 | Valor absoluto confirmado como entrada (necesario para pH esperado y Winter) |
@@ -413,6 +413,8 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 2. **HCO3:** se pedía decidir categorías vs absoluto → **valor absoluto** (necesario para pH esperado/Winter), con categorías solo visuales.
 3. **«Sat O2 mayor o menor de 98»** → el umbral operativo es **SpO2 ≤97%** para que la SaFi sea válida (por encima, la curva de la hemoglobina se aplana y la SaFi infraestima la gravedad).
 4. Añadidos a las entradas: GCS numérico, FC/TA (los exigen HACOR y los criterios de IOT), inmunodepresión, VMNI/CPAP domiciliaria previa.
+5. **D-12 reformulada (27-10-2026):** las «fórmulas propias del Vivo» no existen — el fabricante no publica ninguna (el manual del Vivo 50 solo limita el O2 a 15 L/min y recomienda monitorizar la concentración) y los estudios de banco confirman que la FiO2 real varía con presiones, fuga y patrón del paciente. La app mantiene la tabla de Thys & Liistro como estimación orientativa con aviso explícito.
+6. **Vídeos de Artacho descartados (27-10-2026, decisión de Carlos):** no se conoce el origen ni los permisos del material, así que no se enlazarán en la app.
 
 ---
 

@@ -82,7 +82,7 @@ Umbrales relevantes: FR >24 (criterio de inicio en EPOC, ERS/ATS p.6), FR >30 (f
 | Reservorio | 4-5 L/min → 0,60 · 6-7 → 0,70 · 8-9 → 0,80 · ≥10 → 0,90 | Según borrador inicial (coherente con la docencia habitual) |
 | TAFCN (AirVo) | FiO2 programada | Directa |
 | Respirador **con** mezclador (V60, Vivo con módulo O2) | FiO2 programada | Directa |
-| Respirador **sin** mezclador (O2 a caudalímetro) | Tabla Thys & Liistro (abajo) + **fórmulas propias de Carlos para Vivo (pendientes de incorporar)** | La FiO2 real depende de IPAP, flujo de O2, punto de conexión, fuga y patrón ventilatorio |
+| Respirador **sin** mezclador (O2 a caudalímetro) | Tabla Thys & Liistro (abajo). **No existen fórmulas propias del Vivo**: el fabricante no las publica (su manual solo limita el O2 a 15 L/min y recomienda monitorizar) | La FiO2 real depende de IPAP, flujo de O2, punto de conexión, fuga y patrón ventilatorio → la estimación es orientativa; titular por SpO2 y, si el equipo monta célula de FiO2, usar el valor medido |
 
 **FiO2 (%) según flujo de O2 e IPAP** (Thys & Liistro, en Rev Am Med Resp 2021, tabla 2.3.5):
 
@@ -317,7 +317,7 @@ Elección por anatomía, consciencia, claustrofobia y compatibilidad con el circ
 
 | Equipo | Tipo | Notas para la app |
 |---|---|---|
-| **Breas Vivo 50 / Vivo 60** | Ventilador de soporte vital domiciliario/hospitalario, turbina, rama única | Modos PSV/PCV/CPAP (± volumen asegurado). O2 por caudalímetro de serie → FiO2 estimada (tabla §2.4 + **fórmulas de Carlos, pendientes**) |
+| **Breas Vivo 50 / Vivo 60** | Ventilador de soporte vital domiciliario/hospitalario, turbina, rama única | Modos PSV/PCV/CPAP (± volumen asegurado). O2 por caudalímetro de serie → FiO2 estimada con la tabla de banco §2.4 (orientativa); O2 máx. 15 L/min según fabricante; si monta célula de FiO2, prevalece el valor medido |
 | **Philips V60** | Ventilador de VNI hospitalario con mezclador | FiO2 directa; modos CPAP/S/T/PCV/AVAPS; compensación de fugas Auto-Trak. Aparece en los vídeos de Artacho (Práctica 2) |
 | **Hersill VITAE 40** | Ventilador de transporte (sala de críticos) | Verificar modos de VNI/CPAP disponibles y manejo de FiO2 (aire comprimido/Venturi) con el manual del equipo |
 | **AirVo (F&P)** | TAFCN | Flujo/FiO2/temperatura directos (§6.4) |
