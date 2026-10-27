@@ -1,6 +1,6 @@
 /* Service worker — VMNI Urgencias. Precacheo + stale-while-revalidate:
    la app funciona sin conexión y se actualiza sola en segundo plano. */
-const CACHE = "vmni-v2.6.2";
+const CACHE = "vmni-v2.6.3";
 const FICHEROS = [
   "./",
   "./index.html",
