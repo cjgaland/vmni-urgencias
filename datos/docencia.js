@@ -99,14 +99,41 @@ const DOCENCIA_DATA = {
       ],
     },
     {
-      id: "modos", icono: "⚙️", titulo: "Modos y respiradores",
-      resumen: "S/T, PCV, AVAPS y el parque real del área.",
+      id: "modos", icono: "⚙️", titulo: "Modos ventilatorios: los pilares",
+      resumen: "CPAP, S, S/T, T y PCV: qué hace cada uno, cuándo y en qué respirador del área.",
       bloques: [
-        { t: "Modo S/T: el caballo de batalla", p: "El paciente dispara (S = espontáneo) y, si se duerme o se agota, el ventilador asegura una frecuencia de respaldo (T = programado, 12-15 rpm). Ciclado por flujo: la inspiración termina cuando el flujo cae al % programado del pico (≥25% en obstructivos; súbelo si hay ciclado tardío)." },
-        { t: "Los cuatro mandos que importan", p: "<strong>EPAP</strong> (4-8; sube si esfuerzos inefectivos o hipoxemia), <strong>IPAP</strong> (10-12 de inicio, subir 2-3 cada 10-30 min hasta Vt 6-8 ml/kg y FR &lt;25, techo 20-25), <strong>rampa</strong> (rápida en el disneico; lenta si intolerancia) y <strong>trigger</strong> (sensible sin autociclado). Lo demás casi siempre puede esperar." },
-        { t: "PCV y volumen asegurado (AVAPS)", p: "PCV (controlado por presión con Ti fijo): para el neuromuscular que no dispara. AVAPS/volumen garantizado: la IPAP «flota» entre un mínimo y un máximo para asegurar el Vt — útil en SHO cuando no se alcanza volumen con presiones fijas." },
-        { t: "Nuestro parque", p: "<strong>Breas Vivo 50/60</strong>: rama única con fuga intencional, O₂ por caudalímetro (sin mezclador: la FiO₂ real depende de la IPAP y del flujo — ver la tabla de la app). <strong>Philips V60</strong>: mezclador (FiO₂ directa), compensación de fugas Auto-Trak, CPAP/S/T/PCV/AVAPS. <strong>Hersill VITAE 40</strong>: transporte, en sala de críticos. <strong>AirVo</strong>: alto flujo (TAFCN), primera línea en el hipoxémico de novo (ATS 2026)." },
+        { t: "CPAP: presión, no ventilación", p: "Una sola presión continua. <strong>No ventila</strong> (no hay presión de soporte): recluta alveolos, mejora la oxigenación y descarga el ventrículo izquierdo — por eso trata el <strong>EAP</strong> ella sola (equivalente al binivel en mortalidad e intubación, ERS/ATS 2017). En tu área la dan todos: V60, Vivo 50/60, VITAE 40 y la Boussignac." },
+        { t: "S, S/T y T: ¿quién manda?", p: "La familia binivel se distingue por quién inicia y termina los ciclos. <strong>S (espontáneo)</strong>: todos los ciclos los dispara y cicla el paciente — exige un estímulo fiable. <strong>S/T (espontáneo-programado)</strong>: igual, pero con una <strong>FR de respaldo</strong> (12-15 rpm): si el paciente no dispara a tiempo, la máquina entrega un ciclo controlado por tiempo — <strong>el caballo de batalla del fallo hipercápnico</strong>. <strong>T (programado)</strong>: todos los ciclos los manda la máquina (FR y Ti fijos), ignorando el esfuerzo — su sitio es el paciente <strong>sin estímulo respiratorio</strong> (sedación, encefalopatía profunda) cuando se decide mantener la VNI, siempre en entorno monitorizado y reevaluando la IOT. En S/T el ciclado es por flujo: la inspiración acaba cuando el flujo cae al % programado del pico (≥25% en obstructivos; súbelo si hay ciclado tardío)." },
+        { t: "PCV: el tiempo inspiratorio fijo", p: "Controlada por presión con <strong>Ti fijo</strong>: asiste los esfuerzos que haya y asegura ciclos si no los hay. Tres usos en VMNI: el <strong>neuromuscular con disparo débil</strong> (el trigger falla — BTS rec. 52), la <strong>asincronía de ciclado refractaria</strong> (el ciclado por tiempo es inmune a la fuga, que pervierte el ciclado por flujo) y el <strong>restrictivo</strong> que necesita Ti largos (1,2–1,5 s)." },
+        { t: "Los cuatro mandos que importan", p: "<strong>EPAP</strong> (4-8; sube si esfuerzos inefectivos o hipoxemia), <strong>IPAP</strong> (10-12 de inicio, subir 2-3 cada 10-30 min hasta Vt 6-8 ml/kg y FR &lt;25, techo 20-25), <strong>rampa</strong> (rápida en el disneico; lenta si intolerancia) y <strong>trigger</strong> (sensible sin autociclado). Lo demás casi siempre puede esperar.", cajas: [{ titulo: "💡 Modo por escenario (propuesta D-17, PROVISIONAL)", items: [
+          "**EAP** → CPAP (binivel S/T equivalente; preferirlo si hipercapnia o fatiga).",
+          "**EPOC hipercápnico** → binivel S/T.",
+          "**Restrictivo / neuromuscular** → S/T o PCV con Ti largo; ± volumen asegurado para soporte prolongado.",
+          "**Sin estímulo respiratorio / sedación** → T (o PCV con FR fija).",
+          "**Hipoxémico de novo** → alto flujo (TAFCN) de primera línea (ATS 2026).",
+        ] }] },
+        { t: "Nuestro parque", p: "<strong>Breas Vivo 50/60</strong>: rama única con fuga intencional, O₂ por caudalímetro (sin mezclador: la FiO₂ real depende de la IPAP y del flujo — ver la tabla de la app). <strong>Philips V60</strong>: mezclador (FiO₂ directa), compensación de fugas Auto-Trak, CPAP/S/T/PCV/AVAPS. <strong>Hersill VITAE 40</strong>: transporte, en sala de críticos. <strong>AirVo</strong>: alto flujo (TAFCN), primera línea en el hipoxémico de novo (ATS 2026).", cajas: [{ titulo: "🏥 Qué hay en tu área (modo a modo)", items: [
+          "**CPAP**: V60 · Vivo 50/60 · VITAE 40 · Boussignac.",
+          "**S/T (binivel)**: V60 (S/T) · Vivo 50/60 (PSV con FR de respaldo) · VITAE 40 (binivel de transporte).",
+          "**PCV / T**: V60 · Vivo 50/60.",
+          "**Volumen asegurado**: AVAPS en el V60 · «volumen asegurado» en los Vivo.",
+          "**TAFCN**: AirVo. **No disponibles**: iVAPS, PAV, NAVA, ASV (ver tema de modos avanzados).",
+        ] }] },
         { t: "FiO₂ sin mezclador: la trampa", p: "A más IPAP, más dilución: con 10 L/min de O₂ la FiO₂ real baja de ~0,40 (IPAP 8) a ~0,35 (IPAP 20). Conecta el O₂ cerca de la mascarilla, guíate por la SpO₂ y recuerda que un flujo &gt;4 L/min en la mascarilla genera fugas y asincronías: si no llegas, pide un equipo con mezclador (BTS)." },
+      ],
+    },
+    {
+      id: "modos_avanzados", icono: "🧠", titulo: "Modos avanzados: de AVAPS a ASV",
+      resumen: "Volumen asegurado, proporcionales y servoadaptativa: qué aportan de verdad y sus límites.",
+      bloques: [
+        { t: "AVAPS e iVAPS: presión con objetivo de volumen", p: "La IPAP «flota» automáticamente entre un mínimo y un máximo para alcanzar un <strong>Vt medio objetivo</strong> (AVAPS, Philips) o una <strong>ventilación alveolar objetivo</strong> con frecuencia inteligente (iVAPS, ResMed). El matiz que lo cambia todo: el ajuste es <strong>gradual (~1 cmH₂O por minuto en AVAPS), no respiración a respiración</strong> — ante un deterioro brusco responde tarde, así que <strong>no es un modo de rescate agudo</strong>. Su sitio: la hipoventilación sostenida (SHO, restrictivo) y el soporte prolongado o nocturno. Y la evidencia pincha el globo: en superobesos con fallo hipercápnico, AVAPS <strong>no superó a una presión de soporte bien titulada</strong> (Murphy, Thorax 2012). En tu área: AVAPS en el V60; «volumen asegurado» en los Vivo 50/60; iVAPS no (equipos ResMed)." },
+        { t: "PAV y NAVA: proporcionales al esfuerzo", p: "Asisten en proporción al esfuerzo instantáneo del paciente: <strong>PAV</strong> estimándolo de la mecánica, <strong>NAVA</strong> midiendo la actividad eléctrica del diafragma con un <strong>catéter esofágico (Edi)</strong>. En estudios fisiológicos <strong>mejoran la sincronía</strong> — NAVA reduce el índice de asincronías frente a la presión de soporte en VMNI (Piquilloud 2012) — pero <strong>sin beneficio demostrado en resultados duros</strong> (mortalidad, intubación). PAV+ es hoy casi exclusivo de la ventilación invasiva; NAVA exige el catéter Edi y un ventilador Servo (Getinge): <strong>ninguno disponible en el área</strong>. Para nosotros, valor docente." },
+        { t: "PRVC: la adaptación de la invasiva", p: "Presión regulada con volumen garantizado: retitula la presión <strong>respiración a respiración</strong> para clavar el Vt. Nació en la ventilación invasiva y ahí se queda casi siempre: en VMNI la <strong>fuga hace poco fiable el Vt medido</strong> sobre el que ajusta, y su uso en agudos no invasivos es residual." },
+        { t: "ASV: la servoadaptativa y su aviso de seguridad", p: "Presión de soporte <strong>anticíclica</strong>: asiste más cuando el paciente ventila menos y al revés, diseñada para la <strong>respiración periódica / apnea central</strong> (Cheyne-Stokes). No está en Urgencias del área, pero algunos pacientes la llevan <strong>domiciliaria</strong> desde las unidades de sueño — y ahí está la trampa que hay que conocer.", cajas: [{ titulo: "⚠️ Aviso SERVE-HF (obligatorio)", items: [
+          "La ASV está **contraindicada en la insuficiencia cardiaca con FEVI ≤45% y apnea central predominante**.",
+          "El ensayo SERVE-HF (Cowie, NEJM 2015) mostró **exceso de mortalidad cardiovascular** (HR 1,34) en ese grupo.",
+          "En todo cardiópata con ventilador domiciliario: **pregunta qué modo lleva** antes de un EAP/IC descompensada.",
+        ] }] },
       ],
     },
     {
@@ -139,6 +166,7 @@ const DOCENCIA_DATA = {
   glosario: [
     ["AP", "Antecedentes personales"],
     ["APACHE II", "Acute Physiology and Chronic Health Evaluation II (score de gravedad)"],
+    ["ASV", "Ventilación servoadaptativa (adaptive servo-ventilation) — contraindicada en IC con FEVI ≤45% y apnea central (SERVE-HF)"],
     ["ATS", "American Thoracic Society"],
     ["AVAPS", "Average Volume-Assured Pressure Support: presión de soporte con volumen medio asegurado"],
     ["BiPAP / binivel", "Ventilación con doble nivel de presión (IPAP + EPAP)"],
@@ -176,7 +204,9 @@ const DOCENCIA_DATA = {
     ["IPAP", "Presión positiva inspiratoria en la vía aérea"],
     ["I:E", "Relación inspiración:espiración"],
     ["IRA / IRC", "Insuficiencia respiratoria aguda / crónica"],
+    ["iVAPS", "Intelligent Volume-Assured Pressure Support: ventilación alveolar objetivo con FR inteligente (ResMed)"],
     ["LET", "Limitación del esfuerzo terapéutico"],
+    ["NAVA", "Neurally Adjusted Ventilatory Assist: asistencia proporcional a la actividad eléctrica diafragmática (catéter Edi)"],
     ["NNT / NNTB", "Número necesario a tratar (para beneficiar)"],
     ["OR", "Odds ratio"],
     ["PaCO₂ / pCO₂", "Presión parcial de CO₂ (arterial)"],
@@ -186,6 +216,7 @@ const DOCENCIA_DATA = {
     ["PC / PCV", "Ventilación controlada por presión"],
     ["PEEP / autoPEEP (PEEPi)", "Presión positiva al final de la espiración / PEEP intrínseca (aire atrapado)"],
     ["Pmus", "Presión generada por la musculatura respiratoria del paciente"],
+    ["PRVC", "Presión regulada con volumen garantizado (pressure-regulated volume control)"],
     ["PS", "Presión de soporte (IPAP − EPAP)"],
     ["PtcCO₂ / TcPCO₂", "CO₂ transcutáneo"],
     ["Rampa (rise time)", "Velocidad con la que el ventilador alcanza la IPAP"],
@@ -264,6 +295,12 @@ const DOCENCIA_DATA = {
     { tema: "gasometria", q: "Acidosis metabólica con HCO₃ 12: ¿qué pCO₂ esperas si la compensación respiratoria es adecuada (Winter)?", o: ["12", "26 ± 2", "40", "50"], c: 1, e: "Winter: pCO₂ esperada = 1,5×12 + 8 = 26 (±2). Si la pCO₂ real es claramente mayor, el pulmón no está compensando (fatiga, depresión respiratoria): vigílalo de cerca — puede necesitar soporte." },
     { tema: "gasometria", q: "pH 7,28 con pCO₂ 70 en un EPOC conocido. El pH esperado agudo sería 7,16 y el crónico 7,31. ¿Cómo lo interpretas?", o: ["Acidosis respiratoria aguda pura", "Acidosis crónica agudizada", "Acidosis metabólica", "Error de la máquina"], c: 1, e: "El pH real (7,28) queda ENTRE el esperado agudo (7,16) y el crónico (7,31): hipercapnia crónica con empeoramiento agudo — el perfil típico del EPOC agudizado que se beneficia de la VNI." },
     { tema: "volumenes", q: "Hombre de 175 cm: ¿sobre qué peso se calcula su volumen corriente objetivo?", o: ["Su peso real, sea cual sea", "El peso ideal (~70 kg por ARDSNet)", "El peso que diga la familia", "90 kg fijos"], c: 1, e: "Sobre el peso corporal predicho/ideal (ARDSNet: 50 + 0,91×(talla−152,4) ≈ 70,6 kg), porque el tamaño pulmonar depende de talla y sexo, no de la grasa corporal. 6–8 ml/kg ideal ≈ 420–565 ml." },
+    /* --- modos ventilatorios --- */
+    { tema: "modos", q: "Paciente en VNI profundamente sedado, sin esfuerzos inspiratorios, en el que se decide mantener la VNI. ¿Qué modo garantiza la ventilación?", o: ["S (espontáneo)", "CPAP", "T (programado) o PCV con FR fija", "AVAPS"], c: 2, e: "Sin estímulo respiratorio, los modos que dependen del disparo del paciente (S) no ventilan y la CPAP nunca ventila: hace falta un modo controlado por tiempo (T o PCV con FR fija), en entorno monitorizado y reevaluando la indicación de IOT." },
+    { tema: "modos", q: "¿Por qué el AVAPS NO es un modo de rescate en el deterioro agudo?", o: ["Porque no existe en VMNI", "Porque ajusta la IPAP gradualmente (~1 cmH₂O/min), no respiración a respiración", "Porque requiere catéter Edi", "Porque solo funciona con helmet"], c: 1, e: "El volumen asegurado corrige la hipoventilación SOSTENIDA subiendo la IPAP poco a poco: ante un deterioro brusco responde tarde. Además, en superobesos no superó a una presión de soporte bien titulada (Murphy, Thorax 2012). Su sitio: SHO/restrictivo y soporte prolongado o nocturno." },
+    { tema: "modos", q: "IC con FEVI del 30% y apnea central predominante. ¿Ventilación servoadaptativa (ASV)?", o: ["Es el modo de elección", "Contraindicada: SERVE-HF mostró exceso de mortalidad cardiovascular", "Solo durante el día", "Sí, si ya usaba CPAP"], c: 1, e: "SERVE-HF (Cowie, NEJM 2015): en IC con FEVI ≤45% y apnea central, la ASV aumentó la mortalidad cardiovascular (HR 1,34). En todo cardiópata con ventilador domiciliario hay que preguntar qué modo lleva." },
+    { tema: "modos", q: "La ventaja demostrada de NAVA frente a la presión de soporte en VMNI es:", o: ["Menos mortalidad", "Menos intubaciones", "Mejor sincronía paciente-ventilador en estudios fisiológicos", "Mayor barrido de CO₂"], c: 2, e: "NAVA reduce el índice de asincronías frente a la PS (Piquilloud 2012), pero sin beneficio demostrado en resultados duros. Exige catéter Edi y ventilador Servo — no disponibles en el área: valor docente." },
+    { tema: "modos", q: "EPOC en S/T con asincronía persistente pese a optimizar fugas, trigger, rampa y ciclado. ¿Qué cambio de modo es razonable valorar?", o: ["Subir la FiO₂", "PCV con Ti fijo", "ASV", "Pasar a CPAP"], c: 1, e: "El ciclado por tiempo (PCV con Ti fijo) es inmune a la fuga, que es lo que pervierte el ciclado por flujo del S/T. Disponible en el V60 y los Vivo 50/60. (Regla evolutiva D-18, provisional.) El cambio de modo nunca sustituye a la escalada si hay criterios de fracaso." },
   ],
 
   /* ---------------- BIBLIOGRAFÍA COMENTADA ---------------- */
@@ -290,6 +327,10 @@ const DOCENCIA_DATA = {
     { tipo: "Revisión", ref: "Berend K, de Vries APJ, Gans ROB. Physiological approach to assessment of acid-base disturbances. N Engl J Med 2014;371:1434-1445.", com: "La lectura sistemática de la gasometría que sigue la app (y el tema docente): pH → componente → compensación esperada → mixtos. Incluye las reglas del pH esperado y la fórmula de Winter." },
     { tipo: "Estudio", ref: "Knudson RJ et al. The maximal expiratory flow-volume curve: normal standards. Am Rev Respir Dis 1976;113:587-600.", com: "De aquí salen las ecuaciones lineales de capacidad vital teórica por sexo, talla y edad que usa el espirograma interactivo." },
     { tipo: "Guía", ref: "Quanjer PH et al. Lung volumes and forced ventilatory flows. Official Statement ERS. Eur Respir J 1993;6(Supl 16):5-40.", com: "Las ecuaciones europeas de referencia (ECSC/ERS) de los volúmenes pulmonares: el volumen residual teórico del espirograma viene de ellas." },
+    { tipo: "ECA", ref: "Murphy PB et al. Volume targeted versus pressure support non-invasive ventilation in patients with super obesity and chronic respiratory failure: a randomised controlled trial. Thorax 2012;67:727-734.", com: "El ensayo del volumen asegurado en superobesos: AVAPS no superó a una presión de soporte bien titulada. Moraleja doble: el modo no sustituye a la titulación, y su ajuste gradual (~1 cmH₂O/min) lo descarta como rescate agudo." },
+    { tipo: "ECA", ref: "Cowie MR et al. Adaptive servo-ventilation for central sleep apnea in systolic heart failure (SERVE-HF). N Engl J Med 2015;373:1095-1105.", com: "El gran aviso de seguridad de los modos «inteligentes»: la ASV aumentó la mortalidad cardiovascular (HR 1,34) en la IC con FEVI ≤45% y apnea central. Obliga a preguntar por el ventilador domiciliario de todo cardiópata." },
+    { tipo: "Estudio", ref: "Piquilloud L et al. Neurally adjusted ventilatory assist improves patient–ventilator interaction during non-invasive ventilation delivered by face mask. Intensive Care Med 2012;38:1624-1631.", com: "El estudio fisiológico de NAVA en VMNI: menos asincronías que con presión de soporte. Sin beneficio demostrado en resultados duros y con hardware (catéter Edi, Servo) que no tenemos: por eso en la app es solo docente." },
+    { tipo: "ECA", ref: "Gay PC, Hess DR, Hill NS. Noninvasive proportional assist ventilation for acute respiratory insufficiency. Am J Respir Crit Care Med 2001;164:1606-1611.", com: "La PAV no invasiva probada en agudos: tan eficaz como la PS, con mejor tolerancia inicial, pero nunca llegó a generalizarse — hoy la PAV+ vive casi solo en la ventilación invasiva." },
   ],
 };
 /* temas de las 26 preguntas originales (las nuevas ya llevan el suyo) */
