@@ -52,7 +52,7 @@ body{
 }
 
 /* ---------- pantallas ---------- */
-main{max-width:1060px;margin:0 auto;padding:26px 18px 50px}
+main{max-width:1380px;margin:0 auto;padding:26px 22px 50px}
 .pantalla{display:none;animation:aparece .25s ease}
 .pantalla.visible{display:block}
 @keyframes aparece{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -201,7 +201,17 @@ main{max-width:1060px;margin:0 auto;padding:26px 18px 50px}
 /* ---------- simulador ---------- */
 .sim-barra{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:14px}
 .sim-grupo>label{display:block;font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--texto-suave);margin-bottom:6px}
-.sim-layout{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.sim-layout{
+  display:grid;gap:16px;align-items:start;
+  grid-template-columns:minmax(0,1fr) 310px;
+  grid-template-areas:"monitor controles" "docente controles";
+}
+.sim-layout .monitor{grid-area:monitor}
+.sim-layout .controles{grid-area:controles}
+.sim-layout .docente-panel{grid-area:docente;margin-top:0}
+.docente-panel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+.docente-panel .doc-bloque{margin-bottom:0}
+.docente-panel>button{grid-column:1/-1;justify-self:start}
 .monitor{background:#0B1E24;border-color:#0B1E24;padding:0;overflow:hidden;transition:background .25s}
 .sim-cuerpo{display:flex;align-items:stretch}
 .sim-cuerpo canvas{flex:1;min-width:0}
@@ -226,7 +236,14 @@ main{max-width:1060px;margin:0 auto;padding:26px 18px 50px}
 .conmutador input:checked + span{background:var(--acento)}
 .conmutador input:checked + span::after{left:18px}
 .btn-mini{padding:6px 12px;font-size:.82rem;border-radius:9px}
-.docente-panel{margin-top:10px}
+.control.guiado label{color:var(--alerta)}
+.control.guiado input[type=range]{accent-color:var(--ambar)}
+.guia{
+  margin-top:6px;font-size:.8rem;font-weight:600;color:#8a5a1d;
+  background:var(--alerta-fondo);border:1px solid #F0DCC2;border-left:4px solid var(--ambar);
+  border-radius:9px;padding:7px 11px;animation:aparece .25s ease;
+}
+.guia.lograda{color:var(--ok);background:var(--ok-fondo);border-color:#CBE5CF;border-left-color:var(--ok)}
 .doc-bloque{
   background:#fff;border:1px solid var(--borde);border-left:4px solid var(--acento);
   border-radius:10px;padding:9px 12px;margin-bottom:8px;
@@ -328,7 +345,8 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 
 /* ---------- responsive ---------- */
 @media (max-width:860px){
-  .sim-layout{grid-template-columns:1fr}
+  .sim-layout{grid-template-columns:1fr;grid-template-areas:"monitor" "controles" "docente"}
+  .docente-panel{grid-template-columns:1fr}
   .nav-desktop{display:none}
   .brand p{display:none}
   .brand h1{font-size:1.05rem;white-space:nowrap}

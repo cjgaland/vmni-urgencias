@@ -10,12 +10,10 @@ const Sim = (() => {
   const cv = document.getElementById("ondas");
   const ctx = cv.getContext("2d");
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const W = 720, H = 430;
-  cv.width = W * dpr; cv.height = H * dpr;
-  ctx.scale(dpr, dpr);
-  const PXS = 76;            // píxeles por segundo
-  const X0 = 58, X1 = W - 34; // márgenes del área de trazado (escala izq., unidades dcha.)
-  const HB = H - 26;          // reserva inferior para el eje de tiempo
+  // dimensiones adaptables: el lienzo ocupa el espacio disponible (ajustarLienzo)
+  let W = 720, H = 430, X1 = W - 34, HB = H - 26;
+  const PXS = 76;  // píxeles por segundo
+  const X0 = 58;   // margen izquierdo (escala)
 
   /* ---------- vistas (temas) ---------- */
   const TEMAS = {
@@ -174,7 +172,7 @@ const Sim = (() => {
     const T = 60 / Math.max(frResp, 6);
     const PS = ipap - epap;
     const tiMax = asinc === "tardio" ? 2.3 : 1.5;
-    const cicl = (asinc === "tardio" ? 5 : ciclado) / 100;
+    const cicl = ciclado / 100;
     const Palv = (V * 1000) / P.C;
     const pmus = pmusEn(t);
     tFase += dt;
@@ -205,7 +203,7 @@ const Sim = (() => {
         if (asinc === "tardio" && tFase >= tiMax && t - ultimaAnot > 2.5) anotar(0, "Ciclado tardío: sobrepresión y espiración activa");
         fase = "exp"; tFase = 0;
         // doble disparo: el esfuerzo continúa tras el ciclado
-        if (asinc === "doble" && !dobleHecho && pmus > 1.5 && Math.random() < 0.8) {
+        if (asinc === "doble" && !dobleHecho && pmus > 1.5 && tiReal < 1.05 && Math.random() < 0.8) {
           dobleHecho = true;
           iniciarInsp(t, true); fase = "insp";
           if (t - ultimaAnot > 2.5) anotar(0, "Doble disparo: dos ciclos sin espiración");
@@ -326,7 +324,7 @@ const Sim = (() => {
   function datosCabecera() {
     const PS = ipap - epap;
     document.getElementById("simDatos").textContent =
-      `IPAP ${ipap} · EPAP ${epap} · PS ${PS} · Ciclado ${asinc === "tardio" ? 5 : ciclado}%`;
+      `IPAP ${ipap} · EPAP ${epap} · PS ${PS} · Ciclado ${ciclado}%`;
   }
 
   /* ---------- textos docentes ---------- */
@@ -360,11 +358,64 @@ const Sim = (() => {
     }
   }
 
+  /* ---------- guías interactivas: el deslizador que corrige la asincronía ---------- */
+  const GUIAS = {
+    inefectivo: {
+      control: "rEpap", preset: { id: "rEpap", v: 4 },
+      texto: "💡 Sube la <strong>EPAP hasta 8</strong> cmH₂O y mira cómo desaparecen las muescas",
+      ok: () => epap >= 8,
+      logrado: "✅ EPAP 8: los esfuerzos vuelven a disparar — has compensado la autoPEEP.",
+    },
+    tardio: {
+      control: "rCiclado", preset: { id: "rCiclado", v: 10 },
+      texto: "💡 Sube el <strong>ciclado a ≥35%</strong> y el ventilador cortará cuando el paciente quiere espirar",
+      ok: () => ciclado >= 35,
+      logrado: "✅ Ciclado ≥35%: fin de la sobrepresión — cicla a tiempo.",
+    },
+    doble: {
+      control: "rCiclado", preset: { id: "rCiclado", v: 45 },
+      texto: "💡 Baja el <strong>ciclado a ≤15%</strong>: alargas la insuflación y el esfuerzo deja de «sobrar»",
+      ok: () => ciclado <= 15,
+      logrado: "✅ Ti más largo que el esfuerzo: se acabó el doble disparo.",
+    },
+  };
+  function aplicarPreset(a) {
+    const g = GUIAS[a];
+    if (!g || !g.preset) return;
+    const r = document.getElementById(g.preset.id);
+    r.value = g.preset.v;
+    if (g.preset.id === "rEpap") epap = Math.min(g.preset.v, ipap - 2);
+    if (g.preset.id === "rCiclado") ciclado = g.preset.v;
+    document.getElementById(g.preset.id.replace("r", "o")).textContent = r.value;
+  }
+  function aplicarGuia() {
+    document.querySelectorAll(".control").forEach(c => c.classList.remove("guiado"));
+    document.querySelectorAll(".guia").forEach(g => g.remove());
+    const g = GUIAS[asinc];
+    if (!g || !docente || (examen && !revelado)) return;
+    const ctrl = document.getElementById(g.control).closest(".control");
+    ctrl.classList.add("guiado");
+    const div = document.createElement("div");
+    div.className = "guia";
+    ctrl.appendChild(div);
+    refrescarGuia();
+  }
+  function refrescarGuia() {
+    const g = GUIAS[asinc]; if (!g) return;
+    const div = document.querySelector(".guia"); if (!div) return;
+    const ok = g.ok();
+    div.innerHTML = ok ? g.logrado : g.texto;
+    div.classList.toggle("lograda", ok);
+  }
+
   /* ---------- API y controles ---------- */
   function setAsincronia(a) {
     asinc = a; examen = false; revelado = false;
     fugaMedia = 0;
+    aplicarPreset(a);
     pintarDocente();
+    aplicarGuia();
+    datosCabecera();
   }
 
   function setTema(tm) {
@@ -385,15 +436,38 @@ const Sim = (() => {
     const opciones = ["fuga", "inefectivo", "autociclado", "doble", "tardio"];
     asinc = opciones[Math.floor(Math.random() * opciones.length)];
     examen = true; revelado = false; fugaMedia = 0;
+    aplicarPreset(asinc);
     document.querySelectorAll(".asincronias .chip").forEach(c => c.classList.remove("sel"));
     pintarDocente();
+    aplicarGuia();
   }
-  function revelar() { revelado = true; pintarDocente(); }
+  function revelar() { revelado = true; pintarDocente(); aplicarGuia(); }
 
+  function ajustarLienzo() {
+    const cont = cv.parentElement; // .sim-cuerpo
+    const anchoNum = document.getElementById("numericos").offsetWidth || 112;
+    W = Math.max(600, Math.min(1500, (cont.clientWidth || 760) - anchoNum));
+    H = Math.max(360, Math.min(540, window.innerHeight - 475)); // deja sitio a las fichas docentes sin scroll
+    X1 = W - 34; HB = H - 26;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    calcBandas(); x = X0; prev = null; fondo(); pintarNumericos();
+    const mon = document.getElementById("monitor");
+    mon.style.background = TEMAS[tema].panel; mon.style.borderColor = TEMAS[tema].panel;
+  }
+  let tResize;
+  window.addEventListener("resize", () => {
+    if (!activo) return;
+    clearTimeout(tResize); tResize = setTimeout(ajustarLienzo, 200);
+  });
+
+  let iniciado = false;
   function activar() {
     if (activo) return;
     activo = true; bucle.t0 = null;
-    if (!bandas.length) { setTema(tema); programarEsfuerzo(0); datosCabecera(); pintarDocente(); }
+    ajustarLienzo();
+    if (!iniciado) { iniciado = true; setTema(tema); programarEsfuerzo(0); datosCabecera(); pintarDocente(); aplicarGuia(); }
     raf = requestAnimationFrame(bucle);
   }
   function pausar() { activo = false; if (raf) cancelAnimationFrame(raf); }
@@ -402,7 +476,7 @@ const Sim = (() => {
   const liga = (idR, idO, fn, fmtOut) => {
     const r = document.getElementById(idR), o = document.getElementById(idO);
     if (!r) return;
-    r.addEventListener("input", () => { fn(+r.value); o.textContent = fmtOut ? fmtOut(+r.value) : r.value; datosCabecera(); });
+    r.addEventListener("input", () => { fn(+r.value); o.textContent = fmtOut ? fmtOut(+r.value) : r.value; datosCabecera(); refrescarGuia(); });
   };
   liga("rIpap", "oIpap", v => { ipap = v; if (epap >= ipap - 2) { epap = ipap - 2; document.getElementById("rEpap").value = epap; document.getElementById("oEpap").textContent = epap; } });
   liga("rEpap", "oEpap", v => { epap = Math.min(v, ipap - 2); });
@@ -422,7 +496,7 @@ const Sim = (() => {
       c.classList.add("sel"); setPerfil(c.dataset.v);
     }));
   const tgl = document.getElementById("tglDocente");
-  if (tgl) tgl.addEventListener("change", () => { docente = tgl.checked; pintarDocente(); });
+  if (tgl) tgl.addEventListener("change", () => { docente = tgl.checked; pintarDocente(); aplicarGuia(); });
 
   return { activar, pausar, setAsincronia, examenNuevo, revelar, otroExamen: examenNuevo };
 })();
