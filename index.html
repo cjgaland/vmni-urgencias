@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>VMNI Urgencias</title>
+<meta name="description" content="Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva en Urgencias">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" onclick="irA('inicio')">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    <div>
+      <h1>VMNI <span>Urgencias</span></h1>
+      <p>Ventilación Mecánica No Invasiva</p>
+    </div>
+  </div>
+  <nav class="nav-desktop">
+    <button data-s="inicio" class="activo" onclick="irA('inicio')">Inicio</button>
+    <button data-s="evaluacion" onclick="irA('evaluacion')">Evaluación</button>
+    <button data-s="simulador" onclick="irA('simulador')">Simulador</button>
+    <button data-s="problemas" onclick="irA('problemas')">Problemas</button>
+    <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
+  </nav>
+  <span class="badge-boceto">BOCETO v0.2</span>
+</header>
+
+<main>
+
+<!-- ===================== INICIO ===================== -->
+<section id="inicio" class="pantalla visible">
+  <div class="hero">
+    <h2>Del fallo respiratorio agudo<br>a la ventilación bien ajustada</h2>
+    <p>Diagnóstico guiado, parámetros iniciales con evidencia, seguimiento de la respuesta y corrección de problemas — en la cabecera del paciente.</p>
+    <div class="hero-acciones">
+      <button class="btn-primario grande" onclick="irA('evaluacion')">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Evaluación completa
+      </button>
+      <div class="rapidos">
+        <button class="btn-rapido eap" onclick="inicioRapido('eap')">⚡ Inicio rápido · <strong>EAP</strong></button>
+        <button class="btn-rapido epoc" onclick="inicioRapido('epoc')">⚡ Inicio rápido · <strong>EPOC hipercápnico</strong></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-modulos">
+    <article class="card modulo" onclick="irA('simulador')">
+      <div class="icono sim">〰️</div>
+      <h3>Simulador de gráficas</h3>
+      <p>Ondas de presión, flujo y volumen en tiempo real. Mueve los parámetros y observa el efecto.</p>
+    </article>
+    <article class="card modulo" onclick="irA('problemas')">
+      <div class="icono prob">🛠️</div>
+      <h3>Corrección de problemas</h3>
+      <p>Fugas y asincronías: reconócelas en las curvas y corrige el parámetro adecuado.</p>
+    </article>
+    <article class="card modulo" onclick="irA('seguimiento')">
+      <div class="icono seg">📈</div>
+      <h3>Respuesta al tratamiento</h3>
+      <p>Reevaluación a la hora: pH, FR, PaFi y HACOR. Criterios de fracaso y escalada.</p>
+    </article>
+    <article class="card modulo" onclick="irA('docencia')">
+      <div class="icono doc">🎓</div>
+      <h3>Docencia</h3>
+      <p>Fundamentos, modos, interfaces y evidencia — con rigor y al grano.</p>
+    </article>
+  </div>
+
+  <div class="aviso-legal">⚠️ Utilidad de apoyo a la decisión clínica. No sustituye el criterio del profesional sanitario.</div>
+</section>
+
+<!-- ===================== EVALUACIÓN (wizard) ===================== -->
+<section id="evaluacion" class="pantalla">
+  <div class="cabecera-seccion">
+    <h2>Evaluación del fallo respiratorio</h2>
+    <div class="pasos">
+      <span class="paso activo" data-p="1">1<label>Antecedentes</label></span>
+      <span class="paso" data-p="2">2<label>Clínica</label></span>
+      <span class="paso" data-p="3">3<label>Gasometría</label></span>
+      <span class="paso" data-p="4">4<label>Resultado</label></span>
+    </div>
+  </div>
+
+  <div class="card panel-paso" id="paso1">
+    <h3>Antecedentes personales</h3>
+    <p class="sub">Patología respiratoria <em>(selección múltiple)</em></p>
+    <div class="chips">
+      <button class="chip">EPOC</button><button class="chip">Sospecha EPOC</button><button class="chip">Asma</button>
+      <button class="chip">SAHOS</button><button class="chip">SHO</button><button class="chip">T. restrictivo</button>
+      <button class="chip">Neuromuscular</button><button class="chip">Bronquiectasias</button><button class="chip">Otros</button>
+    </div>
+    <p class="sub">Otros antecedentes</p>
+    <div class="chips">
+      <button class="chip">Insuf. cardiaca</button><button class="chip">HTA</button><button class="chip">Diabetes</button>
+      <button class="chip">ERC</button><button class="chip">Inmunodepresión</button><button class="chip">Enf. grave otra</button>
+    </div>
+    <p class="sub">Otras circunstancias</p>
+    <div class="chips">
+      <button class="chip">O₂ domiciliario</button><button class="chip">VMNI/CPAP domiciliaria</button><button class="chip alerta">Vida limitada / LET</button>
+    </div>
+    <div class="botonera"><span></span><button class="btn-primario" onclick="pasoWizard(2)">Siguiente →</button></div>
+  </div>
+
+  <div class="card panel-paso oculto" id="paso2">
+    <h3>Situación clínica</h3>
+    <div class="fila-campos">
+      <div class="campo"><label>FR (rpm)</label><input type="number" value="32"></div>
+      <div class="campo"><label>FC (lpm)</label><input type="number" value="112"></div>
+      <div class="campo"><label>TAS (mmHg)</label><input type="number" value="148"></div>
+      <div class="campo"><label>GCS</label><input type="number" value="14"></div>
+      <div class="campo"><label>SpO₂ (%)</label><input type="number" value="86"></div>
+    </div>
+    <p class="sub">Signos de trabajo respiratorio</p>
+    <div class="chips">
+      <button class="chip sel">Musculatura accesoria</button><button class="chip">Respiración abdominal</button>
+      <button class="chip sel">↑ Trabajo evidente</button><button class="chip">Bajo nivel de consciencia</button>
+    </div>
+    <div class="botonera"><button class="btn-sec" onclick="pasoWizard(1)">← Atrás</button><button class="btn-primario" onclick="pasoWizard(3)">Siguiente →</button></div>
+  </div>
+
+  <div class="card panel-paso oculto" id="paso3">
+    <h3>Gasometría y oxigenación</h3>
+    <div class="selector-av">
+      <button class="sel-btn activo">Arterial</button><button class="sel-btn">Venosa</button>
+    </div>
+    <div class="fila-campos">
+      <div class="campo"><label>pH</label><input type="number" step="0.01" value="7.27"></div>
+      <div class="campo"><label>pCO₂ (mmHg)</label><input type="number" value="68"></div>
+      <div class="campo"><label>pO₂ (mmHg)</label><input type="number" value="54"></div>
+      <div class="campo"><label>HCO₃ (mEq/L)</label><input type="number" step="0.1" value="31.5"></div>
+      <div class="campo"><label>Láctico (mg/dL)</label><input type="number" value="14"></div>
+    </div>
+    <p class="sub">FiO₂ administrada</p>
+    <div class="fila-campos">
+      <div class="campo ancho">
+        <label>Dispositivo</label>
+        <select><option>Gafas nasales</option><option>Ventimask</option><option>Reservorio</option><option>Aire ambiente</option><option>Respirador (Vivo / V60)</option></select>
+      </div>
+      <div class="campo"><label>Flujo (L/min)</label><input type="number" value="3"></div>
+      <div class="campo calculado"><label>FiO₂ estimada</label><output>0,33</output></div>
+    </div>
+    <div class="botonera"><button class="btn-sec" onclick="pasoWizard(2)">← Atrás</button><button class="btn-primario" onclick="pasoWizard(4)">Calcular →</button></div>
+  </div>
+
+  <div class="panel-paso oculto" id="paso4">
+    <div class="card resultado-principal hipercapnico">
+      <p class="etiqueta">Clasificación</p>
+      <h3>Fallo hipercápnico — acidosis crónica agudizada <span class="ref">C2</span></h3>
+      <p class="explica">pH 7,27 con pCO₂ 68 y HCO₃ 31,5 → pH esperado agudo 7,18, crónico 7,32: patrón de <strong>EPOC crónico agudizado</strong>. Láctico normal: sin componente metabólico.</p>
+      <div class="chips-datos">
+        <span class="dato">PaFi <strong>164</strong></span>
+        <span class="dato">SaFi <strong>261</strong></span>
+        <span class="dato">pH esp. <strong>7,32</strong></span>
+        <span class="dato ok">Láctico <strong>normal</strong></span>
+      </div>
+    </div>
+
+    <div class="card recomendacion">
+      <p class="etiqueta acc">Recomendación</p>
+      <h3>Iniciar VNI binivel <small>(fuerte, evidencia alta — ERS/ATS 2017 · ATS 2026 · BTS 2016)</small></h3>
+      <div class="parametros">
+        <div class="param"><label>Modo</label><strong>S/T</strong></div>
+        <div class="param"><label>EPAP</label><strong>5</strong><small>cmH₂O</small></div>
+        <div class="param"><label>IPAP</label><strong>12→18</strong><small>cmH₂O</small></div>
+        <div class="param"><label>FR resp.</label><strong>14</strong><small>rpm</small></div>
+        <div class="param"><label>Ti</label><strong>0,8–1,2</strong><small>s</small></div>
+        <div class="param"><label>SpO₂ obj.</label><strong>88–92</strong><small>%</small></div>
+      </div>
+      <ul class="claves">
+        <li>Subir IPAP de 2–3 en 2–3 cmH₂O cada 10–30 min hasta Vt 6–8 ml/kg ideal y FR &lt;25.</li>
+        <li>Gasometría de control <strong>a la hora</strong>. pH &lt;7,25 persistente → entorno con IOT inmediata.</li>
+        <li>Mascarilla oronasal + protección del puente nasal desde el inicio.</li>
+      </ul>
+      <div class="botonera">
+        <button class="btn-sec" onclick="irA('simulador')">Ver en el simulador</button>
+        <button class="btn-primario" onclick="irA('seguimiento')">Iniciar seguimiento ⏱</button>
+      </div>
+    </div>
+    <div class="botonera suelta"><button class="btn-sec" onclick="pasoWizard(3)">← Atrás</button></div>
+  </div>
+</section>
+
+<!-- ===================== SIMULADOR ===================== -->
+<section id="simulador" class="pantalla">
+  <div class="cabecera-seccion">
+    <h2>Simulador de gráficas</h2>
+    <p class="sub-seccion">Ondas en tiempo real como en el respirador. Ajusta los parámetros o provoca una asincronía.</p>
+  </div>
+
+  <div class="sim-layout">
+    <div class="card monitor">
+      <div class="monitor-head">
+        <span class="led"></span> VMNI · Modo S/T
+        <span class="sim-datos" id="simDatos">PS 10 · I:E 1:2,4 · Vte ~480 ml</span>
+      </div>
+      <canvas id="ondas" width="860" height="430"></canvas>
+    </div>
+
+    <div class="card controles">
+      <h3>Parámetros</h3>
+      <div class="control"><label>IPAP <output id="oIpap">15</output> cmH₂O</label><input type="range" id="rIpap" min="8" max="30" value="15"></div>
+      <div class="control"><label>EPAP <output id="oEpap">5</output> cmH₂O</label><input type="range" id="rEpap" min="4" max="12" value="5"></div>
+      <div class="control"><label>FR <output id="oFr">18</output> rpm</label><input type="range" id="rFr" min="10" max="32" value="18"></div>
+      <div class="control"><label>Rampa <output id="oRampa">media</output></label><input type="range" id="rRampa" min="1" max="3" value="2"></div>
+      <h3>Asincronías</h3>
+      <div class="chips asincronias">
+        <button class="chip sel" data-a="normal">Normal</button>
+        <button class="chip" data-a="fuga">Fuga</button>
+        <button class="chip" data-a="inefectivo">Esf. inefectivo</button>
+        <button class="chip" data-a="autociclado">Autociclado</button>
+        <button class="chip" data-a="doble">Doble disparo</button>
+        <button class="chip" data-a="tardio">Ciclado tardío</button>
+      </div>
+      <div class="pista" id="pista">Curvas normales: presión en meseta, flujo desacelerado, volumen estable ciclo a ciclo.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SEGUIMIENTO ===================== -->
+<section id="seguimiento" class="pantalla">
+  <div class="cabecera-seccion"><h2>Respuesta al tratamiento</h2>
+  <p class="sub-seccion">Reevaluación a la hora de VNI — demo con datos de ejemplo.</p></div>
+  <div class="grid-seguimiento">
+    <div class="card kpi mejora"><label>pH</label><strong>7,27 → 7,31</strong><span>↗ mejorando</span></div>
+    <div class="card kpi mejora"><label>FR</label><strong>32 → 24</strong><span>↗ mejorando</span></div>
+    <div class="card kpi neutro"><label>pCO₂</label><strong>68 → 61</strong><span>→ en descenso</span></div>
+    <div class="card kpi mejora"><label>HACOR</label><strong>7 → 4</strong><span>≤5: bajo riesgo de fracaso</span></div>
+  </div>
+  <div class="card veredicto ok">
+    <h3>✅ Respuesta favorable</h3>
+    <p>↓FR y mejoría del pH en la primera hora predicen éxito. Continuar VNI, nueva gasometría a las 4–6 h, vigilar fugas y sincronía.</p>
+  </div>
+  <div class="card veredicto alerta-suave">
+    <h3>Si no mejorara…</h3>
+    <p>2 criterios menores en 1 h (FR &gt;35 · pH &lt;7,30 o ↓ · pCO₂ +20% · PaFi &lt;150 · ↑encefalopatía) → <strong>escalada IOT/UCI</strong>. Antes: descartar neumotórax, fugas e IPAP insuficiente.</p>
+  </div>
+</section>
+
+<!-- ===================== PROBLEMAS ===================== -->
+<section id="problemas" class="pantalla">
+  <div class="cabecera-seccion"><h2>Corrección de problemas</h2>
+  <p class="sub-seccion">La fuga excesiva es la causa más frecuente de asincronía: corrígela antes de tocar parámetros.</p></div>
+  <div class="lista-problemas">
+    <article class="card problema" onclick="verAsincronia('fuga')"><h3>Fugas</h3><p>Trigger y ciclado erráticos, Vt sobrestimado.</p><span class="fix">→ Reajustar interfaz, parches, mínima presión eficaz</span></article>
+    <article class="card problema" onclick="verAsincronia('inefectivo')"><h3>Esfuerzo inefectivo</h3><p>Muesca en el flujo sin ciclo del ventilador.</p><span class="fix">→ Subir EPAP (autoPEEP), sensibilizar trigger</span></article>
+    <article class="card problema" onclick="verAsincronia('autociclado')"><h3>Autociclado</h3><p>Ciclos sin deflexión negativa previa.</p><span class="fix">→ Reducir fuga, bajar sensibilidad del trigger</span></article>
+    <article class="card problema" onclick="verAsincronia('doble')"><h3>Doble disparo</h3><p>Dos ciclos seguidos sin espiración.</p><span class="fix">→ Alargar Ti, revisar PS</span></article>
+    <article class="card problema" onclick="verAsincronia('tardio')"><h3>Ciclado tardío</h3><p>Pico de presión al final, espiración activa.</p><span class="fix">→ Subir % de ciclado (&gt;25–50%), bajar PS</span></article>
+    <article class="card problema"><h3>Reinhalación de CO₂</h3><p>pCO₂ que no baja pese a buena mecánica.</p><span class="fix">→ EPAP ≥4–5, válvula antirreinhalación</span></article>
+  </div>
+</section>
+
+<!-- ===================== DOCENCIA ===================== -->
+<section id="docencia" class="pantalla">
+  <div class="cabecera-seccion"><h2>Docencia</h2>
+  <p class="sub-seccion">Píldoras con rigor: de los fundamentos a la evidencia.</p></div>
+  <div class="grid-modulos">
+    <article class="card modulo"><div class="icono doc">🫁</div><h3>Fundamentos de la VMNI</h3><p>CPAP vs binivel, presión de soporte, autoPEEP y cómo descarga la musculatura.</p></article>
+    <article class="card modulo"><div class="icono doc">🎭</div><h3>Interfaces</h3><p>Oronasal, facial total, helmet: elección, fugas y protección cutánea.</p></article>
+    <article class="card modulo"><div class="icono doc">⚙️</div><h3>Modos y respiradores</h3><p>S/T, PCV, AVAPS. Vivo 50/60, V60, VITAE 40 y AirVo del área.</p></article>
+    <article class="card modulo"><div class="icono doc">📚</div><h3>La evidencia en 1 minuto</h3><p>NNT 5 para evitar una intubación en EPOC. Las cifras que conviene recordar.</p></article>
+  </div>
+</section>
+
+</main>
+
+<nav class="nav-movil">
+  <button data-s="inicio" class="activo" onclick="irA('inicio')"><span>🏠</span>Inicio</button>
+  <button data-s="evaluacion" onclick="irA('evaluacion')"><span>🩺</span>Evaluar</button>
+  <button data-s="simulador" onclick="irA('simulador')"><span>〰️</span>Simular</button>
+  <button data-s="problemas" onclick="irA('problemas')"><span>🛠️</span>Problemas</button>
+  <button data-s="docencia" onclick="irA('docencia')"><span>🎓</span>Docencia</button>
+</nav>
+
+<footer class="pie">
+  Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — v0.2 boceto · 2026
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
