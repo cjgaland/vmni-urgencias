@@ -5,7 +5,7 @@ const CAMBIOS_AYUDA = [
   {
     version: "v1.2",
     titulo: "Fisiología respiratoria, espirograma animado y alarmas",
-    texto: "La **Docencia** crece con cuatro temas nuevos de fisiología (**volúmenes y capacidades** con un **espirograma animado interactivo**, flujos y curva flujo-volumen, mecánica con la constante de tiempo, e intercambio gaseoso) y **navegación entre temas** con flechas ← → sin volver al índice. El **simulador** estrena **alarmas**: cuando la FR, el volumen corriente o la fuga se salen de rango, el parámetro parpadea en **rojo** y suena un **beep** (silenciable con el botón 🔔 del monitor). La bibliografía incorpora las guías de tratamiento farmacológico (GesEPOC, GINA, GEMA).",
+    texto: "La **Docencia** crece con cuatro temas nuevos de fisiología (**volúmenes y capacidades** con un **espirograma animado interactivo**, flujos y curva flujo-volumen, mecánica con la constante de tiempo, e intercambio gaseoso) y **navegación entre temas** con flechas ← → sin volver al índice. El **simulador** estrena **alarmas**: cuando la FR, el volumen corriente o la fuga se salen de rango, el parámetro parpadea en **rojo** y suena un **beep** (silenciable con el botón 🔔 del monitor). Llegan además las **🧮 Herramientas rápidas** (PaFi/SaFi, peso ideal y Vt, pH esperado con interpretación, HACOR y FiO₂ estimada, desde la portada) y el **🌙 modo oscuro «de guardia»** (botón de la cabecera; la app recuerda tu elección). La bibliografía incorpora las guías de tratamiento farmacológico (GesEPOC, GINA, GEMA).",
   },
   {
     version: "v1.1",

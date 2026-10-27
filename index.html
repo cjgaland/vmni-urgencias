@@ -6,6 +6,7 @@
 <title>VMNI Urgencias</title>
 <meta name="description" content="Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva en Urgencias">
 <meta name="theme-color" content="#0F4C5C">
+<script>try{if(localStorage.getItem("vmni-tema")==="oscuro")document.documentElement.dataset.tema="oscuro"}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="iconos/icono-192.png">
 <link rel="apple-touch-icon" href="iconos/icono-180.png">
@@ -32,6 +33,7 @@
     <button data-s="docencia" onclick="irA('docencia')">Docencia</button>
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
+  <button id="btnTema" class="btn-tema" title="Modo oscuro / claro">🌙</button>
   <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v1.2 BETA</span>
 </header>
 
@@ -74,6 +76,11 @@
       <div class="icono doc">🎓</div>
       <h3>Docencia</h3>
       <p>Fundamentos, modos, interfaces y evidencia — con rigor y al grano.</p>
+    </article>
+    <article class="card modulo" onclick="irA('herramientas')">
+      <div class="icono calcico">🧮</div>
+      <h3>Herramientas rápidas</h3>
+      <p>PaFi/SaFi, peso ideal y Vt, pH esperado, HACOR y FiO₂ — sin hacer una evaluación completa.</p>
     </article>
   </div>
 
@@ -306,6 +313,73 @@
   </div>
   <div id="docQuiz" class="oculto"></div>
   <div id="docBiblio" class="oculto"></div>
+</section>
+
+<!-- ===================== HERRAMIENTAS RÁPIDAS ===================== -->
+<section id="herramientas" class="pantalla">
+  <div class="cabecera-seccion"><h2>🧮 Herramientas rápidas</h2>
+  <p class="sub-seccion">Calculadoras sueltas, al momento. Los resultados se actualizan mientras escribes.</p></div>
+  <div class="grid-calcs">
+
+    <div class="card calc">
+      <h3>🫁 PaFi / SaFi</h3>
+      <div class="fila-campos">
+        <div class="campo"><label>pO₂ (mmHg)</label><input type="number" id="cPo2" placeholder="—"></div>
+        <div class="campo"><label>SpO₂ (%)</label><input type="number" id="cSpo2" placeholder="—"></div>
+        <div class="campo"><label>FiO₂</label><input type="number" step="0.05" id="cFio2" value="0.21"></div>
+      </div>
+      <div class="calc-res" id="rOxi">Introduce pO₂ o SpO₂ y la FiO₂.</div>
+    </div>
+
+    <div class="card calc">
+      <h3>⚖️ Peso ideal y Vt objetivo</h3>
+      <div class="fila-campos">
+        <div class="campo"><label>Sexo</label><select id="cSexo"><option value="v">Varón</option><option value="m">Mujer</option></select></div>
+        <div class="campo"><label>Talla (cm)</label><input type="number" id="cTalla" placeholder="170"></div>
+      </div>
+      <div class="calc-res" id="rPeso">Introduce la talla.</div>
+    </div>
+
+    <div class="card calc">
+      <h3>🧪 pH esperado y compensación</h3>
+      <div class="fila-campos">
+        <div class="campo"><label>pCO₂ (mmHg)</label><input type="number" id="cPco2" placeholder="—"></div>
+        <div class="campo"><label>HCO₃ (mEq/L)</label><input type="number" step="0.1" id="cHco3" placeholder="—"></div>
+        <div class="campo"><label>pH real (opc.)</label><input type="number" step="0.01" id="cPh" placeholder="—"></div>
+      </div>
+      <div class="calc-res" id="rPh">Introduce la pCO₂.</div>
+    </div>
+
+    <div class="card calc">
+      <h3>📊 HACOR</h3>
+      <div class="fila-campos">
+        <div class="campo"><label>FC</label><input type="number" id="hFc" placeholder="—"></div>
+        <div class="campo"><label>pH</label><input type="number" step="0.01" id="hPh" placeholder="—"></div>
+        <div class="campo"><label>GCS</label><input type="number" id="hGcs" placeholder="15"></div>
+        <div class="campo"><label>PaFi</label><input type="number" id="hPafi" placeholder="—"></div>
+        <div class="campo"><label>FR</label><input type="number" id="hFr" placeholder="—"></div>
+      </div>
+      <div class="calc-res" id="rHacor">Rellena los cinco campos (a 1–2 h de VNI).</div>
+    </div>
+
+    <div class="card calc">
+      <h3>💨 FiO₂ estimada</h3>
+      <div class="fila-campos">
+        <div class="campo ancho"><label>Dispositivo</label>
+          <select id="cDisp">
+            <option value="aire">Aire ambiente</option>
+            <option value="gafas" selected>Gafas nasales</option>
+            <option value="vk">Ventimask</option>
+            <option value="reservorio">Reservorio</option>
+            <option value="vivo">Vivo (O₂ por caudalímetro)</option>
+          </select>
+        </div>
+        <div class="campo"><label id="cEtiqueta">Flujo (L/min)</label><input type="number" id="cFlujo" value="2"></div>
+      </div>
+      <div class="calc-res" id="rFio2">—</div>
+    </div>
+
+  </div>
 </section>
 
 <!-- ===================== AYUDA ===================== -->

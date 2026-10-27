@@ -469,6 +469,81 @@ function pintarFaq() {
 
 pintarManual(); pintarVersiones(); pintarFaq();
 
+/* ==================== HERRAMIENTAS RÁPIDAS ==================== */
+function calcOxi() {
+  const po2 = num("cPo2"), spo2 = num("cSpo2"), fio2 = num("cFio2");
+  const r = document.getElementById("rOxi");
+  if (!fio2 || fio2 < 0.21 || (!po2 && !spo2)) { r.innerHTML = "Introduce pO₂ o SpO₂ y la FiO₂ (≥0,21)."; return; }
+  const partes = [];
+  if (po2) partes.push(`<strong>PaFi ${Math.round(po2 / fio2)}</strong>`);
+  if (spo2 !== undefined) {
+    if (spo2 > 97) partes.push(`SaFi no válida (SpO₂ >97%: baja la FiO₂ y reevalúa)`);
+    else {
+      const safi = Math.round(spo2 / fio2);
+      partes.push(`<strong>SaFi ${safi}</strong> ≈ PaFi ${Math.round((safi - 64) / 0.84)}`);
+    }
+  }
+  partes.push(`<small>Bandas: >300 normal · 200–300 leve · 100–200 moderada (<150 avisa a UCI) · <100 grave</small>`);
+  r.innerHTML = partes.join(" · ");
+}
+function calcPeso() {
+  const talla = num("cTalla");
+  const r = document.getElementById("rPeso");
+  if (!talla || talla < 120) { r.textContent = "Introduce la talla (cm)."; return; }
+  const base = document.getElementById("cSexo").value === "v" ? 50 : 45.5;
+  const pi = base + 0.91 * (talla - 152.4);
+  r.innerHTML = `<strong>Peso ideal ≈ ${pi.toFixed(1).replace(".", ",")} kg</strong> · Vt objetivo (6–8 ml/kg): <strong>${Math.round(pi * 6)}–${Math.round(pi * 8)} ml</strong>`;
+}
+function calcPh() {
+  const pco2 = num("cPco2"), hco3 = num("cHco3"), ph = num("cPh");
+  const r = document.getElementById("rPh");
+  if (!pco2) { r.textContent = "Introduce la pCO₂."; return; }
+  const agudo = 7.4 - 0.008 * (pco2 - 40), cronico = 7.4 - 0.003 * (pco2 - 40);
+  const partes = [`pH esperado — agudo <strong>${agudo.toFixed(2).replace(".", ",")}</strong> · crónico <strong>${cronico.toFixed(2).replace(".", ",")}</strong>`];
+  if (hco3 !== undefined && hco3 < 22) partes.push(`Winter (acidosis metabólica): pCO₂ esperada <strong>${Math.round(1.5 * hco3 + 8)} ±2</strong>`);
+  if (ph !== undefined && pco2 > 45) {
+    if (ph >= cronico - 0.02) partes.push("Patrón: <strong>crónico compensado</strong>");
+    else if (ph <= agudo - 0.03) partes.push("Patrón: <strong>componente metabólico añadido</strong> (C3: busca hipoperfusión)");
+    else if (ph <= agudo + 0.02) partes.push("Patrón: <strong>agudo puro</strong> (C1)");
+    else partes.push("Patrón: <strong>crónico agudizado</strong> (C2)");
+  }
+  r.innerHTML = partes.join("<br>");
+}
+function calcHacor() {
+  const d = { fc: num("hFc"), ph: num("hPh"), gcs: num("hGcs"), pafi: num("hPafi"), fr: num("hFr") };
+  const r = document.getElementById("rHacor");
+  if (!REGLAS || Object.values(d).some(v => v === undefined)) { r.textContent = "Rellena los cinco campos (a 1–2 h de VNI)."; return; }
+  const h = Motor.hacor(d);
+  r.innerHTML = `<strong>HACOR ${h.total}</strong> — ${h.altoRiesgo
+    ? "⚠ >5: riesgo ALTO de fracaso (~78%): reevaluación muy precoz y avisar a UCI"
+    : "≤5: riesgo bajo de fracaso (~18%): continuar y reevaluar"}`;
+}
+function calcFio2() {
+  if (!REGLAS) return;
+  const d = document.getElementById("cDisp").value;
+  document.getElementById("cEtiqueta").textContent = ETIQUETAS_FLUJO[d] === "—" ? "Flujo" : ETIQUETAS_FLUJO[d];
+  document.getElementById("cFlujo").disabled = d === "aire";
+  const res = Motor.fio2Estimada(d, num("cFlujo"));
+  document.getElementById("rFio2").innerHTML = `<strong>FiO₂ ≈ ${fmt(res.fio2)}</strong>${res.aviso ? `<br><small>${res.aviso}</small>` : ""}`;
+}
+const seccionHerr = document.getElementById("herramientas");
+if (seccionHerr) {
+  seccionHerr.addEventListener("input", () => { calcOxi(); calcPeso(); calcPh(); calcHacor(); calcFio2(); });
+  seccionHerr.addEventListener("change", () => { calcOxi(); calcPeso(); calcPh(); calcHacor(); calcFio2(); });
+}
+
+/* ==================== MODO OSCURO ==================== */
+const btnTema = document.getElementById("btnTema");
+function aplicarTemaApp(oscuro) {
+  document.documentElement.dataset.tema = oscuro ? "oscuro" : "";
+  if (btnTema) btnTema.textContent = oscuro ? "☀️" : "🌙";
+  try { localStorage.setItem("vmni-tema", oscuro ? "oscuro" : "claro"); } catch (e) {}
+}
+if (btnTema) {
+  btnTema.addEventListener("click", () => aplicarTemaApp(document.documentElement.dataset.tema !== "oscuro"));
+  if (document.documentElement.dataset.tema === "oscuro") btnTema.textContent = "☀️";
+}
+
 /* ==================== PWA: registro y aviso de actualización ==================== */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

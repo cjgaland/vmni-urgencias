@@ -19,6 +19,56 @@
   --sombra:0 2px 14px rgba(15,76,92,.08);
   --radio:14px;
 }
+/* ---------- modo oscuro («modo guardia») ---------- */
+:root[data-tema="oscuro"]{
+  --fondo:#0D181D;
+  --tarjeta:#152730;
+  --texto:#E6EFF2;
+  --texto-suave:#9DB4BB;
+  --borde:#24404B;
+  --acento-claro:#173742;
+  --ok-fondo:#15301E;
+  --alerta-fondo:#33261272;
+  --rojo-fondo:#331B1B;
+  --sombra:0 2px 14px rgba(0,0,0,.45);
+}
+:root[data-tema="oscuro"] body{background:var(--fondo);color:var(--texto)}
+:root[data-tema="oscuro"] .chip,
+:root[data-tema="oscuro"] .sel-btn,
+:root[data-tema="oscuro"] .btn-sec,
+:root[data-tema="oscuro"] .opcion,
+:root[data-tema="oscuro"] .campo input,
+:root[data-tema="oscuro"] .campo select,
+:root[data-tema="oscuro"] .buscador,
+:root[data-tema="oscuro"] .doc-bloque{background:var(--tarjeta);color:var(--texto);border-color:var(--borde)}
+:root[data-tema="oscuro"] .chip.sel{background:var(--acento);border-color:var(--acento);color:#fff}
+:root[data-tema="oscuro"] .sel-btn.activo{background:var(--acento);color:#fff}
+:root[data-tema="oscuro"] .opcion.correcta{background:var(--ok-fondo);border-color:var(--ok)}
+:root[data-tema="oscuro"] .opcion.incorrecta{background:var(--rojo-fondo);border-color:var(--rojo)}
+:root[data-tema="oscuro"] .pie,
+:root[data-tema="oscuro"] .nav-movil{background:#101E24;border-color:var(--borde)}
+:root[data-tema="oscuro"] .aviso-legal{background:#2B2413;border-color:#4A3D1E;color:#D9C27E}
+:root[data-tema="oscuro"] .param{background:linear-gradient(160deg,var(--acento-claro),var(--tarjeta))}
+:root[data-tema="oscuro"] .resultado-principal.actual,
+:root[data-tema="oscuro"] .version-tarjeta.actual{background:linear-gradient(160deg,var(--ok-fondo),var(--tarjeta))}
+:root[data-tema="oscuro"] .veredicto.ok{background:var(--ok-fondo);border-color:#2E5A38}
+:root[data-tema="oscuro"] .veredicto.alerta-suave{background:var(--rojo-fondo);border-color:#5A3030}
+:root[data-tema="oscuro"] .explica-quiz.bien{background:var(--ok-fondo);border-color:#2E5A38}
+:root[data-tema="oscuro"] .explica-quiz.mal{background:var(--rojo-fondo);border-color:#5A3030}
+:root[data-tema="oscuro"] .kpi strong,:root[data-tema="oscuro"] .quiz-q,
+:root[data-tema="oscuro"] .cabecera-seccion h2,:root[data-tema="oscuro"] .modulo h3,
+:root[data-tema="oscuro"] .tema-detalle .tema-titulo,:root[data-tema="oscuro"] .version-cuerpo h4,
+:root[data-tema="oscuro"] .biblio-ref,:root[data-tema="oscuro"] .manual-cabecera h3,
+:root[data-tema="oscuro"] .recomendacion h3,:root[data-tema="oscuro"] .resultado-principal h3,
+:root[data-tema="oscuro"] .problema h3,:root[data-tema="oscuro"] .calc h3,
+:root[data-tema="oscuro"] .panel-paso h3,:root[data-tema="oscuro"] .param strong{color:#BFE2EA}
+:root[data-tema="oscuro"] .manual-bloque summary{color:#BFE2EA}
+:root[data-tema="oscuro"] .guia{background:var(--alerta-fondo);border-color:#4A3D1E;color:#E0B46A}
+:root[data-tema="oscuro"] .guia.lograda{background:var(--ok-fondo);border-color:#2E5A38;color:#8FD4A0}
+:root[data-tema="oscuro"] .alerta-item{background:var(--rojo-fondo);border-color:#5A3030;color:#E8A3A3}
+:root[data-tema="oscuro"] .espiro-marco{background:#F7FAFB} /* el espirograma queda como «papel» */
+:root[data-tema="oscuro"] .fix{color:#6FC7D6}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
@@ -46,6 +96,8 @@ body{
 }
 .nav-desktop button:hover{background:rgba(255,255,255,.12);color:#fff}
 .nav-desktop button.activo{background:rgba(255,255,255,.18);color:#fff}
+.btn-tema{background:none;border:none;font-size:1.05rem;cursor:pointer;padding:2px 4px;opacity:.9}
+.btn-tema:hover{opacity:1;transform:scale(1.1)}
 .badge-boceto{
   font-size:.6rem;font-weight:700;letter-spacing:.1em;color:var(--primario);
   background:#FFD97D;padding:4px 9px;border-radius:999px;flex-shrink:0;
@@ -296,6 +348,15 @@ input[type=range]{width:100%;accent-color:var(--acento)}
 .problema h3{color:var(--primario);font-size:1rem;margin-bottom:5px}
 .problema p{color:var(--texto-suave);font-size:.86rem;margin-bottom:9px}
 .problema .fix{font-size:.82rem;font-weight:700;color:var(--acento)}
+
+/* ---------- herramientas rápidas ---------- */
+.grid-calcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.calc h3{color:var(--primario);font-size:1rem;margin-bottom:10px}
+.calc-res{
+  margin-top:12px;background:var(--acento-claro);border-left:4px solid var(--acento);
+  border-radius:10px;padding:10px 13px;font-size:.92rem;color:var(--texto);line-height:1.5;
+}
+.calc-res small{color:var(--texto-suave);font-size:.78rem}
 
 /* ---------- docencia ---------- */
 .doc-tabs{margin-bottom:16px}
