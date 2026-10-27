@@ -1,6 +1,6 @@
 {
-  "version": "0.3",
-  "estado": "PROVISIONAL — valores propuestos en docs/BASE_CIENTIFICA.md pendientes de validación (decisiones D-1 a D-16, §14). La sección de fármacos (§13) está validada (27-10-2026).",
+  "version": "0.4",
+  "estado": "PROVISIONAL — valores propuestos en docs/BASE_CIENTIFICA.md pendientes de validación (decisiones D-1 a D-19, §14). La sección de fármacos (§13) está validada (27-10-2026).",
   "fio2": {
     "nota": "Estimación de FiO2 por dispositivo. D-2 provisional: 4%/L en gafas. D-12 reformulada: no existen fórmulas propias del Vivo; tabla de banco orientativa, titular por SpO2 y usar la célula de FiO2 si el equipo la monta.",
     "aire": 0.21,
@@ -121,7 +121,16 @@
   "escenarios": {
     "epoc_hipercapnico": {
       "nombre": "EPOC agudizado / fallo hipercápnico",
-      "modo": "Binivel S/T",
+      "modo": {
+        "recomendado": "Binivel S/T",
+        "alternativas": [
+          "TAFCN si acidemia leve (pH >7,25) con monitorización y escalada disponibles (ATS 2026)",
+          "PCV con Ti fijo si asincronía refractaria pese a optimizar fugas y ciclado"
+        ],
+        "parque": "V60 (S/T) · Vivo 50/60 (PSV con FR de respaldo) · VITAE 40 (binivel, transporte)",
+        "decision": "D-17",
+        "ref": "BTS 2016 · ERS/ATS 2017 Q1b · consenso 2021"
+      },
       "evidencia": "Fuerte, certeza alta (ERS/ATS 2017 Q1b · ATS 2026 · BTS 2016 · Cochrane 2017: NNT 5 intubación, 12 mortalidad)",
       "parametros": {
         "epap": {
@@ -157,7 +166,15 @@
     },
     "eap": {
       "nombre": "Edema agudo de pulmón / IC aguda",
-      "modo": "CPAP",
+      "modo": {
+        "recomendado": "CPAP",
+        "alternativas": [
+          "Binivel S/T equivalente en mortalidad e intubación; preferirlo si hipercapnia, acidosis o fatiga"
+        ],
+        "parque": "V60 · Vivo 50/60 · VITAE 40 · Boussignac (CPAP)",
+        "decision": "D-17",
+        "ref": "ERS/ATS 2017 Q2a · ESC 2021 · Cochrane 2019"
+      },
       "evidencia": "Fuerte, certeza moderada (ERS/ATS 2017 Q2a · ESC 2021 IIa-B · Cochrane 2019: NNT 13 intubación, 17 mortalidad)",
       "parametros": {
         "cpap": {
@@ -180,7 +197,16 @@
     },
     "hipoxemico": {
       "nombre": "Fallo hipoxémico de novo",
-      "modo": "TAFCN (primera línea) · CPAP/binivel como alternativa",
+      "modo": {
+        "recomendado": "TAFCN (alto flujo)",
+        "alternativas": [
+          "CPAP (mascarilla o helmet)",
+          "Binivel S/T si antecedente de EPOC/SAHOS/SHO/restrictivo"
+        ],
+        "parque": "AirVo (TAFCN) · V60 / Vivo 50/60 (CPAP, S/T)",
+        "decision": "D-17",
+        "ref": "ATS 2026 PICO1"
+      },
       "evidencia": "TAFCN fuerte/moderada; VNI-CPAP condicional/baja (ATS 2026 PICO1)",
       "parametros": {
         "tafcn": {
@@ -209,7 +235,16 @@
     },
     "sho_restrictivo": {
       "nombre": "SHO / restrictivo toracógeno",
-      "modo": "Binivel S/T",
+      "modo": {
+        "recomendado": "Binivel S/T",
+        "alternativas": [
+          "PCV con Ti largo (1,2–1,5 s)",
+          "Volumen asegurado (AVAPS en V60; volumen asegurado en Vivo 50/60) si Vt insuficiente pese a IPAP alta o para soporte prolongado/nocturno — no como rescate agudo (la IPAP se ajusta gradualmente, ~1 cmH2O/min)"
+        ],
+        "parque": "V60 (S/T, PCV, AVAPS) · Vivo 50/60 (PSV, PCV ± volumen asegurado)",
+        "decision": "D-17",
+        "ref": "BTS 2016 rec. 57 · consenso 2021 · Murphy Thorax 2012"
+      },
       "evidencia": "Consenso 2021 (verde 66%) · BTS 2016 rec. 57 (B)",
       "parametros": {
         "epap": {
@@ -237,7 +272,17 @@
     },
     "neuromuscular": {
       "nombre": "Enfermedad neuromuscular",
-      "modo": "Binivel S/T (PCV si disparo débil)",
+      "modo": {
+        "recomendado": "Binivel S/T",
+        "alternativas": [
+          "PCV con Ti largo si el disparo es débil (el trigger falla — BTS rec. 52)",
+          "Modo T si pierde el estímulo respiratorio (reevaluar indicación de IOT)",
+          "Volumen asegurado para soporte prolongado/nocturno"
+        ],
+        "parque": "V60 (S/T, PCV, AVAPS) · Vivo 50/60 (PSV, PCV ± volumen asegurado)",
+        "decision": "D-17",
+        "ref": "BTS 2016 rec. 50–53"
+      },
       "evidencia": "BTS 2016 rec. 50–53 (D): VNI precoz sin esperar acidosis",
       "parametros": {
         "epap": {
@@ -263,7 +308,13 @@
     },
     "asma": {
       "nombre": "Asma aguda grave",
-      "modo": "Prueba corta de binivel SOLO con vigilancia estrecha",
+      "modo": {
+        "recomendado": "Binivel S/T (prueba corta SOLO con vigilancia estrecha)",
+        "alternativas": [],
+        "parque": "V60 (S/T) · Vivo 50/60 (PSV)",
+        "decision": "D-17",
+        "ref": "Consenso 2021 (amarillo) · Cochrane 2012 · Homer-Bouthiette 2025"
+      },
       "evidencia": "Sin recomendación ERS/ATS 2017; consenso 2021 amarillo; Cochrane 2012 evidencia escasa; revisión 2025 favorable con certeza baja",
       "parametros": {
         "epap": {
@@ -415,6 +466,30 @@
     "pafiFracaso1h": 146,
     "frFracaso1h": 30,
     "textoFavorable": "↓FR y mejoría del pH en la primera hora predicen éxito. Continuar VNI, nueva gasometría a las 4–6 h, vigilar fugas y sincronía.",
-    "textoFracaso": "No retrasar la IOT: antes, descartar y corregir neumotórax, broncoaspiración, fugas/interfaz e IPAP insuficiente (subir hasta ~20 y revisar válvula espiratoria)."
+    "textoFracaso": "No retrasar la IOT: antes, descartar y corregir neumotórax, broncoaspiración, fugas/interfaz e IPAP insuficiente (subir hasta ~20 y revisar válvula espiratoria).",
+    "cambiosModo": [
+      {
+        "cuando": "asincronia",
+        "etiqueta": "Asincronía persistente pese a optimizar fugas, trigger, rampa y ciclado",
+        "sugerencia": "Valorar PCV con Ti fijo: el ciclado por tiempo es inmune a la fuga (disponible en V60 y Vivo 50/60).",
+        "decision": "D-18",
+        "ref": "BTS 2016 · consenso 2021"
+      },
+      {
+        "cuando": "vtInsuficiente",
+        "etiqueta": "Vt insuficiente / hipoventilación persistente pese a IPAP alta, o soporte prolongado-nocturno",
+        "sugerencia": "Valorar volumen asegurado (AVAPS en V60; volumen asegurado en Vivo 50/60). No como rescate agudo: la IPAP se ajusta gradualmente (~1 cmH2O/min).",
+        "decision": "D-18",
+        "ref": "Murphy Thorax 2012 · BTS 2016"
+      },
+      {
+        "cuando": "sinEstimulo",
+        "etiqueta": "Pérdida del estímulo respiratorio (sedación, encefalopatía)",
+        "sugerencia": "Modo T (FR y Ti fijos) solo en entorno monitorizado con la vía aérea vigilada, y reevaluar la indicación de IOT.",
+        "decision": "D-18",
+        "ref": "BTS 2016 · consenso 2021"
+      }
+    ],
+    "notaCambioModo": "El cambio de modo nunca sustituye a la escalada: con criterios de fracaso, la salida es IOT/UCI, no otro modo."
   }
 }

@@ -320,6 +320,7 @@
           : ["VNI solo excepcionalmente (equipo experto, UCI, reevaluación inmediata).", "Preparar IOT: la demora aumenta la mortalidad en el fallo hipoxémico de novo."];
       }
       anatomicas();
+      if (r.tipo === "soporte_hipoxemico") r.modo = esc.modo;
       if (otros.includes("inmunodepresion")) alertas.push(R.modificadores.inmunodepresion);
       if (e.sospecha === "neumonia" && !otros.includes("ic") && !prefiereBinivel) alertas.push(R.modificadores.neumonia_sin_comorbilidad);
       return r;
@@ -327,11 +328,16 @@
 
     if (cls.rama === "eap") {
       anatomicas();
-      const r = { tipo: "cpap", escenario: "eap", titulo: "Iniciar CPAP precoz", parametros: esc.parametros, titulacion: esc.titulacion.slice(), evidencia: esc.evidencia, alertas };
+      const r = { tipo: "cpap", escenario: "eap", titulo: "Iniciar CPAP precoz", parametros: esc.parametros, titulacion: esc.titulacion.slice(), evidencia: esc.evidencia, alertas, modo: esc.modo };
       if (esNum(c.pco2) && c.pco2 > 45) {
         r.titulo = "EAP con hipercapnia: iniciar binivel";
         r.tipo = "binivel";
         r.titulacion.unshift("Hipercapnia asociada: binivel con EPAP 5 e IPAP 10–12 de inicio en lugar de CPAP sola.");
+        r.modo = Object.assign({}, esc.modo, {
+          recomendado: "Binivel S/T",
+          alternativas: ["CPAP una vez corregidas la hipercapnia y la acidosis (equivalente en el EAP sin ellas)"],
+          parque: "V60 (S/T) · Vivo 50/60 (PSV con FR de respaldo) · VITAE 40 (binivel)",
+        });
       }
       if (esNum(c.ph) && c.ph < 7.3) {
         alertas.push(`Acidosis significativa en EAP (pH ${c.ph}): binivel, vigilancia estrecha y valorar UCI.`);
@@ -347,7 +353,7 @@
         tipo: "binivel", escenario: escId,
         titulo: `Iniciar VNI binivel — ${esc.nombre}`,
         parametros: esc.parametros, titulacion: esc.titulacion.slice(),
-        evidencia: esc.evidencia, alertas,
+        evidencia: esc.evidencia, alertas, modo: esc.modo,
       };
       anatomicas();
       alertas.push(`Gravedad: ${cls.gravedad.texto} (pH ${c.ph}). ${cls.gravedad.accion}.`);
@@ -406,7 +412,11 @@
     if (h && h.altoRiesgo && veredicto !== "fracaso") {
       texto += ` HACOR ${h.total} (>5): riesgo alto de fracaso — reevaluación muy precoz y avisar a UCI si no mejora.`;
     }
-    return { veredicto, texto, menores, hacor: h, mejoraPh, mejoraFr };
+
+    // Cambio de modo según evolución (D-18): se activa con los marcadores clínicos
+    // de hora1 (asincronia / vtInsuficiente / sinEstimulo). Nunca sustituye a la escalada.
+    const sugerenciasModo = (s.cambiosModo || []).filter(cm => hora1[cm.cuando] === true);
+    return { veredicto, texto, menores, hacor: h, mejoraPh, mejoraFr, sugerenciasModo };
   }
 
   const Motor = { init, fio2Estimada, calculos, hacor, clasificar, recomendar, evaluar, evaluarRespuesta, spo2Simulada, volumenesTeoricos, clasificarAcidoBase };

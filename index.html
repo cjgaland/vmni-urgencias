@@ -294,6 +294,11 @@
       <div class="campo"><label>FiO₂ 1 h</label><input type="number" step="0.05" id="sFio21"></div>
       <div class="campo"><label>Soporte</label><select id="sSoporte"><option value="vni">VNI</option><option value="tafcn">Alto flujo (TAFCN)</option></select></div>
     </div>
+    <div class="lista-confort" style="margin-top:10px">
+      <label class="check"><input type="checkbox" id="sAsincronia"><span><strong>Asincronía persistente</strong> pese a optimizar fugas, trigger, rampa y ciclado</span></label>
+      <label class="check"><input type="checkbox" id="sVtInsuf"><span><strong>Vt insuficiente / hipoventilación</strong> pese a IPAP alta, o soporte prolongado-nocturno</span></label>
+      <label class="check"><input type="checkbox" id="sSinEstimulo"><span><strong>Pérdida del estímulo respiratorio</strong> (sedación, encefalopatía)</span></label>
+    </div>
     <div class="botonera"><span></span><button class="btn-primario" onclick="valorarRespuesta()">Valorar respuesta →</button></div>
   </div>
   <div id="respuestaDinamica"></div>

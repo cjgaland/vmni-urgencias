@@ -160,6 +160,36 @@ caso("Pulmón normal con aire: SpO2 ≥95; y la fuga de 30 L/min desatura con Fi
   esperar(conFuga < sinFuga - 2, `fuga: de ${sinFuga.toFixed(1)} a ${conFuga.toFixed(1)}`);
 });
 
+console.log("— Modos ventilatorios (D-17) —");
+caso("EPOC hipercápnico → modo S/T con parque (V60, Vivo) y etiqueta D-17", () => {
+  const r = Motor.evaluar(base({
+    antecedentes: { respiratorios: ["epoc"], otros: [], circunstancias: [] },
+    gasometria: { tipo: "arterial", ph: 7.27, pco2: 68, po2: 54, hco3: 31.5, lactato: 14 },
+  }));
+  const m = r.recomendacion.modo;
+  esperar(m && m.recomendado === "Binivel S/T", "recomendado " + (m && m.recomendado));
+  esperar(m.parque.includes("V60") && m.parque.includes("Vivo"), "parque " + m.parque);
+  esperar(m.decision === "D-17", "decisión " + m.decision);
+});
+caso("EAP sin hipercapnia → modo CPAP con binivel como alternativa; con pCO2 50 → modo Binivel S/T", () => {
+  const r1 = Motor.evaluar(base({ sospecha: "eap", gasometria: { tipo: "arterial", ph: 7.38, pco2: 38, po2: 55, hco3: 23, lactato: 15 }, fio2: { dispositivo: "reservorio", valor: 10 } }));
+  esperar(r1.recomendacion.modo.recomendado === "CPAP", r1.recomendacion.modo.recomendado);
+  esperar(r1.recomendacion.modo.alternativas.some(a => a.includes("Binivel")), "alternativa binivel");
+  const r2 = Motor.evaluar(base({ sospecha: "eap", gasometria: { tipo: "arterial", ph: 7.36, pco2: 50, po2: 55, hco3: 25, lactato: 15 }, fio2: { dispositivo: "reservorio", valor: 10 } }));
+  esperar(r2.recomendacion.modo.recomendado === "Binivel S/T", r2.recomendacion.modo.recomendado);
+});
+caso("Hipoxémico moderado → modo TAFCN; SHO/restrictivo → alternativa con volumen asegurado (no rescate)", () => {
+  const r1 = Motor.evaluar(base({ gasometria: { tipo: "arterial", ph: 7.42, pco2: 35, po2: 60, hco3: 24, lactato: 12 }, fio2: { dispositivo: "vk", valor: 50 } }));
+  esperar(r1.recomendacion.modo && r1.recomendacion.modo.recomendado.includes("TAFCN"), "TAFCN");
+  const r2 = Motor.evaluar(base({ antecedentes: { respiratorios: ["sho"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.29, pco2: 62, po2: 58, hco3: 30, lactato: 12 } }));
+  esperar(r2.recomendacion.modo.alternativas.some(a => a.includes("olumen asegurado") && a.includes("rescate")), "volumen asegurado con matiz de rescate");
+});
+caso("Neuromuscular → alternativas con PCV (disparo débil) y modo T", () => {
+  const r = Motor.evaluar(base({ antecedentes: { respiratorios: ["neuromuscular"], otros: [], circunstancias: [] }, gasometria: { tipo: "arterial", ph: 7.31, pco2: 55, po2: 60, hco3: 27, lactato: 12 } }));
+  const alts = r.recomendacion.modo.alternativas.join(" ");
+  esperar(alts.includes("PCV") && alts.includes("Modo T"), alts);
+});
+
 console.log("— Seguimiento —");
 caso("Respuesta favorable: pH 7,27→7,33 y FR 32→24", () => {
   const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32, pco2: 68, gcs: 14 }, { ph: 7.33, fr: 24, pco2: 60, gcs: 15, fc: 95, pafi: 210 });
@@ -172,6 +202,20 @@ caso("Fracaso: pH 7,27→7,24 y FR 32→38 (2 criterios menores)", () => {
 caso("Respuesta incompleta → vigilar", () => {
   const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32, pco2: 68, gcs: 15 }, { ph: 7.28, fr: 31, pco2: 66, gcs: 15, fc: 105, pafi: 190 });
   esperar(r.veredicto === "vigilar", r.veredicto);
+});
+caso("Cambio de modo (D-18): asincronía persistente → PCV con Ti fijo", () => {
+  const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32, pco2: 68, gcs: 15 }, { ph: 7.28, fr: 31, pco2: 66, gcs: 15, fc: 105, pafi: 190, asincronia: true });
+  esperar(r.sugerenciasModo.length === 1 && r.sugerenciasModo[0].sugerencia.includes("PCV"), JSON.stringify(r.sugerenciasModo));
+});
+caso("Cambio de modo (D-18): Vt insuficiente → volumen asegurado; sin estímulo → modo T; ambos a la vez", () => {
+  const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32 }, { ph: 7.3, fr: 28, fc: 100, vtInsuficiente: true, sinEstimulo: true });
+  esperar(r.sugerenciasModo.length === 2, "nº sugerencias " + r.sugerenciasModo.length);
+  esperar(r.sugerenciasModo.some(s => s.sugerencia.includes("olumen asegurado")), "volumen asegurado");
+  esperar(r.sugerenciasModo.some(s => s.sugerencia.includes("Modo T")), "modo T");
+});
+caso("Cambio de modo (D-18): sin marcadores no hay sugerencias", () => {
+  const r = Motor.evaluarRespuesta({ ph: 7.27, fr: 32, pco2: 68, gcs: 14 }, { ph: 7.33, fr: 24, pco2: 60, gcs: 15, fc: 95, pafi: 210 });
+  esperar(Array.isArray(r.sugerenciasModo) && r.sugerenciasModo.length === 0, "esperaba lista vacía");
 });
 
 console.log("— Volúmenes teóricos (docencia) —");
