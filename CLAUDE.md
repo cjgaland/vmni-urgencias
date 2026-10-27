@@ -23,6 +23,10 @@ visualmente muy elegante, con simulador dinámico de las gráficas de los respir
   Hersill VITAE 40 (transporte, sala de críticos), más un simulador genérico CPAP/BiPAP.
 - Alcance v1: motor diagnóstico-terapéutico (con inicio rápido EAP / EPOC hipercápnico),
   simulador de gráficas con asincronías, seguimiento de respuesta/fracaso, módulo docente.
+- **Estética APROBADA por Carlos (2026-10-27)** sobre el boceto v0.2: paleta azul petróleo
+  (--primario #0F4C5C, --secundario #16697A, --acento #2A7F8E), tarjetas suaves, fichas de
+  parámetros grandes, monitor oscuro en el simulador, barra inferior en móvil. No cambiarla
+  sin pedirlo él.
 
 ## Estructura
 - `Apoyo/` — prompt inicial (.docx) y reservorio científico (git-ignorado: copyright y vídeos pesados).
