@@ -4,7 +4,7 @@
    individualizar (alergias, antecedentes, concomitancias, interacciones,
    función renal/hepática, embarazo) y seguir los protocolos del centro. */
 const FARMACOS = {
-  descargo: "Recomendaciones generales según guías nacionales e internacionales (GesEPOC, GOLD, ESC, GINA/GEMA, BTS). NO sustituyen la valoración individual: comprueba alergias, antecedentes, enfermedades concomitantes, interacciones, función renal/hepática y embarazo, y sigue los protocolos y el mapa de resistencias de tu centro. Dosis orientativas de adulto.",
+  descargo: "Recomendaciones generales según guías nacionales e internacionales (GesEPOC, GOLD, ESC, GINA/GEMA, BTS). NO sustituyen la valoración individual: comprueba alergias, antecedentes, enfermedades concomitantes, interacciones, función renal/hepática y embarazo, y sigue los protocolos y el mapa de resistencias de tu centro. Dosis orientativas de adulto. La app ACONSEJA: la decisión de prescribir, ajustar o retirar es siempre del profesional, que registra en el caso lo que realmente hace.",
 
   escenarios: {
     epoc_hipercapnico: {
