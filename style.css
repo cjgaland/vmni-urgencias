@@ -160,6 +160,18 @@ main{max-width:1060px;margin:0 auto;padding:26px 18px 50px}
 /* ---------- resultado ---------- */
 .resultado-principal{border-left:6px solid var(--ambar);margin-top:34px}
 .resultado-principal.hipercapnico{border-left-color:var(--primario)}
+.resultado-principal.hipoxemico{border-left-color:var(--ambar)}
+.resultado-principal.eap{border-left-color:var(--acento)}
+.resultado-principal.rojo{border-left-color:var(--rojo)}
+.alerta-item{
+  background:var(--rojo-fondo);border:1px solid #EACFCF;border-radius:10px;
+  padding:9px 13px;margin:8px 0;font-size:.9rem;color:#6d2f2f;font-weight:500;
+}
+.provisional{
+  margin-top:14px;font-size:.72rem;color:var(--texto-suave);font-style:italic;
+  border-top:1px dashed var(--borde);padding-top:8px;
+}
+.kpi.peor span{color:var(--rojo)}
 .etiqueta{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-suave)}
 .etiqueta.acc{color:var(--acento)}
 .resultado-principal h3{color:var(--primario);font-size:1.25rem;margin:6px 0}

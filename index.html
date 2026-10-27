@@ -87,19 +87,19 @@
   <div class="card panel-paso" id="paso1">
     <h3>Antecedentes personales</h3>
     <p class="sub">Patología respiratoria <em>(selección múltiple)</em></p>
-    <div class="chips">
-      <button class="chip">EPOC</button><button class="chip">Sospecha EPOC</button><button class="chip">Asma</button>
-      <button class="chip">SAHOS</button><button class="chip">SHO</button><button class="chip">T. restrictivo</button>
-      <button class="chip">Neuromuscular</button><button class="chip">Bronquiectasias</button><button class="chip">Otros</button>
+    <div class="chips" data-grupo="resp">
+      <button class="chip" data-v="epoc">EPOC</button><button class="chip" data-v="sospecha_epoc">Sospecha EPOC</button><button class="chip" data-v="asma">Asma</button>
+      <button class="chip" data-v="sahos">SAHOS</button><button class="chip" data-v="sho">SHO</button><button class="chip" data-v="restrictivo">T. restrictivo</button>
+      <button class="chip" data-v="neuromuscular">Neuromuscular</button><button class="chip" data-v="bronquiectasias">Bronquiectasias</button><button class="chip" data-v="otros">Otros</button>
     </div>
     <p class="sub">Otros antecedentes</p>
-    <div class="chips">
-      <button class="chip">Insuf. cardiaca</button><button class="chip">HTA</button><button class="chip">Diabetes</button>
-      <button class="chip">ERC</button><button class="chip">Inmunodepresión</button><button class="chip">Enf. grave otra</button>
+    <div class="chips" data-grupo="otros">
+      <button class="chip" data-v="ic">Insuf. cardiaca</button><button class="chip" data-v="hta">HTA</button><button class="chip" data-v="dm">Diabetes</button>
+      <button class="chip" data-v="erc">ERC</button><button class="chip" data-v="inmunodepresion">Inmunodepresión</button><button class="chip" data-v="grave">Enf. grave otra</button>
     </div>
     <p class="sub">Otras circunstancias</p>
-    <div class="chips">
-      <button class="chip">O₂ domiciliario</button><button class="chip">VMNI/CPAP domiciliaria</button><button class="chip alerta">Vida limitada / LET</button>
+    <div class="chips" data-grupo="circ">
+      <button class="chip" data-v="o2_domiciliario">O₂ domiciliario</button><button class="chip" data-v="vmni_domiciliaria">VMNI/CPAP domiciliaria</button><button class="chip alerta" data-v="let">Vida limitada / LET</button>
     </div>
     <div class="botonera"><span></span><button class="btn-primario" onclick="pasoWizard(2)">Siguiente →</button></div>
   </div>
@@ -107,78 +107,68 @@
   <div class="card panel-paso oculto" id="paso2">
     <h3>Situación clínica</h3>
     <div class="fila-campos">
-      <div class="campo"><label>FR (rpm)</label><input type="number" value="32"></div>
-      <div class="campo"><label>FC (lpm)</label><input type="number" value="112"></div>
-      <div class="campo"><label>TAS (mmHg)</label><input type="number" value="148"></div>
-      <div class="campo"><label>GCS</label><input type="number" value="14"></div>
-      <div class="campo"><label>SpO₂ (%)</label><input type="number" value="86"></div>
+      <div class="campo"><label>FR (rpm)</label><input type="number" id="iFr" value="32"></div>
+      <div class="campo"><label>FC (lpm)</label><input type="number" id="iFc" value="112"></div>
+      <div class="campo"><label>TAS (mmHg)</label><input type="number" id="iTas" value="148"></div>
+      <div class="campo"><label>GCS</label><input type="number" id="iGcs" min="3" max="15" value="14"></div>
+      <div class="campo"><label>SpO₂ (%)</label><input type="number" id="iSpo2" value="86"></div>
     </div>
     <p class="sub">Signos de trabajo respiratorio</p>
-    <div class="chips">
-      <button class="chip sel">Musculatura accesoria</button><button class="chip">Respiración abdominal</button>
-      <button class="chip sel">↑ Trabajo evidente</button><button class="chip">Bajo nivel de consciencia</button>
+    <div class="chips" data-grupo="signos">
+      <button class="chip sel" data-v="musculatura">Musculatura accesoria</button><button class="chip" data-v="abdominal">Respiración abdominal</button>
+      <button class="chip sel" data-v="trabajo">↑ Trabajo evidente</button>
+    </div>
+    <p class="sub">Sospecha clínica principal <em>(una)</em></p>
+    <div class="chips" data-grupo="sospecha" data-exclusivo="1">
+      <button class="chip" data-v="eap">EAP / IC aguda</button><button class="chip" data-v="epoc">Agudización EPOC</button>
+      <button class="chip" data-v="asma">Asma grave</button><button class="chip" data-v="neumonia">Infección resp. / neumonía</button>
+      <button class="chip" data-v="broncoespasmo">Broncoespasmo</button><button class="chip" data-v="sobredosis">Sobredosis de depresores</button>
+      <button class="chip" data-v="noclaro">No lo tengo claro</button>
+    </div>
+    <p class="sub">Criterios de IOT/UCI inmediata <em>(si hay alguno, no sigas: actúa)</em></p>
+    <div class="chips" data-grupo="iot">
+      <button class="chip alerta" data-v="Parada / peri-parada (gasping)">Parada / peri-parada</button>
+      <button class="chip alerta" data-v="Agitación incontrolable">Agitación incontrolable</button>
+      <button class="chip alerta" data-v="Secreciones no manejables / vómitos incoercibles">Secreciones / vómitos no manejables</button>
+      <button class="chip alerta" data-v="Inestabilidad hemodinámica refractaria">Shock refractario</button>
     </div>
     <div class="botonera"><button class="btn-sec" onclick="pasoWizard(1)">← Atrás</button><button class="btn-primario" onclick="pasoWizard(3)">Siguiente →</button></div>
   </div>
 
   <div class="card panel-paso oculto" id="paso3">
     <h3>Gasometría y oxigenación</h3>
-    <div class="selector-av">
-      <button class="sel-btn activo">Arterial</button><button class="sel-btn">Venosa</button>
+    <div class="selector-av" id="selAV">
+      <button class="sel-btn activo" data-v="arterial">Arterial</button><button class="sel-btn" data-v="venosa">Venosa</button>
     </div>
     <div class="fila-campos">
-      <div class="campo"><label>pH</label><input type="number" step="0.01" value="7.27"></div>
-      <div class="campo"><label>pCO₂ (mmHg)</label><input type="number" value="68"></div>
-      <div class="campo"><label>pO₂ (mmHg)</label><input type="number" value="54"></div>
-      <div class="campo"><label>HCO₃ (mEq/L)</label><input type="number" step="0.1" value="31.5"></div>
-      <div class="campo"><label>Láctico (mg/dL)</label><input type="number" value="14"></div>
+      <div class="campo"><label>pH</label><input type="number" step="0.01" id="iPh" value="7.27"></div>
+      <div class="campo"><label>pCO₂ (mmHg)</label><input type="number" id="iPco2" value="68"></div>
+      <div class="campo"><label id="lPo2">pO₂ (mmHg)</label><input type="number" id="iPo2" value="54"></div>
+      <div class="campo"><label>HCO₃ (mEq/L)</label><input type="number" step="0.1" id="iHco3" value="31.5"></div>
+      <div class="campo"><label>Láctico (mg/dL)</label><input type="number" id="iLact" value="14"></div>
     </div>
     <p class="sub">FiO₂ administrada</p>
     <div class="fila-campos">
       <div class="campo ancho">
         <label>Dispositivo</label>
-        <select><option>Gafas nasales</option><option>Ventimask</option><option>Reservorio</option><option>Aire ambiente</option><option>Respirador (Vivo / V60)</option></select>
+        <select id="iDisp">
+          <option value="aire">Aire ambiente</option>
+          <option value="gafas" selected>Gafas nasales</option>
+          <option value="vk">Ventimask</option>
+          <option value="reservorio">Reservorio</option>
+          <option value="vivo">Vivo (O₂ por caudalímetro)</option>
+          <option value="mezclador">V60 / mezclador (FiO₂ directa)</option>
+          <option value="tafcn">AirVo / alto flujo (FiO₂ directa)</option>
+        </select>
       </div>
-      <div class="campo"><label>Flujo (L/min)</label><input type="number" value="3"></div>
-      <div class="campo calculado"><label>FiO₂ estimada</label><output>0,33</output></div>
+      <div class="campo"><label id="lFlujo">Flujo (L/min)</label><input type="number" id="iFlujo" value="3"></div>
+      <div class="campo calculado"><label>FiO₂ estimada</label><output id="oFio2">0,33</output></div>
     </div>
-    <div class="botonera"><button class="btn-sec" onclick="pasoWizard(2)">← Atrás</button><button class="btn-primario" onclick="pasoWizard(4)">Calcular →</button></div>
+    <div class="botonera"><button class="btn-sec" onclick="pasoWizard(2)">← Atrás</button><button class="btn-primario" onclick="calcular()">Calcular →</button></div>
   </div>
 
   <div class="panel-paso oculto" id="paso4">
-    <div class="card resultado-principal hipercapnico">
-      <p class="etiqueta">Clasificación</p>
-      <h3>Fallo hipercápnico — acidosis crónica agudizada <span class="ref">C2</span></h3>
-      <p class="explica">pH 7,27 con pCO₂ 68 y HCO₃ 31,5 → pH esperado agudo 7,18, crónico 7,32: patrón de <strong>EPOC crónico agudizado</strong>. Láctico normal: sin componente metabólico.</p>
-      <div class="chips-datos">
-        <span class="dato">PaFi <strong>164</strong></span>
-        <span class="dato">SaFi <strong>261</strong></span>
-        <span class="dato">pH esp. <strong>7,32</strong></span>
-        <span class="dato ok">Láctico <strong>normal</strong></span>
-      </div>
-    </div>
-
-    <div class="card recomendacion">
-      <p class="etiqueta acc">Recomendación</p>
-      <h3>Iniciar VNI binivel <small>(fuerte, evidencia alta — ERS/ATS 2017 · ATS 2026 · BTS 2016)</small></h3>
-      <div class="parametros">
-        <div class="param"><label>Modo</label><strong>S/T</strong></div>
-        <div class="param"><label>EPAP</label><strong>5</strong><small>cmH₂O</small></div>
-        <div class="param"><label>IPAP</label><strong>12→18</strong><small>cmH₂O</small></div>
-        <div class="param"><label>FR resp.</label><strong>14</strong><small>rpm</small></div>
-        <div class="param"><label>Ti</label><strong>0,8–1,2</strong><small>s</small></div>
-        <div class="param"><label>SpO₂ obj.</label><strong>88–92</strong><small>%</small></div>
-      </div>
-      <ul class="claves">
-        <li>Subir IPAP de 2–3 en 2–3 cmH₂O cada 10–30 min hasta Vt 6–8 ml/kg ideal y FR &lt;25.</li>
-        <li>Gasometría de control <strong>a la hora</strong>. pH &lt;7,25 persistente → entorno con IOT inmediata.</li>
-        <li>Mascarilla oronasal + protección del puente nasal desde el inicio.</li>
-      </ul>
-      <div class="botonera">
-        <button class="btn-sec" onclick="irA('simulador')">Ver en el simulador</button>
-        <button class="btn-primario" onclick="irA('seguimiento')">Iniciar seguimiento ⏱</button>
-      </div>
-    </div>
+    <div id="resultadoDinamico"></div>
     <div class="botonera suelta"><button class="btn-sec" onclick="pasoWizard(3)">← Atrás</button></div>
   </div>
 </section>
@@ -222,21 +212,27 @@
 <!-- ===================== SEGUIMIENTO ===================== -->
 <section id="seguimiento" class="pantalla">
   <div class="cabecera-seccion"><h2>Respuesta al tratamiento</h2>
-  <p class="sub-seccion">Reevaluación a la hora de VNI — demo con datos de ejemplo.</p></div>
-  <div class="grid-seguimiento">
-    <div class="card kpi mejora"><label>pH</label><strong>7,27 → 7,31</strong><span>↗ mejorando</span></div>
-    <div class="card kpi mejora"><label>FR</label><strong>32 → 24</strong><span>↗ mejorando</span></div>
-    <div class="card kpi neutro"><label>pCO₂</label><strong>68 → 61</strong><span>→ en descenso</span></div>
-    <div class="card kpi mejora"><label>HACOR</label><strong>7 → 4</strong><span>≤5: bajo riesgo de fracaso</span></div>
+  <p class="sub-seccion">Reevaluación a la hora de VNI. Los valores basales se rellenan solos si vienes de una evaluación.</p></div>
+  <div class="card panel-paso" style="margin-top:0">
+    <h3>Control a la hora</h3>
+    <div class="fila-campos">
+      <div class="campo"><label>pH basal</label><input type="number" step="0.01" id="sPh0"></div>
+      <div class="campo"><label>pCO₂ basal</label><input type="number" id="sPco20"></div>
+      <div class="campo"><label>FR basal</label><input type="number" id="sFr0"></div>
+      <div class="campo"><label>GCS basal</label><input type="number" id="sGcs0"></div>
+    </div>
+    <div class="fila-campos" style="margin-top:10px">
+      <div class="campo"><label>pH 1 h</label><input type="number" step="0.01" id="sPh1"></div>
+      <div class="campo"><label>pCO₂ 1 h</label><input type="number" id="sPco21"></div>
+      <div class="campo"><label>FR 1 h</label><input type="number" id="sFr1"></div>
+      <div class="campo"><label>GCS 1 h</label><input type="number" id="sGcs1"></div>
+      <div class="campo"><label>FC 1 h</label><input type="number" id="sFc1"></div>
+      <div class="campo"><label>SpO₂ 1 h</label><input type="number" id="sSpo21"></div>
+      <div class="campo"><label>FiO₂ 1 h</label><input type="number" step="0.05" id="sFio21"></div>
+    </div>
+    <div class="botonera"><span></span><button class="btn-primario" onclick="valorarRespuesta()">Valorar respuesta →</button></div>
   </div>
-  <div class="card veredicto ok">
-    <h3>✅ Respuesta favorable</h3>
-    <p>↓FR y mejoría del pH en la primera hora predicen éxito. Continuar VNI, nueva gasometría a las 4–6 h, vigilar fugas y sincronía.</p>
-  </div>
-  <div class="card veredicto alerta-suave">
-    <h3>Si no mejorara…</h3>
-    <p>2 criterios menores en 1 h (FR &gt;35 · pH &lt;7,30 o ↓ · pCO₂ +20% · PaFi &lt;150 · ↑encefalopatía) → <strong>escalada IOT/UCI</strong>. Antes: descartar neumotórax, fugas e IPAP insuficiente.</p>
-  </div>
+  <div id="respuestaDinamica"></div>
 </section>
 
 <!-- ===================== PROBLEMAS ===================== -->
@@ -280,6 +276,7 @@
   Urgencias · Hospital de Montilla · AGS Sur de Córdoba — v0.2 boceto · 2026
 </footer>
 
+<script src="motor.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

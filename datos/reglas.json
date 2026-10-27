@@ -1,0 +1,207 @@
+{
+  "version": "0.3",
+  "estado": "PROVISIONAL — valores propuestos en docs/BASE_CIENTIFICA.md pendientes de validación (decisiones D-1 a D-16, §13). No usar en pacientes reales.",
+
+  "fio2": {
+    "nota": "Estimación de FiO2 por dispositivo. D-2 provisional: 4%/L en gafas. D-12 pendiente: fórmulas propias del Vivo.",
+    "aire": 0.21,
+    "gafas": { "formula": "0.21 + 0.04 × L/min", "base": 0.21, "porLitro": 0.04, "flujoMax": 6, "decision": "D-2" },
+    "reservorio": [
+      { "flujoMin": 10, "fio2": 0.9 },
+      { "flujoMin": 8, "fio2": 0.8 },
+      { "flujoMin": 6, "fio2": 0.7 },
+      { "flujoMin": 4, "fio2": 0.6 }
+    ],
+    "vivoSinMezclador": { "formula": "≈ 0.21 + 0.018 × L/min de O2 (IPAP 12–16, tabla Thys & Liistro)", "base": 0.21, "porLitro": 0.018, "max": 0.6, "decision": "D-12" }
+  },
+
+  "safi": {
+    "nota": "Rice 2007: SaFi = 64 + 0,84×PaFi → PaFi ≈ (SaFi − 64)/0,84. No válida con SpO2 > 97%.",
+    "pendiente": 0.84,
+    "ordenada": 64,
+    "spo2Max": 97,
+    "decision": "D-3"
+  },
+
+  "gasometriaVenosa": {
+    "correccionPh": 0.03,
+    "pco2Descarta": 45,
+    "nota": "pH venoso + 0,03 ≈ arterial. pCO2 venosa <45 descarta hipercapnia; si ≥45, confirmar con arterial.",
+    "decision": "D-16"
+  },
+
+  "acidoBase": {
+    "phEsperadoAgudo": { "porMmHg": 0.008 },
+    "phEsperadoCronico": { "porMmHg": 0.003 },
+    "hco3CronicoDesde": 30,
+    "lactatoAltoMgdl": 18,
+    "decisionLactato": "D-4"
+  },
+
+  "clasificacion": {
+    "hipercapnia": { "pco2": 45, "phAcidosis": 7.35 },
+    "gravedadHipercapnica": [
+      { "phMax": 7.15, "nivel": "critica", "texto": "acidosis crítica", "accion": "IOT salvo LET; VNI solo como prueba junto a IOT inmediata" },
+      { "phMax": 7.25, "nivel": "grave", "texto": "acidosis grave", "accion": "VNI en entorno con IOT inmediata disponible (UCI/críticos)" },
+      { "phMax": 7.3, "nivel": "moderada", "texto": "acidosis moderada", "accion": "VNI en Urgencias/área monitorizada" },
+      { "phMax": 7.35, "nivel": "leve", "texto": "acidosis leve", "accion": "VNI en Urgencias/área monitorizada; TAFCN alternativa si pH >7,25 (ATS 2026)" }
+    ],
+    "pafi": [
+      { "min": 300, "nivel": "normal", "texto": "sin hipoxemia" },
+      { "min": 200, "nivel": "leve", "texto": "hipoxemia leve" },
+      { "min": 100, "nivel": "moderada", "texto": "hipoxemia moderada" },
+      { "min": 0, "nivel": "grave", "texto": "hipoxemia grave" }
+    ],
+    "pafiUci": 150,
+    "frAlta": 24,
+    "frDeNovo": 30
+  },
+
+  "escenarios": {
+    "epoc_hipercapnico": {
+      "nombre": "EPOC agudizado / fallo hipercápnico",
+      "modo": "Binivel S/T",
+      "evidencia": "Fuerte, certeza alta (ERS/ATS 2017 Q1b · ATS 2026 · BTS 2016 · Cochrane 2017: NNT 5 intubación, 12 mortalidad)",
+      "parametros": {
+        "epap": { "inicial": 5, "max": 8, "decision": "D-6" },
+        "ipap": { "inicial": 12, "objetivo": "15–20", "max": 25, "decision": "D-7" },
+        "frRespaldo": { "valor": "12–15", "decision": "D-8" },
+        "ti": "0,8–1,2 s",
+        "ie": "1:2 – 1:3",
+        "ciclado": "≥25% (subir a 40–60% si esfuerzos inefectivos)",
+        "rampa": "rápida-media",
+        "spo2": { "objetivo": "88–92%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "Subir IPAP de 2–3 en 2–3 cmH2O cada 10–30 min hasta Vt 6–8 ml/kg ideal y FR <25 (D-10).",
+        "Gasometría de control a la hora; después a las 4–6 h y tras cada cambio (D-11).",
+        "Mascarilla oronasal con protección del puente nasal desde el inicio.",
+        "Nebulización sin interrumpir la VNI si es dependiente (malla vibrante en T)."
+      ]
+    },
+    "eap": {
+      "nombre": "Edema agudo de pulmón / IC aguda",
+      "modo": "CPAP",
+      "evidencia": "Fuerte, certeza moderada (ERS/ATS 2017 Q2a · ESC 2021 IIa-B · Cochrane 2019: NNT 13 intubación, 17 mortalidad)",
+      "parametros": {
+        "cpap": { "inicial": 5, "rango": "7–12", "max": 15 },
+        "fio2": "alta al inicio, bajar 15–20% cada 30 min hasta ≤0,5",
+        "spo2": { "objetivo": "≥92–96%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "Subir CPAP de 2 en 2 cmH2O cada 5–10 min hasta la mínima presión eficaz (SpO2 ≥92%, ↓FR, ↓trabajo).",
+        "Pasar a binivel si hipercapnia (pCO2 >45), acidosis o fatiga muscular.",
+        "No usar en shock cardiogénico ni SCA no estabilizado.",
+        "Retirada: bajar 2 cmH2O cada 30 min hasta 4–5; sustituir por TAFCN u O2 convencional."
+      ]
+    },
+    "hipoxemico": {
+      "nombre": "Fallo hipoxémico de novo",
+      "modo": "TAFCN (primera línea) · CPAP/binivel como alternativa",
+      "evidencia": "TAFCN fuerte/moderada; VNI-CPAP condicional/baja (ATS 2026 PICO1)",
+      "parametros": {
+        "tafcn": { "flujo": "45–50 L/min (30–40 si intolerancia)", "temperatura": "37 °C", "fio2": "mínima para SpO2 92–96%" },
+        "cpap": { "inicial": 5, "rango": "7–12" },
+        "epapBinivel": { "inicial": 5, "max": 12 },
+        "spo2": { "objetivo": "92–96%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "Índice ROX (SaFi/FR) ≥4,88 a las 12 h se asocia a éxito del alto flujo.",
+        "Vigilar Vt espontáneo alto y trabajo intenso (riesgo de autolesión pulmonar): reevaluación precoz.",
+        "PaFi ≤146 a la hora (≤175 en SDRA) o FR que no baja de 30 → no retrasar IOT."
+      ]
+    },
+    "sho_restrictivo": {
+      "nombre": "SHO / restrictivo toracógeno",
+      "modo": "Binivel S/T",
+      "evidencia": "Consenso 2021 (verde 66%) · BTS 2016 rec. 57 (B)",
+      "parametros": {
+        "epap": { "inicial": 8, "rango": "8–10", "max": 15 },
+        "ipap": { "inicial": 14, "objetivo": "18–25", "max": 30 },
+        "ti": "1,2–1,5 s", "ie": "1:1 – 1:2", "ciclado": "<25%",
+        "spo2": { "objetivo": "88–92%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "IPAP alta si hace falta para lograr Vt (puede superar 25); valorar volumen asegurado (AVAPS) si Vt insuficiente.",
+        "Al alta: VNI/CPAP nocturna y estudio de sueño / ventilación domiciliaria."
+      ]
+    },
+    "neuromuscular": {
+      "nombre": "Enfermedad neuromuscular",
+      "modo": "Binivel S/T (PCV si disparo débil)",
+      "evidencia": "BTS 2016 rec. 50–53 (D): VNI precoz sin esperar acidosis",
+      "parametros": {
+        "epap": { "inicial": 4, "max": 6 },
+        "ipap": { "inicial": 10, "objetivo": "PS 8–12" },
+        "ti": "1,2–1,5 s", "ie": "1:1 – 1:2",
+        "spo2": { "objetivo": "88–92%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "VC <1 L con FR >20 ya indica VNI aunque esté normocápnico.",
+        "Si el disparo falla, ventilación controlada por presión.",
+        "NO retrasar la IOT si falla la VNI (BTS rec. 53). Disfunción bulbar: precaución y UCI."
+      ]
+    },
+    "asma": {
+      "nombre": "Asma aguda grave",
+      "modo": "Prueba corta de binivel SOLO con vigilancia estrecha",
+      "evidencia": "Sin recomendación ERS/ATS 2017; consenso 2021 amarillo; Cochrane 2012 evidencia escasa; revisión 2025 favorable con certeza baja",
+      "parametros": {
+        "epap": { "inicial": 4, "max": 6 },
+        "ipap": { "inicial": 10, "objetivo": "12–16" },
+        "spo2": { "objetivo": "≥92%", "decision": "D-9" }
+      },
+      "titulacion": [
+        "Idealmente en UCI o con acceso inmediato a IOT.",
+        "Prioridad absoluta al tratamiento broncodilatador y corticoide.",
+        "Reevaluación muy precoz: deterioro → IOT sin demora."
+      ]
+    }
+  },
+
+  "modificadores": {
+    "inmunodepresion": "Inmunodeprimido: VNI/TAFCN temprana (ERS/ATS Q4, condicional/moderada); umbral bajo para UCI.",
+    "neumonia_sin_comorbilidad": "Neumonía sin comorbilidad cardiorrespiratoria: VNI no aconsejable (consenso 2021); si se prueba, en entorno monitorizado con reevaluación precoz.",
+    "sdra": "SDRA moderado-grave: NO VNI (consenso 2021); solo valorable en SDRA leve (PaFi 200–300).",
+    "let": "Vida limitada / LET: la VNI es válida como techo terapéutico y para confort (ERS/ATS Q7) en grupos con eficacia documentada.",
+    "vmni_domiciliaria": "VMNI/CPAP domiciliaria previa: partir de sus parámetros habituales (+5 cmH2O de IPAP si agudización) y avisar a su unidad de referencia.",
+    "hipercapnia_sin_acidosis": "Hipercapnia con pH ≥7,35: VNI no indicada de entrada (ERS/ATS Q1a, condicional en contra). Tratamiento médico, O2 a 88–92% y reevaluar en 60 min."
+  },
+
+  "paso0": {
+    "titulo": "Criterios de IOT/UCI inmediata (consenso 2021 tabla 3 · BTS Box 1)",
+    "criterios": [
+      "Parada respiratoria o cardiaca / peri-parada (gasping)",
+      "Pausas respiratorias o FC <50 con pérdida de alerta",
+      "Agitación incontrolable",
+      "Aspiración masiva / secreciones no manejables / vómitos incoercibles",
+      "Inestabilidad hemodinámica sin respuesta a volumen y vasoactivos",
+      "GCS <8 de causa no hipercápnica"
+    ]
+  },
+
+  "hacor": {
+    "decision": "D-5",
+    "fc": [ { "max": 120, "p": 0 }, { "max": 999, "p": 1 } ],
+    "ph": [ { "min": 7.35, "p": 0 }, { "min": 7.3, "p": 2 }, { "min": 7.25, "p": 3 }, { "min": 0, "p": 4 } ],
+    "gcs": [ { "min": 15, "p": 0 }, { "min": 13, "p": 2 }, { "min": 11, "p": 5 }, { "min": 0, "p": 10 } ],
+    "pafi": [ { "min": 201, "p": 0 }, { "min": 176, "p": 2 }, { "min": 151, "p": 3 }, { "min": 126, "p": 4 }, { "min": 101, "p": 5 }, { "min": 0, "p": 6 } ],
+    "fr": [ { "max": 30, "p": 0 }, { "max": 35, "p": 1 }, { "max": 40, "p": 2 }, { "max": 45, "p": 3 }, { "max": 999, "p": 4 } ],
+    "umbralFracaso": 5
+  },
+
+  "seguimiento": {
+    "criteriosMenores": [
+      "FR >35 rpm o mayor que la inicial",
+      "pH <7,30 o menor que el inicial",
+      "pCO2 +20% respecto a la inicial",
+      "PaFi <150",
+      "Empeoramiento de la encefalopatía"
+    ],
+    "menoresParaIot": 2,
+    "pafiFracaso1h": 146,
+    "frFracaso1h": 30,
+    "textoFavorable": "↓FR y mejoría del pH en la primera hora predicen éxito. Continuar VNI, nueva gasometría a las 4–6 h, vigilar fugas y sincronía.",
+    "textoFracaso": "No retrasar la IOT: antes, descartar y corregir neumotórax, broncoaspiración, fugas/interfaz e IPAP insuficiente (subir hasta ~20 y revisar válvula espiratoria)."
+  }
+}
