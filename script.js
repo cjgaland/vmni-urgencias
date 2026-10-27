@@ -6,6 +6,7 @@ function irA(id) {
   document.querySelectorAll(".pantalla").forEach(s => s.classList.remove("visible"));
   document.getElementById(id).classList.add("visible");
   if (("#" + id) !== location.hash) history.replaceState(null, "", "#" + id);
+  document.body.classList.toggle("en-portada", id === "portada"); // la bienvenida se muestra a pantalla limpia
   document.querySelectorAll("[data-s]").forEach(b => b.classList.toggle("activo", b.dataset.s === id));
   window.scrollTo({ top: 0, behavior: "instant" });
   if (id === "simulador") Sim.activar(); else Sim.pausar();

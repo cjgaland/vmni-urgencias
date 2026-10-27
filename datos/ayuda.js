@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.6",
+    titulo: "Pantalla de bienvenida",
+    texto: "La app se abre ahora con una **portada de presentación**: el logo, qué es la aplicación, el **aviso de apoyo a la decisión** (no sustituye el criterio del profesional), la **autoría** (Carlos J. Galán Doval, con Enrique Fernández Romero como coautor y revisor científico) y el botón **Entrar →**. Los enlaces directos a secciones (#simulador, #docencia…) siguen llevando directamente a su destino, sin pasar por la portada.",
+  },
+  {
     version: "v2.5",
     titulo: "Modos ventilatorios: selector en el simulador y recomendación en la evaluación",
     texto: "El **simulador** estrena **selector de modo**: CPAP, Binivel S, S/T, T, PCV y AVAPS — los de los respiradores reales del área — y cada modo cambia las **curvas**, los **mandos** que procede ajustar (CPAP sin IPAP ni trigger; S sin FR de respaldo; T con Ti fijo ignorando esfuerzos; PCV ciclada por tiempo) y las **asincronías** que aplican, con su texto docente propio. La **Evaluación** añade al resultado la tarjeta de **modo ventilatorio recomendado** por escenario, con alternativas y en qué respirador del área está, y el **Seguimiento** sugiere **cambios de modo según la evolución** (asincronía persistente, soporte prolongado…) — reglas nuevas documentadas como decisiones D-17 a D-19, PROVISIONALES hasta la revisión científica. La **Docencia** divide los modos en dos temas (11 en total): **pilares** (CPAP/S/S/T/T/PCV) y **avanzados** (AVAPS/iVAPS, PAV, NAVA, PRVC y ASV con su evidencia real y el aviso de seguridad de la ASV en insuficiencia cardiaca — SERVE-HF), con 5 preguntas nuevas (49) y bibliografía ampliada. Los casos arreglan además la navegación: «Volver al caso», botón «☰ Todos los casos» y reapertura de casos archivados.",

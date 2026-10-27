@@ -151,6 +151,24 @@ main{max-width:1380px;margin:0 auto;padding:26px 22px 50px}
   background:#FCF8E3;border:1px solid #F3E8C8;border-radius:10px;padding:10px;
 }
 
+/* ====== Portada (pantalla de bienvenida) ====== */
+body.en-portada .topbar, body.en-portada .nav-movil, body.en-portada footer{display:none}
+.portada-caja{
+  min-height:calc(100dvh - 60px); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; gap:14px; max-width:640px; margin:0 auto; padding:28px 16px;
+}
+.portada-logo{width:150px; height:150px; filter:drop-shadow(0 6px 18px rgba(15,76,92,.25))}
+.portada-titulo{font-size:2.3rem; letter-spacing:.02em; color:var(--primario); margin:2px 0 0}
+.portada-titulo span{font-weight:300; color:var(--secundario)}
+.portada-sub{font-size:1.02rem; color:var(--secundario); font-weight:600; margin:0}
+.portada-explica{color:var(--texto-suave); line-height:1.55; margin:4px 0}
+.portada-aviso{margin:4px 0}
+.portada-autores{font-size:.9rem; line-height:1.6; color:var(--texto-suave); margin:2px 0 6px}
+.portada-entrar{padding:14px 34px; font-size:1.08rem; gap:10px}
+.portada-entrar svg{transition:transform .2s}
+.portada-entrar:hover svg{transform:translateX(4px)}
+@media (max-width:700px){ .portada-logo{width:118px;height:118px} .portada-titulo{font-size:1.9rem} .portada-caja{min-height:calc(100dvh - 40px)} }
+
 /* ---------- botones ---------- */
 .btn-primario{
   background:linear-gradient(120deg,var(--acento),var(--secundario));color:#fff;border:none;

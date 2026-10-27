@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="VMNI">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="en-portada">
 
 <header class="topbar">
   <div class="brand" onclick="irA('inicio')">
@@ -35,13 +35,32 @@
     <button data-s="ayuda" onclick="irA('ayuda')">Ayuda</button>
   </nav>
   <button id="btnTema" class="btn-tema" title="Modo oscuro / claro">🌙</button>
-  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v2.5 BETA</span>
+  <span class="badge-boceto" onclick="abrirAyuda('Versiones')" style="cursor:pointer" title="Ver las novedades">v2.6 BETA</span>
 </header>
 
 <main>
 
+<!-- ===================== PORTADA (pantalla de bienvenida) ===================== -->
+<section id="portada" class="pantalla visible">
+  <div class="portada-caja">
+    <img src="iconos/icono.svg" alt="Logo de VMNI Urgencias" class="portada-logo" width="150" height="150">
+    <h1 class="portada-titulo">VMNI <span>Urgencias</span></h1>
+    <p class="portada-sub">Apoyo al diagnóstico y manejo con Ventilación Mecánica No Invasiva</p>
+    <p class="portada-explica">Del fallo respiratorio agudo a la ventilación bien ajustada: evaluación guiada con evidencia,
+    simulador de gráficas, seguimiento de la respuesta, registro anónimo de casos y módulo docente — en la cabecera del paciente,
+    también sin conexión.</p>
+    <div class="aviso-legal portada-aviso">⚠️ Utilidad de apoyo a la decisión clínica. No sustituye el criterio del profesional sanitario.</div>
+    <p class="portada-autores">Diseñado y desarrollado por <strong>Carlos J. Galán Doval</strong><br>
+    Coautor y revisor científico: <strong>Enrique Fernández Romero</strong><br>
+    <small>Urgencias · Hospital de Montilla · AGS Sur de Córdoba</small></p>
+    <button class="btn-primario grande portada-entrar" onclick="irA('inicio')">Entrar
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</section>
+
 <!-- ===================== INICIO ===================== -->
-<section id="inicio" class="pantalla visible">
+<section id="inicio" class="pantalla">
   <div class="hero">
     <h2>Del fallo respiratorio agudo<br>a la ventilación bien ajustada</h2>
     <p>Diagnóstico guiado, parámetros iniciales con evidencia, seguimiento de la respuesta y corrección de problemas — en la cabecera del paciente.</p>
@@ -469,7 +488,7 @@
 
 <footer class="pie">
   Diseñado y Desarrollado por <strong>Carlos J. Galán Doval</strong> · Coautor y revisor: <strong>Enrique Fernández Romero</strong><br>
-  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v2.5 beta</a> · 2026
+  Urgencias · Hospital de Montilla · AGS Sur de Córdoba — <a href="#" class="enlace-version" onclick="abrirAyuda('Versiones');return false">v2.6 beta</a> · 2026
   · <a class="enlace-version" href="https://github.com/cjgaland/vmni-urgencias/issues" target="_blank" rel="noopener">💬 Sugerencias</a><br>
   <span class="pie-aviso">Reglas clínicas provisionales pendientes de validación · Utilidad de apoyo a la decisión: no sustituye el criterio del profesional</span>
 </footer>
