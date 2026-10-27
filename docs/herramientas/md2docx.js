@@ -8,8 +8,19 @@ const {
   LevelFormat, TableOfContents, PageBreak, ImageRun,
 } = require("docx");
 
-const [, , inFile, outFile] = process.argv;
+const [, , inFile, outFile, cfgFile] = process.argv;
 const md = fs.readFileSync(inFile, "utf8");
+// portada y comportamiento configurables; sin config, el documento es la Base Científica
+const CFG = Object.assign({
+  t1: "VMNI EN URGENCIAS",
+  t2: "Base de Conocimiento Clínico",
+  desc: "Ventilación Mecánica No Invasiva: diagnóstico, indicación, programación, seguimiento y resolución de problemas",
+  version: "Versión 0.1 — borrador para revisión científica",
+  fecha: "27 de octubre de 2026",
+  aviso: "Documento de apoyo a la decisión clínica. No sustituye el criterio del profesional ni los protocolos del centro. Fuente de verdad del motor de decisión de la app VMNI Urgencias: ninguna recomendación entra en la app sin estar validada aquí.",
+  saltosPagina: true,   // salto de página ante secciones largas
+  decisiones: true,     // la sección «13.» se pinta como formulario de revisión
+}, cfgFile ? JSON.parse(fs.readFileSync(cfgFile, "utf8")) : {});
 
 const C = {
   primary: "0F4C5C",   // azul petróleo oscuro
@@ -173,12 +184,12 @@ while (i < lines.length) {
   if (h) {
     const lvl = h[1].length;
     const txt = h[2];
-    if (lvl <= 2) inDecisions = /^13\./.test(txt);
+    if (lvl <= 2) inDecisions = CFG.decisiones && /^13\./.test(txt);
     const levels = [HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3, HeadingLevel.HEADING_4];
     blocks.push(new Paragraph({
       heading: levels[lvl - 1],
       spacing: { before: lvl === 1 ? 420 : 280, after: 140 },
-      pageBreakBefore: lvl === 2 && /^(1|3|6|10|13|14)\./.test(txt), // secciones largas en página nueva
+      pageBreakBefore: CFG.saltosPagina && lvl === 2 && /^(1|3|6|10|13|14)\./.test(txt), // secciones largas en página nueva
       children: inlineRuns(txt.replace(/\*\*/g, "")),
     }));
     i++; continue;
@@ -242,19 +253,19 @@ const cover = [
   new Paragraph({ spacing: { before: 2600 }, children: [] }),
   new Paragraph({
     alignment: AlignmentType.CENTER,
-    children: [new TextRun({ text: "VMNI EN URGENCIAS", bold: true, size: 64, color: C.primary })],
+    children: [new TextRun({ text: CFG.t1, bold: true, size: 64, color: C.primary })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { before: 160 },
-    children: [new TextRun({ text: "Base de Conocimiento Clínico", size: 40, color: C.secondary })],
+    children: [new TextRun({ text: CFG.t2, size: 40, color: C.secondary })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { before: 120 },
-    children: [new TextRun({ text: "Ventilación Mecánica No Invasiva: diagnóstico, indicación, programación, seguimiento y resolución de problemas", italics: true, size: 24, color: C.muted })],
+    children: [new TextRun({ text: CFG.desc, italics: true, size: 24, color: C.muted })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { before: 600 },
-    children: [new TextRun({ text: "Versión 0.1 — borrador para revisión científica", bold: true, size: 24, color: C.accent })],
+    children: [new TextRun({ text: CFG.version, bold: true, size: 24, color: C.accent })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { before: 400 },
@@ -270,7 +281,7 @@ const cover = [
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER, spacing: { before: 120 },
-    children: [new TextRun({ text: "27 de octubre de 2026", size: 21, color: C.muted })],
+    children: [new TextRun({ text: CFG.fecha, size: 21, color: C.muted })],
   }),
   new Paragraph({ spacing: { before: 900 }, children: [] }),
   new Paragraph({
@@ -280,7 +291,7 @@ const cover = [
       top: { style: BorderStyle.SINGLE, size: 6, color: C.accent },
       bottom: { style: BorderStyle.SINGLE, size: 6, color: C.accent },
     },
-    children: [new TextRun({ text: "Documento de apoyo a la decisión clínica. No sustituye el criterio del profesional ni los protocolos del centro. Fuente de verdad del motor de decisión de la app VMNI Urgencias: ninguna recomendación entra en la app sin estar validada aquí.", italics: true, size: 19, color: "444444" })],
+    children: [new TextRun({ text: CFG.aviso, italics: true, size: 19, color: "444444" })],
   }),
   new Paragraph({ children: [new PageBreak()] }),
   new Paragraph({
@@ -294,7 +305,7 @@ const cover = [
 
 const doc = new Document({
   creator: "Carlos J. Galán Doval",
-  title: "VMNI en Urgencias — Base de Conocimiento Clínico v0.1",
+  title: `${CFG.t1} — ${CFG.t2}`,
   styles: {
     default: { document: { run: { font: "Avenir Next", size: 20, color: C.text } } },
     paragraphStyles: [

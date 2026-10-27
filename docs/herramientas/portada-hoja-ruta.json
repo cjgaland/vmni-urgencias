@@ -1,0 +1,10 @@
+{
+  "t1": "HOJA DE RUTA",
+  "t2": "VMNI Urgencias · v1.2 → v2.x",
+  "desc": "Planificación de la evolución de la aplicación: docencia ampliada, modo casos, simulador extendido y tratamientos",
+  "version": "Documento de planificación — 27 de octubre de 2026",
+  "fecha": "Análisis de las propuestas de Carlos J. Galán Doval + propuestas añadidas",
+  "aviso": "Nada de lo descrito en este documento está construido todavía. Las fases v2.x quedan condicionadas a la validación científica de Enrique Fernández Romero (16 decisiones del documento de base y futura sección de fármacos).",
+  "saltosPagina": false,
+  "decisiones": false
+}
