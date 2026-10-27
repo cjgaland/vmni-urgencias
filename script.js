@@ -62,6 +62,7 @@ document.querySelectorAll(".sel-btn").forEach(b => {
     po2.disabled = venosa;
     document.getElementById("lPo2").textContent = venosa ? "pO₂ (no válida en venosa)" : "pO₂ (mmHg)";
     if (venosa) po2.value = "";
+    if (typeof abEnVivo === "function") abEnVivo();
   });
 });
 
@@ -78,7 +79,7 @@ function marcarChip(grupo, valor) {
 
 /* ---------- reglas y motor ---------- */
 let REGLAS = null;
-fetch("datos/reglas.json").then(r => r.json()).then(r => { REGLAS = r; Motor.init(r); fio2EnVivo(); });
+fetch("datos/reglas.json").then(r => r.json()).then(r => { REGLAS = r; Motor.init(r); fio2EnVivo(); abEnVivo(); });
 
 const num = id => { const v = parseFloat(document.getElementById(id).value); return isFinite(v) ? v : undefined; };
 const fmt = (n, d = 2) => (n === null || n === undefined) ? "—" : String(Math.round(n * 10 ** d) / 10 ** d).replace(".", ",");
@@ -94,6 +95,23 @@ function fio2EnVivo() {
 }
 document.getElementById("iDisp").addEventListener("change", fio2EnVivo);
 document.getElementById("iFlujo").addEventListener("input", fio2EnVivo);
+
+/* Diagnóstico ácido-base en vivo bajo la gasometría (paso 3). */
+function abEnVivo() {
+  if (!REGLAS) return;
+  const caja = document.getElementById("abVivo");
+  let ph = num("iPh");
+  const pco2 = num("iPco2"), hco3 = num("iHco3");
+  const venosa = document.querySelector("#selAV .sel-btn.activo")?.dataset.v === "venosa";
+  if (venosa && isFinite(ph)) ph = Math.round((ph + (REGLAS?.gasometriaVenosa.correccionPh ?? 0.03)) * 100) / 100;
+  const r = (typeof Motor !== "undefined" && Motor.clasificarAcidoBase) ? Motor.clasificarAcidoBase(ph, pco2, hco3) : null;
+  if (!r) { caja.classList.add("oculto"); return; }
+  const icono = { acidosis: "🔻", alcalosis: "🔺", compensado: "⚖️", normal: "✅" }[r.tipo] || "🧪";
+  caja.classList.remove("oculto");
+  caja.innerHTML = `<b>${icono} ${r.titulo}</b>${venosa ? ` <small>(pH venoso corregido a ≈${fmt(ph)})</small>` : ""}` +
+    (r.detalle.length ? `<small>${r.detalle.join(" ")}</small>` : "");
+}
+["iPh", "iPco2", "iHco3"].forEach(id => document.getElementById(id).addEventListener("input", abEnVivo));
 
 function inicioRapido(tipo) {
   irA("evaluacion");
@@ -370,11 +388,21 @@ function abrirTema(id) {
       ${tm.espirograma ? `
         <div class="espiro-marco">
           <p class="sub">Espirograma interactivo</p>
+          <div class="espiro-persona">
+            <div class="chips" id="espSexo">
+              <button class="chip sel" data-v="h" onclick="espiroPersona('h')">👨 Hombre</button>
+              <button class="chip" data-v="m" onclick="espiroPersona('m')">👩 Mujer</button>
+            </div>
+            <label>Edad <input type="number" id="espEdad" value="40" min="16" max="100" oninput="espiroPersona()"> años</label>
+            <label>Talla <input type="number" id="espTalla" value="170" min="130" max="220" oninput="espiroPersona()"> cm</label>
+          </div>
+          <div class="espiro-valores" id="espValores"></div>
           <canvas id="espiroCanvas"></canvas>
           <div class="botonera" style="justify-content:flex-start;gap:10px">
             <button class="btn-sec btn-mini" onclick="Espiro.maniobrar('insp')">⬆ Inspiración máxima</button>
             <button class="btn-sec btn-mini" onclick="Espiro.maniobrar('esp')">⬇ Espiración máxima</button>
           </div>
+          <p class="nota-fuente">Valores teóricos: PBW por ARDSNet, capacidad vital por Knudson (1976) y volumen residual por ECSC/ERS (Quanjer 1993). El gráfico se reescala a la persona elegida.</p>
         </div>` : ""}
       ${tm.flujovol ? `
         <div class="espiro-marco">
@@ -389,8 +417,26 @@ function abrirTema(id) {
       ${nav}
     </div>`;
   window.scrollTo({ top: 0, behavior: "instant" });
-  if (tm.espirograma) Espiro.montar();
+  if (tm.espirograma) { Espiro.montar(); espiroPersona(); }
   if (tm.flujovol && typeof FlujoVol !== "undefined") FlujoVol.montar();
+}
+
+/* Volúmenes teóricos del espirograma según sexo, edad y talla (tema «volúmenes»). */
+function espiroPersona(sexo) {
+  const grupo = document.getElementById("espSexo");
+  if (!grupo) return;
+  if (sexo) grupo.querySelectorAll(".chip").forEach(c => c.classList.toggle("sel", c.dataset.v === sexo));
+  const s = grupo.querySelector(".chip.sel")?.dataset.v || "h";
+  const v = Motor.volumenesTeoricos(s, num("espEdad"), num("espTalla"));
+  const caja = document.getElementById("espValores");
+  if (!v) { caja.innerHTML = `<small>Introduce una edad (16–100 años) y una talla (130–220 cm) válidas.</small>`; return; }
+  const ml = l => Math.round(l * 1000).toLocaleString("es-ES") + " ml";
+  caja.innerHTML = [
+    ["Peso ideal", v.pbw.toLocaleString("es-ES") + " kg"],
+    ["VT (7 ml/kg)", ml(v.vt)], ["VRI", ml(v.vri)], ["VRE", ml(v.vre)], ["VR", ml(v.vr)],
+    ["CV", ml(v.cv)], ["CRF", ml(v.crf)], ["CPT", ml(v.cpt)],
+  ].map(([n, x]) => `<span class="val-mini"><small>${n}</small><b>${x}</b></span>`).join("");
+  Espiro.setValores(v);
 }
 
 /* --- glosario --- */
@@ -405,7 +451,7 @@ document.getElementById("busGlosario").addEventListener("input", e => pintarGlos
 
 /* --- ponte a prueba (con progreso personal en el dispositivo) --- */
 const QUIZ_N = 10;
-const NOMBRES_TEMA = { indicaciones: "Indicaciones", oxigenacion: "Oxigenación", parametros: "Parámetros", seguimiento: "Seguimiento", gasometria: "Gasometría", asincronias: "Asincronías", retirada: "Retirada", evidencia: "Evidencia", interfaces: "Interfaces", farmacos: "Fármacos", fisiologia: "Fisiología", cuidados: "Cuidados", anatomia: "Anatomía" };
+const NOMBRES_TEMA = { indicaciones: "Indicaciones", oxigenacion: "Oxigenación", parametros: "Parámetros", seguimiento: "Seguimiento", gasometria: "Gasometría", asincronias: "Asincronías", retirada: "Retirada", evidencia: "Evidencia", interfaces: "Interfaces", farmacos: "Fármacos", fisiologia: "Fisiología", volumenes: "Volúmenes", cuidados: "Cuidados", anatomia: "Anatomía" };
 let quiz = null;
 let QSTATS = { hechas: 0, aciertos: 0, racha: 0, mejorRacha: 0, falladas: {}, temas: {} };
 try { const s = localStorage.getItem("vmni-quiz"); if (s) QSTATS = Object.assign(QSTATS, JSON.parse(s)); } catch (e) {}

@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.4",
+    titulo: "Diagnóstico ácido-base en vivo y espirograma a medida",
+    texto: "La **Evaluación** interpreta ahora la gasometría mientras la tecleas: bajo el paso 3 aparece el **diagnóstico ácido-base** al instante (acidosis/alcalosis, respiratoria/metabólica, aguda, crónica o crónica agudizada, compensaciones por pH esperado y Winter), también con gasometría venosa (pH corregido). La **Docencia** estrena el tema **🧪 Gasometría: análisis y diagnóstico** (lectura sistemática en 4 pasos, con sus trampas) y 4 preguntas nuevas en el cuestionario (44 en total). Y el **espirograma interactivo** se hace personal: elige **sexo, edad y talla** y verás los **valores teóricos** de todos los volúmenes y capacidades (peso ideal ARDSNet, capacidad vital de Knudson, volumen residual ECSC/ERS) con el gráfico **reescalado a esa persona**; además se arregla el corte visual que hacían las maniobras de inspiración y espiración máximas, que ahora fluyen sin reiniciar el trazado.",
+  },
+  {
     version: "v2.3",
     titulo: "Manual ilustrado, curva flujo-volumen, modo alumno con decisiones y más",
     texto: "La **Ayuda** estrena el **Manual del Usuario completo en PDF** (descargable e imprimible, con capturas de pantalla, trucos y FAQ) y el **código QR** para compartir la app apuntando con la cámara. La **Docencia** crece hasta **9 temas** (nuevo tema de **alto flujo nasal — TAFCN**) con la **curva flujo-volumen animada** (asas normal, obstructiva y restrictiva); el cuestionario pasa a **40 preguntas** con **progreso guardado** (aciertos, racha y **repaso de falladas**). Los **Casos** permiten **archivar varios casos** en el dispositivo y añaden **6 ejemplos ficticios** completos; el 🎓 modo alumno registra **tus decisiones** en cada etapa y las compara con lo que se hizo. El **Seguimiento** calcula el **índice ROX** cuando el soporte es alto flujo. El **simulador** incorpora **AVAPS** (volumen asegurado) con volumen diana. Y además: **enlaces directos** a cada sección (#simulador, #docencia…), **tamaño de letra ajustable** (A− / A+ en Ayuda), y el buzón de **💬 Sugerencias** en el pie.",

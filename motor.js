@@ -106,6 +106,69 @@
     return { spo2, pao2: red(pao2, 0), fio2Eff: red(fio2Eff, 2) };
   }
 
+  /* ---------- Volúmenes y capacidades teóricos (docencia) ----------
+     PBW por ARDSNet (igual que pesoIdeal), CV por Knudson 1976 y VR por las
+     ecuaciones de referencia ECSC/ERS (Quanjer 1993). El reparto VRE≈25% de la CV
+     es la proporción del adulto tipo de los textos de fisiología. */
+  function volumenesTeoricos(sexo, edad, talla) {
+    if (!esNum(edad) || !esNum(talla) || talla < 130 || talla > 220 || edad < 16 || edad > 100) return null;
+    const mujer = sexo === "m";
+    const pbw = red((mujer ? 45.5 : 50) + 0.91 * (talla - 152.4), 1);
+    const vt = red(pbw * 7 / 1000, 2); // punto medio del rango fisiológico 6-8 ml/kg ideal
+    const cv = red(mujer ? 0.041 * talla - 0.018 * edad - 2.69
+                         : 0.052 * talla - 0.022 * edad - 3.60, 2);
+    const vr = red(mujer ? 1.81 * (talla / 100) + 0.016 * edad - 2.00
+                         : 1.31 * (talla / 100) + 0.022 * edad - 1.23, 2);
+    if (!(cv > vt + 0.5) || !(vr > 0.3)) return null;
+    const vre = red(0.25 * cv, 2);
+    const vri = red(cv - vt - vre, 2);
+    return { pbw, vt, cv, vr, vre, vri, crf: red(vr + vre, 2), cpt: red(cv + vr, 2) };
+  }
+
+  /* ---------- Clasificación ácido-base (lectura sistemática de la gasometría) ----------
+     pH → ¿acidemia/alcalemia? → componente respiratorio (pCO2) o metabólico (HCO3)
+     → compensación esperada (pH esperado agudo/crónico; Winter). Enfoque de Berend
+     NEJM 2014. Pura para poder testearla y mostrarla en vivo en la evaluación. */
+  function clasificarAcidoBase(ph, pco2, hco3) {
+    if (!esNum(ph) || !esNum(pco2)) return null;
+    const d = [];
+    const co2Alto = pco2 > 45, co2Bajo = pco2 < 35;
+    const hco3Bajo = esNum(hco3) && hco3 < 22, hco3Alto = esNum(hco3) && hco3 > 26;
+    let titulo, tipo;
+
+    if (ph < 7.35) {
+      tipo = "acidosis";
+      const coma = n => String(n).replace(".", ",");
+      if (co2Alto && hco3Bajo) { titulo = "Acidosis mixta (respiratoria + metabólica)"; d.push("pCO2 alta e HCO3 bajo a la vez: dos procesos acidóticos simultáneos."); }
+      else if (co2Alto) {
+        const phAgudo = red(7.4 - R.acidoBase.phEsperadoAgudo.porMmHg * (pco2 - 40), 2);
+        const phCronico = red(7.4 - R.acidoBase.phEsperadoCronico.porMmHg * (pco2 - 40), 2);
+        if (ph <= phAgudo + 0.02) { titulo = "Acidosis respiratoria aguda"; d.push(`El pH cae ≈0,008 por mmHg de pCO2 (esperado ${coma(phAgudo)}): no ha dado tiempo a compensar.`); }
+        else if (ph >= phCronico - 0.02) { titulo = "Acidosis respiratoria crónica (compensada)"; d.push(`El riñón ya retiene HCO3: pH cerca del esperado crónico (${coma(phCronico)}).`); }
+        else { titulo = "Acidosis respiratoria crónica agudizada"; d.push(`pH entre el esperado agudo (${coma(phAgudo)}) y el crónico (${coma(phCronico)}): hipercapnia crónica con empeoramiento agudo.`); }
+      } else if (hco3Bajo) {
+        titulo = "Acidosis metabólica";
+        const winter = red(1.5 * hco3 + 8, 0);
+        if (pco2 > winter + 2) { titulo += " con compensación respiratoria insuficiente"; d.push(`Winter: pCO2 esperada ${winter}±2 y tiene ${pco2} → componente respiratorio añadido (¿fatiga?).`); }
+        else if (pco2 < winter - 2) { titulo += " + alcalosis respiratoria añadida"; d.push(`Winter: pCO2 esperada ${winter}±2 y tiene ${pco2}: hiperventila más de lo que compensa.`); }
+        else d.push(`Compensación respiratoria adecuada (Winter: pCO2 esperada ${winter}±2).`);
+      } else { titulo = "Acidemia sin causa clara con estos datos"; d.push("pCO2 y HCO3 no la explican: revisa los valores (¿láctico, tóxicos?)."); }
+    } else if (ph > 7.45) {
+      tipo = "alcalosis";
+      if (co2Bajo && hco3Alto) { titulo = "Alcalosis mixta (respiratoria + metabólica)"; d.push("pCO2 baja e HCO3 alto a la vez."); }
+      else if (co2Bajo) { titulo = "Alcalosis respiratoria"; d.push("Hiperventilación: pCO2 baja con pH alto (dolor, ansiedad, hipoxemia, TEP…)."); }
+      else if (hco3Alto) { titulo = "Alcalosis metabólica"; d.push("HCO3 alto con pH alto (vómitos, diuréticos, hipopotasemia…)."); }
+      else { titulo = "Alcalemia sin causa clara con estos datos"; d.push("pCO2 y HCO3 no la explican: revisa los valores."); }
+    } else {
+      tipo = "normal";
+      if (co2Alto && hco3Alto) { titulo = "pH normal con hipercapnia compensada"; d.push("Acidosis respiratoria crónica totalmente compensada (retenedor crónico) — pH normal NO significa gasometría normal."); tipo = "compensado"; }
+      else if (co2Bajo && hco3Bajo) { titulo = "pH normal con hipocapnia e HCO3 bajo"; d.push("Posible acidosis metabólica compensada o trastorno mixto equilibrado."); tipo = "compensado"; }
+      else if (co2Alto || co2Bajo || hco3Bajo || hco3Alto) { titulo = "pH normal con alteración aislada"; d.push("Un solo parámetro alterado con pH normal: posible trastorno mixto equilibrado; valora clínica y repite."); tipo = "compensado"; }
+      else titulo = "Equilibrio ácido-base normal";
+    }
+    return { tipo, titulo, detalle: d };
+  }
+
   /* ---------- HACOR ---------- */
   function hacor({ fc, ph, gcs, pafi, fr }) {
     if (![fc, ph, gcs, pafi, fr].every(esNum)) return null;
@@ -346,7 +409,7 @@
     return { veredicto, texto, menores, hacor: h, mejoraPh, mejoraFr };
   }
 
-  const Motor = { init, fio2Estimada, calculos, hacor, clasificar, recomendar, evaluar, evaluarRespuesta, spo2Simulada };
+  const Motor = { init, fio2Estimada, calculos, hacor, clasificar, recomendar, evaluar, evaluarRespuesta, spo2Simulada, volumenesTeoricos, clasificarAcidoBase };
   if (typeof module !== "undefined" && module.exports) module.exports = Motor;
   global.Motor = Motor;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -5,19 +5,27 @@
 const Espiro = (() => {
   "use strict";
 
-  // niveles en litros (adulto tipo)
-  const VR = 1.2, CRF = 2.3, VT_SUP = 2.8, CPT = 5.8, MAX = 6.2;
-  const BANDAS = [
-    { de: 0, a: VR, color: "#E3E8EC", nombre: "VR", detalle: "Volumen residual" },
-    { de: VR, a: CRF, color: "#D5E8EE", nombre: "VRE", detalle: "Reserva espiratoria" },
-    { de: CRF, a: VT_SUP, color: "#BFE5CC", nombre: "VT", detalle: "Volumen corriente" },
-    { de: VT_SUP, a: CPT, color: "#E8F2F5", nombre: "VRI", detalle: "Reserva inspiratoria" },
-  ];
-  const LLAVES = [ // capacidades (llaves a la derecha)
-    { de: 0, a: CRF, nombre: "CRF", off: 12 },
-    { de: VR, a: CPT, nombre: "CV", off: 52 },
-    { de: 0, a: CPT, nombre: "CPT", off: 92 },
-  ];
+  // niveles en litros — por defecto el adulto tipo; setValores() los recalcula
+  // a partir de los volúmenes teóricos por sexo, edad y talla.
+  let N = { vr: 1.2, vre: 1.1, vt: 0.5, vri: 3.0 };
+  let VR, CRF, VT_SUP, CPT, MAX, BANDAS, LLAVES;
+  const lit = v => (Math.round(v * 20) / 20).toLocaleString("es-ES") + " L";
+  function calcularNiveles() {
+    VR = N.vr; CRF = N.vr + N.vre; VT_SUP = CRF + N.vt; CPT = VT_SUP + N.vri;
+    MAX = CPT * 1.08;
+    BANDAS = [
+      { de: 0, a: VR, color: "#E3E8EC", nombre: "VR", detalle: "Volumen residual", v: N.vr },
+      { de: VR, a: CRF, color: "#D5E8EE", nombre: "VRE", detalle: "Reserva espiratoria", v: N.vre },
+      { de: CRF, a: VT_SUP, color: "#BFE5CC", nombre: "VT", detalle: "Volumen corriente", v: N.vt },
+      { de: VT_SUP, a: CPT, color: "#E8F2F5", nombre: "VRI", detalle: "Reserva inspiratoria", v: N.vri },
+    ];
+    LLAVES = [ // capacidades (llaves a la derecha)
+      { de: 0, a: CRF, nombre: "CRF", off: 12, v: CRF },
+      { de: VR, a: CPT, nombre: "CV", off: 52, v: CPT - VR },
+      { de: 0, a: CPT, nombre: "CPT", off: 92, v: CPT },
+    ];
+  }
+  calcularNiveles();
 
   let cv = null, ctx = null, dpr = 1;
   let W = 760, H = 360, X0 = 46, X1 = 600;
@@ -27,6 +35,8 @@ const Espiro = (() => {
   let t = 0, x = X0, prev = null;
   let maniobra = null; // {tipo:"insp"|"esp", t0}
   let resalte = null;
+  let puntos = [];            // trazo del barrido actual, para redibujar sin cortes
+  let pedirRedibujo = false;  // la maniobra terminó: refrescar resaltes sin perder el trazo
 
   const yDe = v => H - 24 - (v / MAX) * (H - 44);
 
@@ -39,7 +49,7 @@ const Espiro = (() => {
     if (tm < 1.6) return base + (objetivo - base) * suave(tm / 1.6);
     if (tm < 2.2) return objetivo;
     if (tm < 3.8) return objetivo + (base - objetivo) * suave((tm - 2.2) / 1.6);
-    maniobra = null; resalte = null;
+    maniobra = null; resalte = null; pedirRedibujo = true;
     return base;
   }
 
@@ -48,7 +58,7 @@ const Espiro = (() => {
     pintarBandas(0, W);
     // eje de litros
     ctx.fillStyle = "#5A6B70"; ctx.font = "600 11px -apple-system, sans-serif"; ctx.textAlign = "right";
-    [0, 1, 2, 3, 4, 5, 6].forEach(l => ctx.fillText(l, X0 - 7, yDe(l) + 4));
+    for (let l = 0; l <= Math.floor(MAX); l++) ctx.fillText(l, X0 - 7, yDe(l) + 4);
     ctx.save(); ctx.translate(13, H / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center";
     ctx.fillText("Volumen (L)", 0, 0); ctx.restore();
     // llaves de capacidades a la derecha
@@ -61,7 +71,10 @@ const Espiro = (() => {
       ctx.stroke();
       ctx.fillStyle = activa ? "#B3541E" : "#16697A"; ctx.font = "800 12px -apple-system, sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText(c.nombre, xx + 5, (y1 + y2) / 2 + 4);
+      ctx.fillText(c.nombre, xx + 5, (y1 + y2) / 2 - 2);
+      ctx.font = "600 10px -apple-system, sans-serif";
+      ctx.fillStyle = activa ? "#B3541E" : "rgba(22,105,122,.75)";
+      ctx.fillText(lit(c.v), xx + 5, (y1 + y2) / 2 + 11);
     });
     ctx.textAlign = "left";
   }
@@ -87,7 +100,7 @@ const Espiro = (() => {
       ctx.fillText(b.nombre, X0 + 8, (yDe(b.de) + yDe(b.a)) / 2 + 4);
       ctx.font = "500 10px -apple-system, sans-serif";
       ctx.fillStyle = "rgba(15,76,92,.5)";
-      ctx.fillText(b.detalle, X0 + 44, (yDe(b.de) + yDe(b.a)) / 2 + 4);
+      ctx.fillText(`${b.detalle} · ${lit(b.v)}`, X0 + 44, (yDe(b.de) + yDe(b.a)) / 2 + 4);
     });
     ctx.restore();
   }
@@ -100,7 +113,7 @@ const Espiro = (() => {
     for (let k = 0; k < pasos; k++) {
       const sub = dt / pasos;
       t += sub; x += sub * PXS;
-      if (x >= X1) { x = X0; prev = null; }
+      if (x >= X1) { x = X0; prev = null; puntos = []; }
       const v = volumen(t);
       // barra de barrido: restaura las bandas bajo ella
       pintarBandas(x + 1, 12);
@@ -109,7 +122,9 @@ const Espiro = (() => {
         ctx.beginPath(); ctx.moveTo(prev.x, yDe(prev.v)); ctx.lineTo(x, yDe(v)); ctx.stroke();
       }
       prev = { x, v };
+      puntos.push(prev);
     }
+    if (pedirRedibujo) { pedirRedibujo = false; redibujar(); }
     raf = requestAnimationFrame(bucle);
   }
 
@@ -117,10 +132,31 @@ const Espiro = (() => {
     if (maniobra) return;
     maniobra = { tipo, t0: t };
     resalte = tipo === "insp" ? "VRI" : "VRE";
-    setTimeout(() => { if (resalte) resalte = tipo === "insp" ? "CPT" : "CRF"; fondoEtiquetas(); }, 1700);
-    fondoEtiquetas();
+    setTimeout(() => {
+      if (resalte) { resalte = tipo === "insp" ? "CPT" : "CRF"; redibujar(); }
+    }, 1700);
+    redibujar();
   }
-  function fondoEtiquetas() { if (ctx) fondo(); prev = null; x = X0; }
+  // Repinta fondo + resaltes y VUELVE A TRAZAR la curva ya dibujada: la
+  // animación continúa donde estaba, sin el corte que reiniciaba el barrido.
+  function redibujar() {
+    if (!ctx) return;
+    fondo();
+    if (puntos.length > 1) {
+      ctx.strokeStyle = "#0F4C5C"; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.beginPath();
+      puntos.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, yDe(p.v)) : ctx.lineTo(p.x, yDe(p.v)));
+      ctx.stroke();
+    }
+  }
+  // Reescala el gráfico a los volúmenes teóricos (L) de la persona elegida.
+  function setValores(v) {
+    if (!v) return;
+    N = { vr: v.vr, vre: v.vre, vt: v.vt, vri: v.vri };
+    calcularNiveles();
+    t = 0; x = X0; prev = null; puntos = []; maniobra = null; resalte = null;
+    if (ctx) fondo();
+  }
 
   function montar() {
     cv = document.getElementById("espiroCanvas");
@@ -132,14 +168,14 @@ const Espiro = (() => {
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     cv.style.width = W + "px"; cv.style.height = H + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    t = 0; x = X0; prev = null; maniobra = null; resalte = null;
+    t = 0; x = X0; prev = null; puntos = []; maniobra = null; resalte = null; pedirRedibujo = false;
     fondo();
     activo = true; bucle.t0 = null;
     raf = requestAnimationFrame(bucle);
   }
   function pausar() { activo = false; if (raf) cancelAnimationFrame(raf); }
 
-  return { montar, pausar, maniobrar };
+  return { montar, pausar, maniobrar, setValores };
 })();
 
 /* ====== Curva flujo-volumen animada (tema «Flujos») ======

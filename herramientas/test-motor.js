@@ -174,5 +174,54 @@ caso("Respuesta incompleta → vigilar", () => {
   esperar(r.veredicto === "vigilar", r.veredicto);
 });
 
+console.log("— Volúmenes teóricos (docencia) —");
+caso("Hombre 175 cm, 40 años: PBW ≈70,6; CV Knudson ≈4,62 L; CPT = CV+VR", () => {
+  const v = Motor.volumenesTeoricos("h", 40, 175);
+  esperar(Math.abs(v.pbw - 70.6) < 0.2, "PBW " + v.pbw);
+  esperar(Math.abs(v.cv - 4.62) < 0.05, "CV " + v.cv);
+  esperar(Math.abs(v.cpt - (v.cv + v.vr)) < 0.03, "CPT ≠ CV+VR");
+  esperar(Math.abs(v.cv - (v.vt + v.vri + v.vre)) < 0.03, "CV ≠ VT+VRI+VRE");
+});
+caso("Mujer 165 cm, 40 años: CV ≈3,36 L; todos los volúmenes positivos", () => {
+  const v = Motor.volumenesTeoricos("m", 40, 165);
+  esperar(Math.abs(v.cv - 3.36) < 0.05, "CV " + v.cv);
+  esperar(v.vt > 0 && v.vri > 0 && v.vre > 0 && v.vr > 0, "volumen no positivo");
+});
+caso("Entradas fuera de rango → null", () => {
+  esperar(Motor.volumenesTeoricos("h", 40, 110) === null, "talla 110");
+  esperar(Motor.volumenesTeoricos("h", 8, 175) === null, "edad 8");
+});
+
+console.log("— Clasificación ácido-base —");
+caso("pH 7,25 / pCO2 60 / HCO3 26 → acidosis respiratoria aguda", () => {
+  const r = Motor.clasificarAcidoBase(7.25, 60, 26);
+  esperar(r.titulo === "Acidosis respiratoria aguda", r.titulo);
+});
+caso("pH 7,25 / pCO2 70 / HCO3 30 → crónica agudizada; pH 7,34 / pCO2 60 → crónica compensada", () => {
+  esperar(Motor.clasificarAcidoBase(7.25, 70, 30).titulo.includes("crónica agudizada"), "agudizada");
+  esperar(Motor.clasificarAcidoBase(7.34, 60, 30).titulo.includes("compensada"), "compensada");
+});
+caso("pH 7,28 / pCO2 26 / HCO3 12 → metabólica con Winter adecuado (26±2)", () => {
+  const r = Motor.clasificarAcidoBase(7.28, 26, 12);
+  esperar(r.titulo === "Acidosis metabólica", r.titulo);
+  esperar(r.detalle[0].includes("adecuada"), r.detalle[0]);
+});
+caso("pH 7,20 / pCO2 38 / HCO3 14 → metabólica con compensación insuficiente", () => {
+  const r = Motor.clasificarAcidoBase(7.20, 38, 14);
+  esperar(r.titulo.includes("insuficiente"), r.titulo);
+});
+caso("pH 7,52 / pCO2 28 → alcalosis respiratoria; pH 7,50 / pCO2 44 / HCO3 32 → metabólica", () => {
+  esperar(Motor.clasificarAcidoBase(7.52, 28, 24).titulo === "Alcalosis respiratoria", "resp");
+  esperar(Motor.clasificarAcidoBase(7.50, 44, 32).titulo === "Alcalosis metabólica", "met");
+});
+caso("pH 7,38 / pCO2 60 / HCO3 34 → hipercapnia compensada (retenedor)", () => {
+  const r = Motor.clasificarAcidoBase(7.38, 60, 34);
+  esperar(r.tipo === "compensado" && r.titulo.includes("hipercapnia compensada"), r.titulo);
+});
+caso("pH 7,40 / pCO2 40 / HCO3 24 → normal; mixta si pCO2 alta e HCO3 bajo con pH bajo", () => {
+  esperar(Motor.clasificarAcidoBase(7.40, 40, 24).titulo === "Equilibrio ácido-base normal", "normal");
+  esperar(Motor.clasificarAcidoBase(7.10, 60, 14).titulo.includes("mixta"), "mixta");
+});
+
 console.log(`\n${ok} correctos, ${fallos} fallos`);
 process.exit(fallos ? 1 : 0);

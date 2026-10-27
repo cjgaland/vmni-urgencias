@@ -112,6 +112,33 @@ Umbrales relevantes: FR >24 (criterio de inicio en EPOC, ERS/ATS p.6), FR >30 (f
 | **HACOR** (a 1–2 h de VNI) | FC + pH + GCS + PaFi + FR (0–25 puntos) | ≤5: fracaso ~18% · >5: fracaso ~78% (Duan 2017; validación externa más débil, AUC 0,71–0,83) (pendiente de revisión) |
 | **Peso ideal** (para Vt objetivo) | Varón: 50 + 0,91×(talla cm −152,4) · Mujer: 45,5 + 0,91×(talla cm −152,4) | Vt objetivo 6–8 ml/kg ideal (ver §7) |
 
+### 2.6 Clasificación ácido-base automática (añadida 27-10-2026)
+
+La app aplica en vivo, sobre pH + pCO2 + HCO3, la lectura sistemática del enfoque fisiológico
+(Berend, NEJM 2014 [26]) usando las fórmulas de §2.5:
+
+1. **pH**: <7,35 acidemia · >7,45 alcalemia · en rango ≠ gasometría normal.
+2. **Componente**: pCO2 >45 respiratorio · HCO3 <22 (o >26) metabólico · ambos en la misma dirección → **mixto**.
+3. **Compensación**: acidosis respiratoria → pH esperado agudo/crónico (0,008/0,003 por mmHg; entre ambos = *crónica agudizada*); acidosis metabólica → Winter ±2 (pCO2 real mayor = compensación insuficiente; menor = alcalosis respiratoria añadida).
+4. **pH normal con pCO2/HCO3 alterados** → trastorno compensado o mixto equilibrado (aviso explícito: el retenedor crónico compensado no es indicación urgente de VNI por sí solo).
+
+En gasometría venosa se clasifica con el pH corregido (+0,03, §2.3) y se indica.
+Tolerancia de ±0,02 sobre los pH esperados para el corte agudo/crónico.
+
+### 2.7 Volúmenes y capacidades teóricos del espirograma docente (añadido 27-10-2026)
+
+Solo para el módulo docente (no intervienen en el motor de recomendación):
+
+| Valor | Fórmula | Fuente |
+|---|---|---|
+| **PBW** | la misma de §2.5 (ARDSNet) | ARDSNet [10] |
+| **VT teórico** | PBW × 7 ml/kg (punto medio del rango fisiológico 6–8) | ARDSNet [10] |
+| **CV teórica** | Varón: 0,052×talla −0,022×edad −3,60 · Mujer: 0,041×talla −0,018×edad −2,69 (L) | Knudson 1976 [27] |
+| **VR teórico** | Varón: 1,31×talla(m) +0,022×edad −1,23 · Mujer: 1,81×talla(m) +0,016×edad −2,00 (L) | ECSC/ERS, Quanjer 1993 [28] |
+| **Reparto** | VRE = 25% de la CV (proporción del adulto tipo); VRI = CV − VT − VRE; CRF = VR+VRE; CPT = CV+VR | Fisiología clásica (West) |
+
+Validez: edad 16–100 años, talla 130–220 cm; fuera de rango la app no muestra valores.
+
 > **Nota HCO3 (pregunta del borrador):** se necesita el **valor absoluto**, no categorías — las fórmulas de pH esperado y Winter lo requieren. La app puede mostrar además la categoría (<22 / 22–26 / 27–30 / >30).
 
 ---
@@ -375,6 +402,9 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 23. GEMA — Guía Española para el Manejo del Asma (edición vigente). gemasma.org.
 24. Cano Ballesteros JC. VNI en la IRA en urgencias: aplicabilidad y pronóstico. Tesis doctoral UCM, 2019.
 25. Carrera Cueva C et al. Cap. 1309 Ventilación Mecánica No Invasiva (manual de urgencias, "RespVMNI").
+26. Berend K, de Vries APJ, Gans ROB. Physiological approach to assessment of acid-base disturbances. N Engl J Med 2014;371:1434-1445.
+27. Knudson RJ et al. The maximal expiratory flow-volume curve: normal standards, variability, and effects of age. Am Rev Respir Dis 1976;113:587-600.
+28. Quanjer PH et al. Lung volumes and forced ventilatory flows. Official Statement of the European Respiratory Society. Eur Respir J 1993;6(Supl 16):5-40.
 
 ---
 

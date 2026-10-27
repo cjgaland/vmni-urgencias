@@ -60,6 +60,23 @@ const DOCENCIA_DATA = {
       ],
     },
     {
+      id: "gasometria", icono: "🧪", titulo: "Gasometría: análisis y diagnóstico",
+      resumen: "Lectura sistemática en 4 pasos: ¿acidosis o alcalosis? ¿respiratoria o metabólica? ¿compensada? ¿aguda o crónica?",
+      bloques: [
+        { t: "Paso 1 — el pH manda: ¿acidemia o alcalemia?", p: "Empieza SIEMPRE por el pH: <strong>&lt;7,35 acidemia</strong>, <strong>&gt;7,45 alcalemia</strong>, 7,35–7,45 normal… <em>que no es lo mismo que gasometría normal</em> (puede haber un trastorno totalmente compensado o dos trastornos opuestos equilibrados). El pH dice QUÉ hay; los otros dos dicen QUIÉN lo causa." },
+        { t: "Paso 2 — ¿quién tiene la culpa? pCO₂ (pulmón) frente a HCO₃ (riñón/metabolismo)", p: "Busca el parámetro que explica el pH en su misma dirección: <strong>acidosis + pCO₂ &gt;45 = respiratoria</strong> (hipoventilación: EPOC, sedantes, fatiga, SHO); <strong>acidosis + HCO₃ &lt;22 = metabólica</strong> (láctico, cetoacidosis, pérdidas digestivas/renales); <strong>alcalosis + pCO₂ &lt;35 = respiratoria</strong> (hiperventilación: dolor, ansiedad, hipoxemia, TEP); <strong>alcalosis + HCO₃ &gt;26 = metabólica</strong> (vómitos, diuréticos). Si AMBOS empujan el pH en la misma dirección, el trastorno es <strong>mixto</strong> (p. ej. parada respiratoria + shock: pCO₂ alta E HCO₃ bajo)." },
+        { t: "Paso 3 — ¿la compensación es la esperada?", p: "El organismo compensa, pero con reglas y SIN pasarse de la raya (la compensación nunca normaliza del todo el pH). En la <strong>acidosis respiratoria</strong>: el pH cae ~<strong>0,008 por mmHg</strong> de pCO₂ si es aguda y ~<strong>0,003</strong> si es crónica (el riñón ya retiene HCO₃) — un pH entre ambos esperados = <strong>crónica agudizada</strong>, el patrón estrella del EPOC que se descompensa. En la <strong>acidosis metabólica</strong>: fórmula de <strong>Winter</strong>, pCO₂ esperada = 1,5×HCO₃ + 8 (±2). Si la pCO₂ real es MAYOR, el pulmón no compensa lo que debería (¿se está fatigando?); si es MENOR, hay una alcalosis respiratoria añadida.", cajas: [{ titulo: "🧪 Tres gasometrías, tres historias (pCO₂ 60 en las tres)", items: [
+          "**pH 7,24** → aguda pura (7,40 − 0,008×20): intoxicación, fatiga aguda.",
+          "**pH 7,29** → crónica AGUDIZADA (entre 7,24 y 7,34): el EPOC que se descompensa — la indicación clásica de VNI.",
+          "**pH 7,36 con HCO₃ 34** → crónica compensada: el retenedor estable. NO es una indicación de VNI urgente por sí sola.",
+        ] }] },
+        { t: "Paso 4 — trampas que ve Urgencias", p: "① <strong>pH normal con pCO₂ y HCO₃ altos</strong>: retenedor crónico compensado — no tratar el número, tratar al paciente. ② <strong>pH normal con pCO₂ baja e HCO₃ bajo</strong>: puede ser una acidosis metabólica BIEN compensada… o un trastorno mixto; mira el láctico y la clínica. ③ <strong>Gasometría venosa</strong>: válida para pH (+0,03) y para DESCARTAR hipercapnia (pCO₂ &lt;45), nunca para la oxigenación. ④ Un <strong>láctico alto con pH aún normal</strong> es una acidosis metabólica en camino: no te fíes de la foto, mira la película.", cajas: [{ titulo: "📲 En la app", items: [
+          "La **Evaluación** hace esta lectura en vivo: al teclear pH, pCO₂ y HCO₃ en el paso de gasometría verás el diagnóstico ácido-base al instante, con el esperado agudo/crónico y Winter.",
+          "La calculadora de **pH esperado** (Herramientas) hace el paso 3 suelto en 10 segundos.",
+        ] }] },
+      ],
+    },
+    {
       id: "fundamentos", icono: "🫁", titulo: "Fundamentos de la VMNI",
       resumen: "Qué hace de verdad la presión positiva y cuándo pensar en ella.",
       bloques: [
@@ -243,6 +260,10 @@ const DOCENCIA_DATA = {
     /* --- modificadores anatómicos --- */
     { tema: "anatomia", q: "En la cifoscoliosis severa que precisa VNI es esperable necesitar:", o: ["IPAP bajas (<10)", "IPAP altas (a veces >20) con Ti 1,2–1,5 s", "Solo CPAP", "FR de respaldo de 30"], c: 1, e: "La caja rígida y la CPT reducida exigen presiones inspiratorias altas para lograr volumen, con Ti largos (patrón restrictivo) y EPAP de reclutamiento. Además: posible vía aérea difícil si hay que intubar." },
     { tema: "anatomia", q: "Paciente con lobectomía previa que precisa VNI por una agudización. ¿Qué ajuste es prudente?", o: ["Vt en el rango alto (9–10 ml/kg)", "Vt en el rango bajo (~6 ml/kg ideal) y umbral bajo para descartar neumotórax", "Doblar la FR de respaldo", "Evitar siempre la VNI"], c: 1, e: "Con parénquima reducido, el mismo Vt distiende más el pulmón restante: objetivo en el rango bajo, vigilar la asimetría ventilatoria y, ante un deterioro brusco, imagen precoz para descartar neumotórax." },
+    { tema: "gasometria", q: "pH 7,36, pCO₂ 62, HCO₃ 34. ¿Diagnóstico?", o: ["Acidosis respiratoria aguda", "Acidosis respiratoria crónica compensada", "Alcalosis metabólica", "Gasometría normal"], c: 1, e: "El pH está en rango porque el riñón ha retenido HCO₃ durante días-semanas: retenedor crónico compensado. Un pH normal NO significa gasometría normal — y este paciente no necesita VNI urgente por este dato aislado." },
+    { tema: "gasometria", q: "Acidosis metabólica con HCO₃ 12: ¿qué pCO₂ esperas si la compensación respiratoria es adecuada (Winter)?", o: ["12", "26 ± 2", "40", "50"], c: 1, e: "Winter: pCO₂ esperada = 1,5×12 + 8 = 26 (±2). Si la pCO₂ real es claramente mayor, el pulmón no está compensando (fatiga, depresión respiratoria): vigílalo de cerca — puede necesitar soporte." },
+    { tema: "gasometria", q: "pH 7,28 con pCO₂ 70 en un EPOC conocido. El pH esperado agudo sería 7,16 y el crónico 7,31. ¿Cómo lo interpretas?", o: ["Acidosis respiratoria aguda pura", "Acidosis crónica agudizada", "Acidosis metabólica", "Error de la máquina"], c: 1, e: "El pH real (7,28) queda ENTRE el esperado agudo (7,16) y el crónico (7,31): hipercapnia crónica con empeoramiento agudo — el perfil típico del EPOC agudizado que se beneficia de la VNI." },
+    { tema: "volumenes", q: "Hombre de 175 cm: ¿sobre qué peso se calcula su volumen corriente objetivo?", o: ["Su peso real, sea cual sea", "El peso ideal (~70 kg por ARDSNet)", "El peso que diga la familia", "90 kg fijos"], c: 1, e: "Sobre el peso corporal predicho/ideal (ARDSNet: 50 + 0,91×(talla−152,4) ≈ 70,6 kg), porque el tamaño pulmonar depende de talla y sexo, no de la grasa corporal. 6–8 ml/kg ideal ≈ 420–565 ml." },
   ],
 
   /* ---------------- BIBLIOGRAFÍA COMENTADA ---------------- */
@@ -266,6 +287,9 @@ const DOCENCIA_DATA = {
     { tipo: "Guía", ref: "GesEPOC 2021 — Diagnóstico y tratamiento del síndrome de agudización de la EPOC. Arch Bronconeumol 2022;58:159-170.", com: "La guía española de la agudización: broncodilatación como base, corticoide si ingreso (mejor con eosinófilos ≥300), y antibiótico guiado por purulencia, PCR ≥20 o necesidad de soporte ventilatorio — que por sí sola ya lo indica." },
     { tipo: "Guía", ref: "GINA. Global Strategy for Asthma Management and Prevention (edición vigente). ginasthma.org.", com: "El marco internacional de la crisis asmática: SABA + ipratropio en la grave, corticoide sistémico en la primera hora, SpO₂ objetivo 93-95% y sulfato de magnesio (2 g IV en 20 min) reservado para la crisis grave que no responde." },
     { tipo: "Guía", ref: "GEMA — Guía Española para el Manejo del Asma (edición vigente). gemasma.org.", com: "La contraparte española de GINA, con las pautas y dosis adaptadas a nuestro medio. Referencia para la sección de fármacos de la app (pendiente de validación)." },
+    { tipo: "Revisión", ref: "Berend K, de Vries APJ, Gans ROB. Physiological approach to assessment of acid-base disturbances. N Engl J Med 2014;371:1434-1445.", com: "La lectura sistemática de la gasometría que sigue la app (y el tema docente): pH → componente → compensación esperada → mixtos. Incluye las reglas del pH esperado y la fórmula de Winter." },
+    { tipo: "Estudio", ref: "Knudson RJ et al. The maximal expiratory flow-volume curve: normal standards. Am Rev Respir Dis 1976;113:587-600.", com: "De aquí salen las ecuaciones lineales de capacidad vital teórica por sexo, talla y edad que usa el espirograma interactivo." },
+    { tipo: "Guía", ref: "Quanjer PH et al. Lung volumes and forced ventilatory flows. Official Statement ERS. Eur Respir J 1993;6(Supl 16):5-40.", com: "Las ecuaciones europeas de referencia (ECSC/ERS) de los volúmenes pulmonares: el volumen residual teórico del espirograma viene de ellas." },
   ],
 };
 /* temas de las 26 preguntas originales (las nuevas ya llevan el suyo) */
