@@ -57,13 +57,21 @@ const Casos = (() => {
     const cont = $("casosCont");
     if (!cont) return;
     if (vista === "informe" && caso) return pintarInforme();
-    if (caso) return pintarActivo();
+    if (caso && vista !== "lista") return pintarActivo();
     pintarLista();
   }
+  // navegación entre vistas (los botones «Volver al caso» y «Todos los casos»)
+  function volverAlCaso() { vista = caso ? "activo" : "lista"; pintar(); }
+  function verLista() { vista = "lista"; pintar(); }
 
   function pintarLista() {
     vista = "lista";
     $("casosCont").innerHTML = `
+      ${caso ? `
+      <article class="card modulo caso-en-curso" onclick="Casos.volverAlCaso()" style="margin-bottom:16px;border-left:4px solid var(--acento)">
+        <div class="icono doc">⏳</div><h3>Caso en curso: ${esc(caso.titulo)}</h3>
+        <p>${esc(caso.meta.escenario)} · ${caso.meta.edad} años · ${caso.eventos.length} eventos — toca para continuar donde lo dejaste.</p>
+      </article>` : ""}
       <div class="grid-modulos">
         <article class="card modulo" onclick="Casos.nuevo()">
           <div class="icono doc">➕</div><h3>Nuevo caso</h3>
@@ -160,6 +168,9 @@ const Casos = (() => {
       return `<div class="ev"><span class="ev-t">t+${ev.t}′</span><span class="ev-icono">${iconos[ev.tipo]}</span><div class="ev-cuerpo">${cuerpo}</div></div>`;
     };
     $("casosCont").innerHTML = `
+      <div class="botonera suelta" style="justify-content:flex-start;margin:0 0 10px">
+        <button class="btn-sec btn-mini" onclick="Casos.verLista()">☰ Todos los casos</button>
+      </div>
       <div class="card caso-cab">
         <div class="caso-titulo"><h3>🗂 ${esc(caso.titulo)}</h3>${etiquetaTipo()}</div>
         <p class="explica">${esc(caso.meta.escenario)} · ${caso.meta.edad} años · ${caso.meta.sexo === "v" ? "varón" : "mujer"}${caso.meta.talla ? ` · ${caso.meta.talla} cm` : ""}</p>
@@ -505,7 +516,8 @@ const Casos = (() => {
         </div>
       </div>
       <div class="botonera suelta no-imprimir">
-        <button class="btn-sec" onclick="Casos.pintar()">← Volver al caso</button>
+        <button class="btn-sec" onclick="Casos.volverAlCaso()">← Volver al caso</button>
+        <button class="btn-sec" onclick="Casos.verLista()">☰ Todos los casos</button>
         <span style="display:flex;gap:10px">
           <button class="btn-sec" onclick="Casos.exportar()">💾 Guardar .json</button>
           <button class="btn-primario" onclick="window.print()">🖨 Imprimir / PDF</button>
@@ -554,5 +566,5 @@ const Casos = (() => {
     vista = "informe"; pintar();
   }
 
-  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, addFarmaco, prefijarDosis, simularEvolucion, revelarEtapa, salirAlumno, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo };
+  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, addFarmaco, prefijarDosis, simularEvolucion, revelarEtapa, salirAlumno, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo, volverAlCaso, verLista, archivar, abrirGuardado, borrarGuardado };
 })();
