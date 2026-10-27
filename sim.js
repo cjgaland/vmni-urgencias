@@ -13,9 +13,9 @@ const Sim = (() => {
   const W = 720, H = 430;
   cv.width = W * dpr; cv.height = H * dpr;
   ctx.scale(dpr, dpr);
-  const PXS = 78;            // píxeles por segundo
-  const X0 = 46, X1 = W - 26; // márgenes del área de trazado (escala izq., unidades dcha.)
-  const HB = H - 20;          // reserva inferior para el eje de tiempo
+  const PXS = 76;            // píxeles por segundo
+  const X0 = 58, X1 = W - 34; // márgenes del área de trazado (escala izq., unidades dcha.)
+  const HB = H - 26;          // reserva inferior para el eje de tiempo
 
   /* ---------- vistas (temas) ---------- */
   const TEMAS = {
@@ -64,8 +64,8 @@ const Sim = (() => {
       { nombre: "Flujo", unidad: "L/min", min: -75, max: 75, ticks: [-60, 0, 60] },
       { nombre: "Volumen", unidad: "ml", min: 0, max: 800, ticks: [0, 400, 800] },
     ].slice(0, n);
-    const alto = Math.floor((HB - 18 - n * 22) / n);
-    bandas = defs.map((d, i) => Object.assign({}, d, { y0: 18 + i * (alto + 22), alto }));
+    const alto = Math.floor((HB - 22 - n * 26) / n);
+    bandas = defs.map((d, i) => Object.assign({}, d, { y0: 22 + i * (alto + 26), alto }));
   }
 
   const yDe = (b, v) => b.y0 + b.alto - ((Math.max(b.min, Math.min(b.max, v)) - b.min) / (b.max - b.min)) * b.alto;
@@ -76,7 +76,7 @@ const Sim = (() => {
     ctx.lineWidth = 1;
     ctx.setLineDash([2, 5]);
     for (let gx = X0; gx <= X1; gx += PXS) {
-      ctx.strokeStyle = T.grid; ctx.beginPath(); ctx.moveTo(gx, 14); ctx.lineTo(gx, HB); ctx.stroke();
+      ctx.strokeStyle = T.grid; ctx.beginPath(); ctx.moveTo(gx, 16); ctx.lineTo(gx, HB); ctx.stroke();
     }
     bandas.forEach(b => {
       b.ticks.forEach(v => {
@@ -87,36 +87,45 @@ const Sim = (() => {
     ctx.setLineDash([]);
   }
 
+  // nombres de las curvas (viven dentro del área de barrido: se redibujan bajo él)
+  function nombres() {
+    const T = TEMAS[tema];
+    ctx.font = "700 14px -apple-system, sans-serif";
+    ctx.textAlign = "left";
+    bandas.forEach((b, bi) => {
+      ctx.fillStyle = T.colores[bi];
+      ctx.fillText(b.nombre, X0 + 2, b.y0 - 7);
+    });
+  }
+
   function fondo() {
     const T = TEMAS[tema];
     ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
     rejilla();
-    ctx.fillStyle = T.rotulo;
-    bandas.forEach(b => {
-      // nombre del parámetro (izquierda, sobre la banda)
-      ctx.font = "700 11px -apple-system, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(b.nombre, X0, b.y0 - 5);
+    nombres();
+    bandas.forEach((b, bi) => {
       // escala numérica (izquierda)
-      ctx.font = "600 9px -apple-system, sans-serif";
+      ctx.fillStyle = T.rotulo;
+      ctx.font = "600 12px -apple-system, sans-serif";
       ctx.textAlign = "right";
-      b.ticks.forEach(v => ctx.fillText(String(v), X0 - 6, yDe(b, v) + 3));
+      b.ticks.forEach(v => ctx.fillText(String(v), X0 - 7, yDe(b, v) + 4));
       // unidades (derecha, en vertical)
       ctx.save();
-      ctx.translate(W - 8, b.y0 + b.alto / 2);
+      ctx.translate(W - 10, b.y0 + b.alto / 2);
       ctx.rotate(-Math.PI / 2);
       ctx.textAlign = "center";
-      ctx.font = "600 9.5px -apple-system, sans-serif";
+      ctx.font = "700 12px -apple-system, sans-serif";
       ctx.fillText(b.unidad, 0, 0);
       ctx.restore();
     });
     // eje de tiempo
-    ctx.font = "600 9px -apple-system, sans-serif";
+    ctx.fillStyle = T.rotulo;
+    ctx.font = "600 12px -apple-system, sans-serif";
     ctx.textAlign = "center";
-    for (let s = 0; s * PXS <= X1 - X0 - 84; s += 2) ctx.fillText(String(s), X0 + s * PXS, H - 6);
+    for (let s = 0; s * PXS <= X1 - X0 - 96; s += 2) ctx.fillText(String(s), X0 + s * PXS, H - 8);
     ctx.textAlign = "right";
-    ctx.font = "600 10px -apple-system, sans-serif";
-    ctx.fillText("Tiempo (s)", X1, H - 6);
+    ctx.font = "700 12px -apple-system, sans-serif";
+    ctx.fillText("Tiempo (s)", X1, H - 8);
     ctx.textAlign = "left";
   }
 
@@ -292,10 +301,10 @@ const Sim = (() => {
       const vals = paso(sub);
 
       ctx.fillStyle = T.bg;
-      ctx.fillRect(x + 1, 12, 14, HB - 12);
+      ctx.fillRect(x + 1, 0, 14, HB);
       ctx.save();
-      ctx.beginPath(); ctx.rect(x + 1, 12, 14, HB - 12); ctx.clip();
-      rejilla();
+      ctx.beginPath(); ctx.rect(x + 1, 0, 14, HB); ctx.clip();
+      rejilla(); nombres();
       ctx.restore();
 
       if (prev) {
