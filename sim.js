@@ -161,16 +161,57 @@ const Sim = (() => {
   let ultimaAnot = -9;
 
   /* ---------- geometría de bandas ---------- */
+  // visibilidad de cada curva (pulsadores P/F/V de la cabecera del monitor);
+  // con menos curvas visibles, las bandas se reparten el alto y ganan ticks
+  let curvaOn = [true, true, true];
   function calcBandas() {
     const T = TEMAS[tema];
     const n = T.trazas || 3;
     const defs = [
-      { nombre: "Presión", unidad: "cmH₂O", min: -2, max: 34, ticks: [0, 10, 20, 30] },
-      { nombre: "Flujo", unidad: "L/min", min: -75, max: 75, ticks: [-60, 0, 60] },
-      { nombre: "Volumen", unidad: "ml", min: 0, max: 800, ticks: [0, 400, 800] },
+      { idx: 0, nombre: "Presión", unidad: "cmH₂O", min: -2, max: 34,
+        ticksPorN: { 3: [0, 10, 20, 30], 2: [0, 10, 20, 30], 1: [0, 5, 10, 15, 20, 25, 30] } },
+      { idx: 1, nombre: "Flujo", unidad: "L/min", min: -75, max: 75,
+        ticksPorN: { 3: [-60, 0, 60], 2: [-60, -30, 0, 30, 60], 1: [-60, -30, 0, 30, 60] } },
+      { idx: 2, nombre: "Volumen", unidad: "ml", min: 0, max: 800,
+        ticksPorN: { 3: [0, 400, 800], 2: [0, 200, 400, 600, 800], 1: [0, 200, 400, 600, 800] } },
     ].slice(0, n);
-    const alto = Math.floor((HB - 22 - n * 26) / n);
-    bandas = defs.map((d, i) => Object.assign({}, d, { y0: 22 + i * (alto + 26), alto }));
+    let vis = defs.filter(d => curvaOn[d.idx]);
+    // red de seguridad: si la vista no incluye la única curva activa (p. ej.
+    // solo Volumen y cambio a VITAE, de 2 trazas), se reactiva la presión
+    if (!vis.length) { curvaOn[0] = true; vis = [defs[0]]; }
+    const m = vis.length;
+    const alto = Math.floor((HB - 22 - m * 26) / m);
+    bandas = vis.map((d, i) => Object.assign({}, d, {
+      ticks: d.ticksPorN[m], y0: 22 + i * (alto + 26), alto,
+    }));
+    pintarChipsCurvas();
+  }
+
+  function pintarChipsCurvas() {
+    const T = TEMAS[tema];
+    const n = T.trazas || 3;
+    document.querySelectorAll("#curvasToggle .ctoggle").forEach(b => {
+      const i = +b.dataset.c;
+      b.style.display = i < n ? "" : "none";
+      const on = !!curvaOn[i];
+      b.classList.toggle("sel", on);
+      b.style.color = on ? T.colores[i] : T.rotulo;
+      b.style.borderColor = on ? T.colores[i] : T.rotulo;
+    });
+  }
+
+  function toggleCurva(i) {
+    const n = TEMAS[tema].trazas || 3;
+    if (i >= n) return;
+    const visibles = curvaOn.slice(0, n).filter(Boolean).length;
+    if (curvaOn[i] && visibles <= 1) {
+      // siempre al menos una curva activa: sacudida breve en vez de apagar
+      const btn = document.querySelector(`#curvasToggle .ctoggle[data-c="${i}"]`);
+      if (btn) { btn.classList.remove("nego"); void btn.offsetWidth; btn.classList.add("nego"); }
+      return;
+    }
+    curvaOn[i] = !curvaOn[i];
+    calcBandas(); x = X0; prev = null; anots = []; fondo();
   }
 
   const yDe = (b, v) => b.y0 + b.alto - ((Math.max(b.min, Math.min(b.max, v)) - b.min) / (b.max - b.min)) * b.alto;
@@ -197,8 +238,8 @@ const Sim = (() => {
     const T = TEMAS[tema];
     ctx.font = "700 14px -apple-system, sans-serif";
     ctx.textAlign = "left";
-    bandas.forEach((b, bi) => {
-      ctx.fillStyle = T.colores[bi];
+    bandas.forEach(b => {
+      ctx.fillStyle = T.colores[b.idx];
       ctx.fillText(b.nombre, X0 + 2, b.y0 - 7);
     });
   }
@@ -208,7 +249,7 @@ const Sim = (() => {
     ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
     rejilla();
     nombres();
-    bandas.forEach((b, bi) => {
+    bandas.forEach(b => {
       // escala numérica (izquierda)
       ctx.fillStyle = T.rotulo;
       ctx.font = "600 12px -apple-system, sans-serif";
@@ -384,7 +425,8 @@ const Sim = (() => {
   function anotar(bandaIdx, texto) {
     if (!docente || (examen && !revelado)) return;
     ultimaAnot = t;
-    const b = bandas[Math.min(bandaIdx, bandas.length - 1)];
+    // si la curva señalada está oculta, la anotación cae en la última visible
+    const b = bandas.find(z => z.idx === bandaIdx) || bandas[bandas.length - 1];
     anots.push({ x: Math.min(x + 6, X1 - 12), y: b.y0 + b.alto / 2, texto, hasta: t + 3.2 });
     if (anots.length > 4) anots.shift();
   }
@@ -471,11 +513,11 @@ const Sim = (() => {
       ctx.restore();
 
       if (prev) {
-        bandas.forEach((b, bi) => {
-          ctx.strokeStyle = T.colores[bi]; ctx.lineWidth = 2; ctx.lineCap = "round";
+        bandas.forEach(b => {
+          ctx.strokeStyle = T.colores[b.idx]; ctx.lineWidth = 2; ctx.lineCap = "round";
           ctx.beginPath();
-          ctx.moveTo(prev.x, yDe(b, prev.v[bi]));
-          ctx.lineTo(x, yDe(b, vals[bi]));
+          ctx.moveTo(prev.x, yDe(b, prev.v[b.idx]));
+          ctx.lineTo(x, yDe(b, vals[b.idx]));
           ctx.stroke();
         });
       }
@@ -730,6 +772,9 @@ const Sim = (() => {
     }));
   document.querySelectorAll('[data-grupo="modo"] .chip').forEach(c =>
     c.addEventListener("click", () => setModo(c.dataset.v)));
+  // pulsadores P/F/V: mostrar u ocultar cada curva del monitor
+  document.querySelectorAll("#curvasToggle .ctoggle").forEach(b =>
+    b.addEventListener("click", () => toggleCurva(+b.dataset.c)));
   const btnSon = document.getElementById("btnSonido");
   if (btnSon) btnSon.addEventListener("click", () => {
     sonidoOn = !sonidoOn;

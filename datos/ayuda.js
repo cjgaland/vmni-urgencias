@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.7",
+    titulo: "Elige qué curvas ver en el monitor",
+    texto: "El monitor del simulador estrena los **pulsadores P · F · V** en su cabecera: cada curva — **Presión**, **Flujo** y **Volumen** — puede mostrarse u ocultarse de forma independiente, y las que queden visibles **se reparten todo el alto del monitor** (una sola curva a pantalla completa gana detalle, con escalas más finas). Siempre queda al menos una activa, los pulsadores toman el **color de su curva** en cada vista (Genérico, Vivo, V60, VITAE) y funcionan en los seis modos ventilatorios, con las asincronías, las guías y el modo examen. Ideal para la docencia: aísla la curva de la que estás hablando.",
+  },
+  {
     version: "v2.6",
     titulo: "Pantalla de bienvenida",
     texto: "La app se abre ahora con una **portada de presentación**: el logo, qué es la aplicación, el **aviso de apoyo a la decisión** (no sustituye el criterio del profesional), la **autoría** (Carlos J. Galán Doval, con Enrique Fernández Romero como coautor y revisor científico) y el botón **Entrar →**. Los enlaces directos a secciones (#simulador, #docencia…) siguen llevando directamente a su destino, sin pasar por la portada. Y junto a las 💬 Sugerencias (GitHub) se añade **✉️ Escribir al autor**: un correo directo con el asunto ya preparado, sin necesidad de cuenta alguna.",
