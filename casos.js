@@ -1,20 +1,43 @@
 /* ====== VMNI Urgencias · modo CASOS ======
-   Registro evolutivo ANÓNIMO de un caso: basal (desde la Evaluación), línea
+   Registro evolutivo ANÓNIMO de casos: basal (desde la Evaluación), línea
    temporal de eventos, informe con checklist «hecho / no registrado» y
    exportación/importación como fichero .json local. Sin identificadores por
-   diseño: solo edad en años, sexo y talla; tiempos RELATIVOS en minutos. */
+   diseño: solo edad en años, sexo y talla; tiempos RELATIVOS en minutos.
+   Multipaciente: varios casos EN CURSO a la vez, conmutables desde la lista,
+   cada uno con sus alarmas de seguimiento (1.ª hora y 6 horas). */
 const Casos = (() => {
   "use strict";
-  const LS = "vmni-caso-activo";
-  const LSLISTA = "vmni-casos-guardados";
-  let caso = null;
+  const LS_V1 = "vmni-caso-activo";          // borrador único de ≤ v2.6 (se migra solo)
+  const LS_ABIERTOS = "vmni-casos-abiertos"; // casos en curso (varios a la vez)
+  const LS_ACTIVO = "vmni-caso-activo-id";   // cuál de ellos está en pantalla
+  const LSLISTA = "vmni-casos-guardados";    // archivo del dispositivo
+  let abiertos = [];
+  let caso = null; // referencia al caso activo DENTRO de `abiertos`
+  const nuevoId = () => Math.random().toString(16).slice(2, 10);
   function listaGuardados() {
     try { return JSON.parse(localStorage.getItem(LSLISTA) || "[]"); } catch (e) { return []; }
   }
   function guardarLista(l) { try { localStorage.setItem(LSLISTA, JSON.stringify(l)); } catch (e) {} }
   let vista = "lista"; // lista | nuevo | activo | informe
 
-  try { const b = localStorage.getItem(LS); if (b) { caso = JSON.parse(b); vista = "activo"; } } catch (e) {}
+  try { abiertos = JSON.parse(localStorage.getItem(LS_ABIERTOS) || "[]"); } catch (e) { abiertos = []; }
+  if (!Array.isArray(abiertos)) abiertos = [];
+  // migración automática y SIN pérdidas desde el borrador único de ≤ v2.6:
+  // el caso pasa tal cual a la lista de abiertos y queda como activo
+  try {
+    const b = localStorage.getItem(LS_V1);
+    if (b) {
+      const c = JSON.parse(b);
+      c.id = c.id || nuevoId();
+      if (!abiertos.some(x => x.id === c.id)) abiertos.unshift(c);
+      localStorage.setItem(LS_ACTIVO, c.id);
+      localStorage.removeItem(LS_V1);
+      localStorage.setItem(LS_ABIERTOS, JSON.stringify(abiertos));
+    }
+  } catch (e) {}
+  abiertos.forEach(c => { c.id = c.id || nuevoId(); });
+  caso = abiertos.find(c => c.id === localStorage.getItem(LS_ACTIVO)) || abiertos[0] || null;
+  if (caso) vista = "activo";
 
   const $ = id => document.getElementById(id);
   const nv = id => { const v = parseFloat($(id)?.value); return isFinite(v) ? v : undefined; };
@@ -22,11 +45,24 @@ const Casos = (() => {
   const f1 = n => (n === undefined || n === null) ? "—" : String(n).replace(".", ",");
 
   function guardar() {
-    try { caso ? localStorage.setItem(LS, JSON.stringify(caso)) : localStorage.removeItem(LS); } catch (e) {}
+    try {
+      localStorage.setItem(LS_ABIERTOS, JSON.stringify(abiertos));
+      caso ? localStorage.setItem(LS_ACTIVO, caso.id) : localStorage.removeItem(LS_ACTIVO);
+    } catch (e) {}
+  }
+  function quitarAbierto(id) {
+    abiertos = abiertos.filter(x => x.id !== id);
+    if (caso && caso.id === id) caso = abiertos[0] || null;
+  }
+  function activar(id) {
+    const c = abiertos.find(x => x.id === id);
+    if (!c) return;
+    caso = c; vista = "activo"; guardar(); pintar();
   }
   function tSugerido() {
     const ult = caso.eventos.length ? Math.max(...caso.eventos.map(e => e.t)) : 0;
-    return ult + 30;
+    const m = minSeguimiento(caso);
+    return (m !== null && m > ult) ? m : ult + 30; // con reloj en marcha, sugiere el minuto real
   }
   function escenarioId() {
     const r = caso.basal.resumen;
@@ -52,6 +88,166 @@ const Casos = (() => {
     ? `<span class="etiq-caso ficticio">CASO FICTICIO · DOCENTE</span>`
     : `<span class="etiq-caso ${caso.tipo}">${caso.tipo === "real" ? "CASO REAL (anonimizado)" : "CASO DOCENTE"}</span>`;
 
+  /* ================= reloj y alarmas de seguimiento =================
+     Al iniciar el seguimiento de un caso se programan los recordatorios de la
+     reevaluación de la 1.ª hora (ventana 60–120 min) y de la valoración de las
+     6 h. Con la app ABIERTA: cartel destacado + beep + Notificación del sistema
+     (si hay permiso). La app no tiene servidor: con la app cerrada no puede
+     avisar; al reabrirla se comprueban los relojes y se muestran los vencidos.
+     El instante de inicio vive SOLO en este dispositivo (localStorage) y se
+     elimina del .json exportado: fuera no viajan ni fechas ni horas. */
+  const HITOS = [
+    { clave: "h1", min: 60, desde: 45, nombre: "Reevaluación de la 1.ª hora", detalle: "ventana de 60–120 min" },
+    { clave: "h6", min: 360, desde: 300, nombre: "Valoración de las 6 horas", detalle: "control clínico-gasométrico" },
+  ];
+  const minSeguimiento = c => c.reloj ? Math.max(0, Math.floor((Date.now() - c.reloj.inicio) / 60000)) : null;
+  // una alarma se apaga sola al registrar una reevaluación dentro de su hito
+  function estadoHito(c, h) {
+    if (!c.reloj || c.cierre) return null;
+    if ((c.reloj.descartadas || []).includes(h.clave)) return { estado: "descartada" };
+    if (c.eventos.some(e => e.tipo === "reevaluacion" && e.t >= h.desde)) return { estado: "hecha" };
+    const m = minSeguimiento(c);
+    return m >= h.min ? { estado: "vencida", retraso: m - h.min } : { estado: "pendiente", faltan: h.min - m };
+  }
+  function proximoHito(c) {
+    if (c.cierre) return "caso cerrado";
+    if (!c.reloj) return "sin alarmas de seguimiento";
+    for (const h of HITOS) {
+      const e = estadoHito(c, h);
+      if (e.estado === "vencida") return `⏰ ${h.nombre.toLowerCase()} pendiente desde hace ${e.retraso} min`;
+      if (e.estado === "pendiente") return `⏱ ${h.nombre.toLowerCase()} en ${e.faltan} min`;
+    }
+    return "✓ reevaluaciones de 1 h y 6 h registradas";
+  }
+  const textoReloj = c => c.ejemplo ? "caso ficticio · sin alarmas"
+    : c.reloj ? `t+${minSeguimiento(c)}′ de seguimiento · ${proximoHito(c)}` : proximoHito(c);
+
+  // beep propio (mismo patrón que el simulador: el audio se desbloquea con el
+  // primer gesto del usuario, obligatorio en los navegadores móviles)
+  let audioCtx = null;
+  function desbloquearAudio() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    } catch (e) { /* sin audio disponible */ }
+  }
+  ["pointerdown", "touchstart", "keydown"].forEach(ev =>
+    document.addEventListener(ev, desbloquearAudio, { once: true, passive: true }));
+  function beepAlarma() {
+    try {
+      desbloquearAudio();
+      if (!audioCtx || audioCtx.state !== "running") return; // aún sin gesto del usuario
+      const tono = (t, f) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        o.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.16, t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+        o.start(t); o.stop(t + 0.17);
+      };
+      const t0 = audioCtx.currentTime;
+      tono(t0, 880); tono(t0 + 0.19, 660); tono(t0 + 0.38, 880);
+    } catch (e) { /* sin audio disponible */ }
+  }
+  function notificar(cuerpo, tag) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    const op = { body: cuerpo, icon: "iconos/icono-192.png", badge: "iconos/icono-192.png", tag };
+    const directa = () => { try { new Notification("VMNI Urgencias", op); } catch (e) {} };
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+        navigator.serviceWorker.getRegistration()
+          .then(reg => { if (reg && reg.showNotification) reg.showNotification("VMNI Urgencias", op); else directa(); })
+          .catch(directa);
+      } else directa();
+    } catch (e) {}
+  }
+  function pedirNotificaciones() {
+    if (!("Notification" in window)) { alert("Este navegador no admite notificaciones del sistema."); return; }
+    Notification.requestPermission().then(() => pintar());
+  }
+  function iniciarSeguimiento() {
+    const ult = caso.eventos.length ? Math.max(...caso.eventos.map(e => e.t)) : 0;
+    // anclado al último evento registrado: en un caso recién creado, t0 = ahora
+    caso.reloj = { inicio: Date.now() - ult * 60000, avisadas: [], descartadas: [] };
+    // momento oportuno para pedir el permiso de notificaciones: lo acaba de pedir el usuario
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().then(() => pintar());
+    }
+    guardar(); pintar(); tick();
+  }
+  function descartarAviso(id, clave) {
+    const c = abiertos.find(x => x.id === id);
+    if (!c || !c.reloj) return;
+    c.reloj.descartadas = c.reloj.descartadas || [];
+    if (!c.reloj.descartadas.includes(clave)) c.reloj.descartadas.push(clave);
+    guardar(); tick();
+    if (vista === "activo" || vista === "lista") pintar();
+  }
+  // vigilancia periódica: dispara las alarmas recién vencidas (una sola vez por
+  // hito) y refresca cuentas atrás y cartel sin repintar las vistas (no borra
+  // lo que el usuario esté tecleando en un formulario)
+  function tick() {
+    let cambio = false;
+    abiertos.forEach(c => {
+      if (!c.reloj || c.cierre) return;
+      c.reloj.avisadas = c.reloj.avisadas || [];
+      HITOS.forEach(h => {
+        const e = estadoHito(c, h);
+        if (e.estado === "vencida" && !c.reloj.avisadas.includes(h.clave)) {
+          c.reloj.avisadas.push(h.clave);
+          cambio = true;
+          beepAlarma();
+          notificar(`⏰ ${c.titulo}: ${h.nombre.toLowerCase()} (${h.detalle})${e.retraso > 1 ? ` — pendiente desde hace ${e.retraso} min` : ""}.`, `vmni-${c.id}-${h.clave}`);
+        }
+      });
+    });
+    if (cambio) guardar();
+    pintarAvisos();
+    document.querySelectorAll("[data-reloj]").forEach(el => {
+      const c = abiertos.find(x => x.id === el.dataset.reloj);
+      if (c) el.textContent = textoReloj(c);
+    });
+  }
+  // cartel fijo con los avisos vencidos: visible en CUALQUIER sección de la app
+  function pintarAvisos() {
+    let caja = $("casosAvisos");
+    const vencidas = [];
+    abiertos.forEach(c => HITOS.forEach(h => {
+      const e = estadoHito(c, h);
+      if (e && e.estado === "vencida") vencidas.push({ c, h, retraso: e.retraso });
+    }));
+    if (!vencidas.length) { if (caja) caja.remove(); return; }
+    if (!caja) { caja = document.createElement("div"); caja.id = "casosAvisos"; document.body.appendChild(caja); }
+    caja.innerHTML = vencidas.map(v => `
+      <div class="caso-aviso">
+        <span>⏰ <strong>${esc(v.c.titulo)}</strong>: ${v.h.nombre.toLowerCase()} pendiente desde hace ${v.retraso} min</span>
+        <span class="caso-aviso-botones">
+          <button onclick="irA('casos'); Casos.activar('${v.c.id}')">Ir al caso →</button>
+          <button class="caso-aviso-x" title="No volver a avisar de este hito" onclick="Casos.descartarAviso('${v.c.id}','${v.h.clave}')">✕</button>
+        </span>
+      </div>`).join("");
+  }
+  // bloque del reloj en la cabecera del caso activo
+  function relojHTML() {
+    if (caso.ejemplo || caso.cierre) return "";
+    if (!caso.reloj) return `
+      <div class="caso-reloj">
+        <button class="btn-sec btn-mini" onclick="Casos.iniciarSeguimiento()">⏱ Iniciar seguimiento (alarmas a 1 h y 6 h)</button>
+        <small>recordatorios de reevaluación con la app abierta; al reabrir se muestran los vencidos</small>
+      </div>`;
+    const chips = HITOS.map(h => {
+      const e = estadoHito(caso, h);
+      const cls = e.estado === "vencida" ? " vencida" : (e.estado === "hecha" || e.estado === "descartada") ? " hecha" : "";
+      const txt = e.estado === "hecha" ? "✓ registrada" : e.estado === "descartada" ? "aviso descartado"
+        : e.estado === "vencida" ? `⏰ hace ${e.retraso}′` : `en ${e.faltan}′`;
+      return `<span class="chip-hito${cls}">${h.nombre} · ${txt}</span>`;
+    }).join("");
+    const notif = ("Notification" in window && Notification.permission === "default")
+      ? `<button class="btn-sec btn-mini" onclick="Casos.pedirNotificaciones()">🔔 Avisarme también con notificación</button>` : "";
+    return `<div class="caso-reloj"><span class="chip-hito reloj" data-reloj="${caso.id}">${textoReloj(caso)}</span>${chips}${notif}</div>`;
+  }
+
   /* ================= vistas ================= */
   function pintar() {
     const cont = $("casosCont");
@@ -67,11 +263,16 @@ const Casos = (() => {
   function pintarLista() {
     vista = "lista";
     $("casosCont").innerHTML = `
-      ${caso ? `
-      <article class="card modulo caso-en-curso" onclick="Casos.volverAlCaso()" style="margin-bottom:16px;border-left:4px solid var(--acento)">
-        <div class="icono doc">⏳</div><h3>Caso en curso: ${esc(caso.titulo)}</h3>
-        <p>${esc(caso.meta.escenario)} · ${caso.meta.edad} años · ${caso.eventos.length} eventos — toca para continuar donde lo dejaste.</p>
-      </article>` : ""}
+      ${abiertos.length ? `
+      <p class="sub" style="margin-bottom:10px">Casos en curso (${abiertos.length}) — toca uno para seguir a ese paciente</p>
+      <div class="grid-modulos" style="margin-bottom:16px">
+        ${abiertos.map(c => `
+          <article class="card modulo caso-en-curso" onclick="Casos.activar('${c.id}')" style="border-left:4px solid var(--acento)${caso && c.id === caso.id ? ";outline:2px solid var(--acento)" : ""}">
+            <div class="icono doc">${c.cierre ? "🏁" : "⏳"}</div><h3>${esc(c.titulo)}</h3>
+            <p>${esc(c.meta.escenario)} · ${c.meta.edad} años · ${c.eventos.length} eventos</p>
+            <p class="caso-cuenta" data-reloj="${c.id}">${textoReloj(c)}</p>
+          </article>`).join("")}
+      </div>` : ""}
       <div class="grid-modulos">
         <article class="card modulo" onclick="Casos.nuevo()">
           <div class="icono doc">➕</div><h3>Nuevo caso</h3>
@@ -111,7 +312,7 @@ const Casos = (() => {
       $("casosCont").innerHTML = `
         <div class="card"><h3>Primero, la evaluación basal</h3>
         <p class="explica">Un caso empieza por la situación inicial del paciente. Haz la evaluación y, en la pantalla de resultado, pulsa <strong>«🗂 Iniciar caso»</strong>.</p>
-        <div class="botonera"><button class="btn-sec" onclick="Casos.pintar()">← Volver</button>
+        <div class="botonera"><button class="btn-sec" onclick="Casos.verLista()">← Volver</button>
         <button class="btn-primario" onclick="irA('evaluacion')">Ir a la evaluación →</button></div></div>`;
       return;
     }
@@ -127,7 +328,7 @@ const Casos = (() => {
           <div class="campo"><label>Talla (cm)</label><input type="number" id="ncTalla" value="${ULTIMA_EVAL.entradas.clinica.talla ?? ""}"></div>
           <div class="campo ancho"><label>Tipo</label><select id="ncTipo"><option value="docente">Docente / simulado</option><option value="real">Real (anonimizado)</option></select></div>
         </div>
-        <div class="botonera"><button class="btn-sec" onclick="Casos.pintar()">← Cancelar</button>
+        <div class="botonera"><button class="btn-sec" onclick="Casos.verLista()">← Cancelar</button>
         <button class="btn-primario" onclick="Casos.crear()">Crear caso →</button></div>
       </div>`;
   }
@@ -137,13 +338,17 @@ const Casos = (() => {
     if (!edad) { alert("Indica al menos la edad (en años)."); return; }
     caso = {
       formato: "vmni-caso-v1",
+      id: nuevoId(),
       tipo: $("ncTipo").value,
       titulo: $("ncTitulo").value.trim() || "Caso sin título",
       meta: { edad, sexo: $("ncSexo").value, talla: nv("ncTalla"), escenario: ULTIMA_EVAL.resumen.clasif },
       basal: JSON.parse(JSON.stringify(ULTIMA_EVAL)),
       eventos: [],
       cierre: null,
+      // el seguimiento (alarmas 1 h / 6 h) arranca con el caso; solo en este dispositivo
+      reloj: { inicio: Date.now(), avisadas: [], descartadas: [] },
     };
+    abiertos.unshift(caso);
     guardar(); vista = "activo"; pintar();
   }
 
@@ -169,11 +374,12 @@ const Casos = (() => {
     };
     $("casosCont").innerHTML = `
       <div class="botonera suelta" style="justify-content:flex-start;margin:0 0 10px">
-        <button class="btn-sec btn-mini" onclick="Casos.verLista()">☰ Todos los casos</button>
+        <button class="btn-sec btn-mini" onclick="Casos.verLista()">☰ Todos los casos${abiertos.length > 1 ? ` (${abiertos.length} en curso)` : ""}</button>
       </div>
       <div class="card caso-cab">
         <div class="caso-titulo"><h3>🗂 ${esc(caso.titulo)}</h3>${etiquetaTipo()}</div>
         <p class="explica">${esc(caso.meta.escenario)} · ${caso.meta.edad} años · ${caso.meta.sexo === "v" ? "varón" : "mujer"}${caso.meta.talla ? ` · ${caso.meta.talla} cm` : ""}</p>
+        ${relojHTML()}
         <div class="chips-datos">
           <span class="dato">pH <strong>${f1(r.ph)}</strong></span>
           <span class="dato">pCO₂ <strong>${f1(r.pco2)}</strong></span>
@@ -238,20 +444,25 @@ const Casos = (() => {
   /* ---------- varios casos guardados en el dispositivo ---------- */
   function archivar() {
     const l = listaGuardados();
-    caso.id = caso.id || Math.random().toString(16).slice(2, 10);
+    caso.id = caso.id || nuevoId();
     const copia = JSON.parse(JSON.stringify(caso));
     delete copia.alumno;
     const i = l.findIndex(g => g.id === caso.id);
     const ficha = { id: caso.id, titulo: caso.titulo, escenario: caso.meta.escenario, edad: caso.meta.edad, eventos: caso.eventos.length, cerrado: !!caso.cierre, caso: copia };
     if (i >= 0) l[i] = ficha; else l.push(ficha);
     guardarLista(l);
-    caso = null; guardar(); pintar();
+    quitarAbierto(caso.id);
+    vista = "lista"; guardar(); pintar(); tick();
   }
   function abrirGuardado(id) {
+    const ya = abiertos.find(x => x.id === id);
+    if (ya) { caso = ya; vista = "activo"; guardar(); pintar(); return; } // ya estaba en curso
     const g = listaGuardados().find(x => x.id === id);
     if (!g) return;
     caso = JSON.parse(JSON.stringify(g.caso));
-    guardar(); vista = "activo"; pintar();
+    caso.id = g.id;
+    abiertos.unshift(caso);
+    vista = "activo"; guardar(); pintar(); tick();
   }
   function borrarGuardado(id) {
     if (!confirm("¿Borrar este caso guardado del dispositivo?")) return;
@@ -411,7 +622,7 @@ const Casos = (() => {
     const v = Motor.evaluarRespuesta({ ph: r.ph, pco2: r.pco2, fr: r.fr, gcs: r.gcs }, { ...d, pafi });
     const h = Motor.hacor({ fc: d.fc, ph: d.ph, gcs: d.gcs ?? 15, pafi, fr: d.fr });
     caso.eventos.push({ t: nv("evT") ?? tSugerido(), tipo: "reevaluacion", datos: d, veredicto: { veredicto: v.veredicto, resumen: v.texto, menores: v.menores }, hacor: h ? h.total : undefined });
-    guardar(); pintar();
+    guardar(); pintar(); tick(); // la reevaluación puede apagar una alarma pendiente
   }
   function addParametros() {
     caso.eventos.push({ t: nv("evT") ?? tSugerido(), tipo: "parametros", datos: { modo: $("evModo").value, epap: nv("evEpap"), ipap: nv("evIpap"), fio2: $("evFio2p").value || "—", nota: $("evNotaP").value } });
@@ -429,11 +640,12 @@ const Casos = (() => {
   }
   function cerrarCaso() {
     caso.cierre = { t: nv("evT") ?? tSugerido(), destino: $("evDestino").value, comentario: $("evCierre").value };
-    guardar(); pintar();
+    guardar(); pintar(); tick(); // al cerrar el caso se apagan sus alarmas
   }
   function descartar() {
     if (!confirm("¿Descartar este caso? Se borrará de este dispositivo (si lo quieres conservar, guárdalo antes como .json).")) return;
-    caso = null; guardar(); pintar();
+    quitarAbierto(caso.id);
+    vista = "lista"; guardar(); pintar(); tick();
   }
 
   /* ================= informe ================= */
@@ -512,7 +724,7 @@ const Casos = (() => {
           <div class="chk-lista">
             ${chk.map(c => `<div class="chk ${c.estado}"><span>${c.icono}</span> ${c.texto}${c.estado === "no" ? " — <em>no registrado</em>" : c.estado === "na" ? " — <em>no aplica</em>" : ""}</div>`).join("")}
           </div>
-          <p class="provisional">Informe generado por VMNI Urgencias v2.0 · reglas clínicas provisionales pendientes de validación · caso sin identificadores (tiempos relativos) · utilidad de apoyo y docencia: no sustituye la historia clínica.</p>
+          <p class="provisional">Informe generado por VMNI Urgencias v2.8 · reglas clínicas provisionales pendientes de validación · caso sin identificadores (tiempos relativos) · utilidad de apoyo y docencia: no sustituye la historia clínica.</p>
         </div>
       </div>
       <div class="botonera suelta no-imprimir">
@@ -533,6 +745,7 @@ const Casos = (() => {
     const slug = caso.titulo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "caso";
     const limpio = JSON.parse(JSON.stringify(caso));
     delete limpio.alumno; // el estado del modo alumno no viaja en el fichero
+    delete limpio.reloj;  // ni el reloj de alarmas: fuera no viajan fechas ni horas
     const blob = new Blob([JSON.stringify(limpio, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -547,14 +760,19 @@ const Casos = (() => {
       try {
         const c = JSON.parse(lector.result);
         if (c.formato !== "vmni-caso-v1") throw new Error("formato");
-        caso = c; guardar(); vista = "activo"; pintar();
+        c.id = c.id || nuevoId();
+        const i = abiertos.findIndex(x => x.id === c.id);
+        if (i >= 0) abiertos[i] = c; else abiertos.unshift(c);
+        caso = c; guardar(); vista = "activo"; pintar(); tick();
       } catch (e) { alert("Ese fichero no parece un caso de VMNI Urgencias (.json con formato vmni-caso-v1)."); }
     };
     lector.readAsText(fichero);
   }
   function cargarEjemplo(i, alumno) {
     caso = JSON.parse(JSON.stringify(CASOS_EJEMPLO[i]));
+    caso.id = nuevoId();
     if (alumno) caso.alumno = { etapa: 0 };
+    abiertos.unshift(caso);
     guardar(); vista = "activo"; pintar();
   }
 
@@ -566,5 +784,34 @@ const Casos = (() => {
     vista = "informe"; pintar();
   }
 
-  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, addFarmaco, prefijarDosis, simularEvolucion, revelarEtapa, salirAlumno, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo, volverAlCaso, verLista, archivar, abrirGuardado, borrarGuardado };
+  /* ================= estilos y arranque de la vigilancia ================= */
+  // los estilos del bloque viven aquí para no tocar ficheros compartidos
+  (function estilos() {
+    const s = document.createElement("style");
+    s.textContent = `
+#casosAvisos{position:fixed;left:12px;right:12px;bottom:78px;z-index:900;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+@media (min-width:720px){#casosAvisos{left:auto;right:18px;bottom:18px;max-width:430px}}
+.caso-aviso{pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#9c2f24;color:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 6px 18px rgba(0,0,0,.3);font-size:.92rem;animation:casoAvisoPulso 1.5s ease-in-out 4}
+.caso-aviso-botones{display:flex;gap:6px;flex-shrink:0}
+.caso-aviso button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:.85rem;cursor:pointer}
+.caso-aviso button:hover{background:rgba(255,255,255,.25)}
+.caso-aviso .caso-aviso-x{padding:5px 8px}
+@keyframes casoAvisoPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.caso-reloj{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.caso-reloj small{opacity:.75}
+.chip-hito{display:inline-block;border:1px solid var(--acento,#2A7F8E);border-radius:999px;padding:4px 12px;font-size:.84rem}
+.chip-hito.reloj{font-weight:600;color:var(--acento,#2A7F8E)}
+.chip-hito.vencida{background:#9c2f24;border-color:#9c2f24;color:#fff;font-weight:600}
+.chip-hito.hecha{opacity:.6}
+.caso-cuenta{margin-top:8px;font-size:.88rem;font-weight:600;color:var(--acento,#2A7F8E)}
+@media print{#casosAvisos{display:none}}`;
+    document.head.appendChild(s);
+  })();
+  // comprobación periódica de los relojes; también al volver la app a primer
+  // plano y nada más abrir (avisos vencidos mientras estaba cerrada)
+  setInterval(tick, 30000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") tick(); });
+  setTimeout(tick, 600);
+
+  return { pintar, nuevo, crear, formulario, addReevaluacion, addParametros, addCuidado, addNota, addFarmaco, prefijarDosis, simularEvolucion, revelarEtapa, salirAlumno, cerrarCaso, descartar, verInforme, exportar, importar, cargarEjemplo, volverAlCaso, verLista, archivar, abrirGuardado, borrarGuardado, activar, iniciarSeguimiento, descartarAviso, pedirNotificaciones };
 })();

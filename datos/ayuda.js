@@ -3,6 +3,11 @@
 
 const CAMBIOS_AYUDA = [
   {
+    version: "v2.8",
+    titulo: "Varios pacientes a la vez y alarmas de seguimiento",
+    texto: "Los **Casos** permiten ahora seguir **varios pacientes a la vez** desde el móvil, la tablet o el ordenador: los casos **en curso** aparecen arriba de la lista como tarjetas con su situación de un vistazo —título, escenario, tiempo de seguimiento y **próximo hito**— y basta **tocar una para cambiar de paciente**. El caso que tuvieras abierto se migra solo, sin perder nada, y el formato de los ficheros .json no cambia. Además, cada caso estrena **⏰ alarmas de seguimiento**: al crearlo (o al pulsar «⏱ Iniciar seguimiento» en casos previos) se programan los recordatorios de la **reevaluación de la 1.ª hora** (ventana 60–120 min) y de la **valoración de las 6 horas**. Con la app abierta avisan con un **cartel destacado y un pitido** —y, si concedes el permiso cuando la app te lo ofrece, también con una **notificación del sistema**—; como la app no usa servidores, con la app cerrada no puede sonar: **al reabrirla comprueba los relojes de cada caso** y muestra lo vencido («pendiente desde hace X min»). Cada aviso se apaga solo al registrar la reevaluación correspondiente, y puede descartarse con ✕. Todo sigue siendo **local y anónimo**: la hora de inicio no viaja en el .json exportado.",
+  },
+  {
     version: "v2.7",
     titulo: "Elige qué curvas ver en el monitor",
     texto: "El monitor del simulador estrena los **pulsadores P · F · V** en su cabecera: cada curva — **Presión**, **Flujo** y **Volumen** — puede mostrarse u ocultarse de forma independiente, y las que queden visibles **se reparten todo el alto del monitor** (una sola curva a pantalla completa gana detalle, con escalas más finas). Siempre queda al menos una activa, los pulsadores toman el **color de su curva** en cada vista (Genérico, Vivo, V60, VITAE) y funcionan en los seis modos ventilatorios, con las asincronías, las guías y el modo examen. Ideal para la docencia: aísla la curva de la que estás hablando.",
@@ -128,6 +133,10 @@ const MANUAL_AYUDA = [
           "**Fármacos como eventos:** elige el tratamiento del escenario (dosis prefijada editable) y el informe comprobará los tiempos clave (broncodilatador ≤30 min, corticoide ≤1 h…).",
           "**⚗️ Simular evolución** (solo casos docentes): la app genera la siguiente gasometría según el soporte y los fármacos clave que hayas registrado. Es docencia: jamás predice pacientes reales.",
           "**🎓 Modo alumno** en los ejemplos: el caso se revela por etapas; decide tú antes de ver qué pasó.",
+        ] }, { titulo: "👥⏰ Varios pacientes y alarmas", items: [
+          "**Multipaciente:** puedes tener varios casos **en curso** a la vez; en la lista de Casos aparecen arriba como tarjetas con su tiempo de seguimiento y su próximo hito — toca una para cambiar de paciente.",
+          "**Alarmas de seguimiento:** cada caso programa recordatorios de la **reevaluación de la 1.ª hora** (ventana 60–120 min) y de la **valoración de las 6 h**: cartel destacado + pitido con la app abierta y, si concedes permiso, notificación del sistema.",
+          "**Con la app cerrada no suenan** (no hay servidores): al reabrirla se comprueban los relojes y se muestra lo pendiente («desde hace X min»). El aviso se apaga al registrar la reevaluación.",
         ] }, { titulo: "🔒 Anonimato por diseño", items: [
           "**Sin identificadores:** solo edad en años, sexo y talla; ni nombres, ni fechas, ni número de historia — tampoco los escribas en el título o las notas.",
           "**Fichero .json local:** el caso se guarda y carga como fichero en TU dispositivo; la app no lo envía a ningún sitio.",

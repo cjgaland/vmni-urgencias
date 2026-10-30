@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["herramientas/servidor.js"],
       "port": 8123
+    },
+    {
+      "name": "vmni-casos",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["PORT=8125", "node", "herramientas/servidor.js"],
+      "port": 8125
     }
   ]
 }
