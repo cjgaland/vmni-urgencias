@@ -2,9 +2,9 @@
   "t1": "VMNI EN URGENCIAS",
   "t2": "Base de Conocimiento Clínico",
   "desc": "Ventilación Mecánica No Invasiva: diagnóstico, indicación, programación, fármacos, seguimiento y resolución de problemas",
-  "version": "Versión 0.2 — sección de fármacos VALIDADA (27-10-2026); decisiones D-1 a D-16 pendientes de revisión",
-  "fecha": "27 de octubre de 2026",
-  "aviso": "Documento de apoyo a la decisión clínica. No sustituye el criterio del profesional ni los protocolos del centro. Fuente de verdad del motor de decisión de la app VMNI Urgencias: ninguna recomendación entra en la app sin estar validada aquí. El formulario de las 16 decisiones (sección 14) espera la revisión de Enrique Fernández Romero.",
+  "version": "Versión 0.3 — reconciliación de la 1.ª entrega de la revisión de Enrique (sección 17); fármacos VALIDADOS; formulario D-1 a D-19 pendiente",
+  "fecha": "30 de octubre de 2026",
+  "aviso": "Documento de apoyo a la decisión clínica. No sustituye el criterio del profesional ni los protocolos del centro. Fuente de verdad del motor de decisión de la app VMNI Urgencias: ninguna recomendación entra en la app sin estar validada aquí. La sección 17 reconcilia la 1.ª entrega de la revisión de Enrique Fernández Romero (30-10-2026); el formulario de las 19 decisiones (sección 14) sigue pendiente de devolución.",
   "saltosPagina": true,
   "decisiones": true
 }

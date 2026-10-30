@@ -1,9 +1,9 @@
 # Base de Conocimiento Clínico — VMNI en Urgencias
 
-**Versión 0.1 — borrador para revisión científica**
+**Versión 0.3**
 Autor: Carlos J. Galán Doval · Coautor y revisor: Enrique Fernández Romero
 Urgencias, Hospital de Montilla (Área de Gestión Sanitaria Sur de Córdoba)
-Fecha: 27 de octubre de 2026
+Fecha: 30 de octubre de 2026
 
 ---
 
@@ -204,7 +204,7 @@ Equivale a detectar componente metabólico añadido (C3): la app mostrará la de
 ## 5. Modos ventilatorios en VMNI
 
 > Añadido el 27-10-2026. La recomendación de modo por escenario (§5.3) y las reglas de cambio
-> según evolución (§5.4) alimentan el motor de la app → decisiones abiertas **pendiente de revisión, pendiente de revisión y pendiente de revisión** (§14).
+> según evolución (§5.4) alimentan el motor de la app (pendientes de revisión).
 
 ### 5.1 Los pilares (los modos del día a día)
 
@@ -441,6 +441,7 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 32. Gay PC, Hess DR, Hill NS. Noninvasive proportional assist ventilation for acute respiratory insufficiency: comparison with pressure support ventilation. Am J Respir Crit Care Med 2001;164:1606-1611.
 
 ---
+
 
 
 ## Anexo A. Glosario de siglas y acrónimos

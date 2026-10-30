@@ -1,9 +1,9 @@
 # Base de Conocimiento Clínico — VMNI en Urgencias
 
-**Versión 0.1 — borrador para revisión científica**
+**Versión 0.3 — incorpora la reconciliación de la 1.ª entrega de la revisión de Enrique (§17)**
 Autor: Carlos J. Galán Doval · Coautor y revisor: Enrique Fernández Romero
 Urgencias, Hospital de Montilla (Área de Gestión Sanitaria Sur de Córdoba)
-Fecha: 27 de octubre de 2026
+Fecha: 30 de octubre de 2026
 
 > **Objeto.** Este documento es la fuente de verdad del motor de decisión de la app *VMNI Urgencias*. Ninguna recomendación entrará en la app sin estar recogida y validada aquí. Cada umbral lleva su referencia. Las decisiones aún abiertas se listan en la **sección 14** para su resolución por los autores.
 >
@@ -412,6 +412,8 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 ## 14. Decisiones abiertas para revisión (Carlos + Enrique)
 
 > En la versión Word de este documento, cada decisión aparece como **formulario de revisión**: casillas «Aceptamos la propuesta» / «La rechazamos» y un espacio para escribir la decisión propia. Lo acordado se incorporará aquí y pasará al motor de la app.
+>
+> **Estado (30-10-2026):** recibida la **1.ª entrega** de la revisión de Enrique, que no responde este formulario sino que desarrolla su propio flujo clínico. Su reconciliación con la base está en la **sección 17**; el formulario D-1..D-19 sigue pendiente de devolución.
 
 | # | Cuestión | Opciones / propuesta |
 |---|---|---|
@@ -482,6 +484,113 @@ Antibiótico empírico según el mapa de resistencias del área (F-1) y cotejo f
 4. Añadidos a las entradas: GCS numérico, FC/TA (los exigen HACOR y los criterios de IOT), inmunodepresión, VMNI/CPAP domiciliaria previa.
 5. **D-12 reformulada (27-10-2026):** las «fórmulas propias del Vivo» no existen — el fabricante no publica ninguna (el manual del Vivo 50 solo limita el O2 a 15 L/min y recomienda monitorizar la concentración) y los estudios de banco confirman que la FiO2 real varía con presiones, fuga y patrón del paciente. La app mantiene la tabla de Thys & Liistro como estimación orientativa con aviso explícito.
 6. **Vídeos de Artacho descartados (27-10-2026, decisión de Carlos):** no se conoce el origen ni los permisos del material, así que no se enlazarán en la app.
+
+---
+
+## 17. Revisión de Enrique — 1.ª entrega (30-10-2026)
+
+> Recibida el 30-10-2026 (`docs/Escrito Enrique 01.docx`). **No es la devolución del formulario
+> D-1..D-19**: Enrique envía su desarrollo del flujo clínico completo («los cambios están en verde»)
+> y avisa de que sigue trabajando (definición de triggers, detección de problemas, fórmulas del Vivo).
+> Esta sección reconcilia su escrito con la base: clasificación punto a punto (§17.1), dudas y
+> discrepancias que se le devuelven (§17.2) y peticiones de funcionalidad que pasan a los hilos de
+> la app (§17.3). **Nada de esto entra en el motor hasta cerrar la reconciliación** («documento primero»).
+
+### 17.1 Clasificación punto a punto
+
+Clave: **VALIDA** = coincide con la base · **MATIZA** = cambia un umbral o valor ya documentado ·
+**NOVEDAD** = no estaba en la base · **DUDA** = requiere aclaración de Enrique (detalle en §17.2).
+
+**Entradas de la evaluación inicial**
+
+| # | Elemento del escrito | Clase | Contraste con la base |
+|---|---|---|---|
+| E-01 | AP en selección múltiple (EPOC, sospecha EPOC, asma, SAHOS, SHO, restrictivo, ENM, otros, ICC, OCD) | VALIDA | §2.1. La «posibilidad diagnóstica más probable» como entrada propia es novedad menor de interfaz |
+| E-02 | Peso ideal por **Lorentz** (H: talla−100−(talla−150)/4 · M: talla−100−(talla−150)/2,5) | MATIZA | La base usa la fórmula **ARDSNet** (§2.5), la del Vt protector → duda (e) |
+| E-03 | Situación clínica: FR, respiración abdominal, musculatura accesoria, trabajo respiratorio, GCS | VALIDA | §2.2 (la respiración abdominal ya figura). Su uso sistemático como signo de seguimiento en las pantallas de 1 h y 6 h es NOVEDAD |
+| E-04 | FiO2 por dispositivo: aire 0,21 · VK %/100 · reservorio 0,6–0,9 | VALIDA | §2.4, tabla idéntica |
+| E-05 | Gafas nasales «0,21 + 0,3×L/min» | DUDA | Repite la errata del borrador (D-2). ¿0,03 o el 0,04 clásico? → duda (d) |
+| E-06 | «Tengo fórmulas para Vivo» | **DUDA mayor** | Contradice la D-12 reformulada (se asumió que no existían). Pedírselas con su fuente → duda (a) |
+| E-07 | pH, pCO2, pO2/SpO2 en **valor exacto** con PaFi/SaFi calculadas | VALIDA | §2.5; coincide además con D-15 y D-3. Recordar: SaFi válida solo con SpO2 ≤97% |
+| E-08 | HCO3 por categorías «<15, 15-22, 20-30, >30» | MATIZA | La base necesita el **valor absoluto** (pH esperado y Winter, §2.5); sus categorías se solapan (¿15–22 / 22–30?) → errata menor, duda (d) |
+| E-09 | Láctico en mg/dL: <20 / 20–30 / >30 | VALIDA | Igual que el borrador; unidades siguen en D-4 |
+| E-10 | Inicio rápido EAP / EPOC hipercápnico con entradas mínimas (pH, pO2/SpO2, pCO2) | VALIDA | §3, idéntico |
+| E-11 | Elegir respirador en la evaluación inicial o al seleccionar el modo | NOVEDAD | Flujo de interfaz; pasa a los hilos de la app (§17.3) |
+
+**Algoritmo inicial (A–H)**
+
+| # | Elemento del escrito | Clase | Contraste con la base |
+|---|---|---|---|
+| E-12 | A — Sobredosis: pH <7,30 + pCO2 >50 → revertir; si no responde, seguir B… | VALIDA | Rama A de §3, idéntica (pendiente D-14) |
+| E-13 | B — Hipoxémico por PaFi: >300 / 200–300 (1.º FiO2 >0,40; CPAP si EAP, trabajo intenso o PaFi <250; BiPAP según AP) / 100–200 (CPAP; UCI si <150) / <100 (VMI; VNI si LET) | VALIDA | Rama B de §3: umbrales y conducta coinciden. Su esquema omite el **TAFCN de 1.ª línea** (ATS 2026, D-13) → confirmar si el AirVo entra en el algoritmo |
+| E-14 | C — pH normal + pCO2 alta + PaFi baja = fallo hipoxémico sobre IRC no descompensada (tratar como E) | NOVEDAD | Categoría explícita que la base subsumía en C2; útil para el motor tras validarla |
+| E-15 | D–G — Fallo hipercápnico con **pH <7,33 y pCO2 >50**; gravedad por pH <7,25/<7,20, HCO3 y láctico | MATIZA | La base usa **pH <7,35 y pCO2 >45** (ERS/ATS, BTS, consenso 2021); la subclasificación por HCO3/láctico/pH esperado coincide con C1–C3 → tabla de umbrales en §17.2 |
+| E-16 | H — pH predicho = 7,40 + (40−PaCO2)/200 (pendiente única 0,005/mmHg) | MATIZA | La base usa doble pendiente **0,008 agudo / 0,003 crónico** + Winter (Berend [26], §2.5–2.6); la fórmula única pierde la distinción aguda/crónica que su propio flujo (D vs E) necesita → duda (f) |
+| E-17 | H — Si acidosis metabólica: láctico alto → fallo cardiaco/sepsis/fármacos; normal → cetonas, GAP | VALIDA | Coherente con rama E/C3 de §3; añade detalle etiológico aprovechable en el texto de la app |
+
+**Recomendaciones iniciales por escenario (REC 1–5)**
+
+| # | Elemento del escrito | Clase | Contraste con la base |
+|---|---|---|---|
+| E-18 | REC 1 EPOC: IPAP1 12, EPAP1 5, rampa 2–3, FR respaldo 15, FiO2 para SpO2 **89–91%**; si pH <7,20 (y predicho ≈ real): IPAP 15, rampa casi vertical; subir soporte de 2 en 2 hasta Vt = PI×6; IMC >30 → EPAP 7 | NOVEDAD + MATIZA | Parámetros concretos con rampa y objetivo que **concretan D-7/D-8** (compatibles con §6.1). Matiza: SpO2 89–91 vs **88–92** (BTS rec. 4, A) · Vt **×6 fijo** vs 6–8 ml/kg (D-10) · IPAP 15 si pH <7,20 vs BTS 20 si pH <7,25 (D-7) |
+| E-19 | «FR 15 (10 r/min por debajo de la del paciente)» | DUDA | Ambas reglas no siempre coinciden → duda (c) |
+| E-20 | REC 2 Asma: IPAP1 15, EPAP1 5, rampa casi vertical, SpO2 94–96%, FR 15; control muy estricto, valorar UCI/IOT si no mejora; IMC >30 → EPAP 7 | NOVEDAD + DUDA | Más decidida que ERS/ATS 2017 (sin recomendación por evidencia insuficiente, §1.1). Propuesta: criterio de autores con monitorización estricta y aviso → duda (g). GINA usa SpO2 93–95% (§13.3) |
+| E-21 | REC 3 Restrictivo toracógeno: IPAP1 18, EPAP1 8, rampa tendida, SpO2 94–96% | NOVEDAD | Compatible con §6.2 (cifoescoliosis IPAP >20); concreta valores de inicio |
+| E-22 | REC 4 SAHOS/SHO: IPAP1 14, EPAP1 7; IMC >30 → EPAP hasta 10–12 manteniendo PS 10–12 | NOVEDAD | Compatible con §6.2 (SHO: EPAP 8–10, hasta 10–15) |
+| E-23 | REC 5 Neuromuscular: IPAP1 10, EPAP1 4, rampa media, trigger insp. muy blando, FR 9–10 (5 por debajo); si no capta → PCV con FR 14; Vt = PI**×5**; no subir EPAP >6 ni PS >8–10 | NOVEDAD + MATIZA | Desarrolla §6.2 ENM y D-17 (S/T o PCV si disparo débil). Matiza el Vt (×5 vs 6–8); los techos EPAP 6 / PS 8–10 son nuevos |
+| E-24 | Memoria de parámetros: «marcar la definitiva como IPAP1/EPAP1/rampa1» para recuperarla en las siguientes ventanas | NOVEDAD | Funcionalidad de seguimiento para el motor (§17.3) |
+| E-25 | Triggers insp./esp.: «dejar como están… hay que escribirlos» (en desarrollo) | DUDA | La base propone trigger de flujo 3–5 L/min y ciclado ~25% (§6.1); esperar su definición |
+
+**Seguimiento, problemas y retirada**
+
+| # | Elemento del escrito | Clase | Contraste con la base |
+|---|---|---|---|
+| E-26 | Valoración a los 60–120 min: recupera últimos parámetros; añade Vt medido, % de ciclos espontáneos (V60 por color; Vivo60 %), preguntas de adaptación (flujo-inspiración, trabajo insp./esp. por ECM y musculatura abdominal) | NOVEDAD | Estructura de forma operativa la reevaluación a 1 h de §8.1–8.2 |
+| E-27 | **Criterios cuantitativos de mejoría gasométrica:** MG1 ΔPaFi >21 (o ΔpO2 >9) · MG2 ΔpH >0,014 · MG3 ΔpCO2 >9 | NOVEDAD + DUDA | No estaban en la base (§8.2 era cualitativa). Pedir **bibliografía** → duda (b). Tal como está escrito, MG3 (pCO2.2 − pCO2 inicial >9) sería un **empeoramiento**: entender *descenso* >9 → errata de signo, duda (d) |
+| E-28 | Respuestas a 1 h por combinaciones (REC n + ausencia de MG1/MG2/MG3 → pantallas específicas: hipoxemia con CPAP/BiPAP, EPOC sin mejoría, etc.) | NOVEDAD | Esqueleto de la lógica de seguimiento del motor; en desarrollo (varias ramas sin contenido aún) |
+| E-29 | Valoración estructurada a las **6 h** (alarma; mismas entradas; se adelanta si hay cambio clínico) | NOVEDAD | Concreta la pauta 4–6 h de §8.1 |
+| E-30 | Pantalla de **corrección de problemas** siempre activa: hipoxemia, asincronías de trigger (autotrigger, esfuerzos inefectivos, retraso), trabajo insp. (flujo insuficiente → ↑PS o Ti) / esp. (Ti prolongado → ↓Ti, ↓PS), pCO2 que no baja, cambio clínico → nueva valoración | NOVEDAD (funcionalidad) | El contenido clínico coincide con la tabla de asincronías de §10; la pantalla permanente y sus flujos pasan a los hilos de la app (§17.3) |
+| E-31 | **Retirada de VNI:** criterios (clínica normal, FR <20, GCS 15, pH >1,34 *(errata: 7,34)*, pCO2 <50) · descenso IPAP de 2 en 2 cada 1–2 h hasta soporte 4–5 · EPAP de 1 en 1 hasta 4 · si estable 1–2 h → retirar con vigilancia · si empeora → reiniciar S/T (mínimo o como al inicio) · si solo IR parcial → OAFCN 40 L/min FiO2 24–30% | NOVEDAD | Pauta operativa que completa §9. Contrastar con la retirada **directa** en EPOC (Sellarés [11]: prolongar no reduce recaídas) y unificar el umbral de pH (7,34 vs ≥7,35) → duda (d) |
+| E-32 | **CPAP de Boussignac:** O2 si FiO2 ≥0,6; tabla flujo→CPAP (15→4 · 16→5 · 18→6 · 20→7 · 24→8 · 26→9 · 27→10 l/min→cmH2O); fórmulas de mezcla O2/aire para FiO2 intermedia | NOVEDAD + DUDA | **Dispositivo nuevo para la app** (no estaba en §12). Él mismo pide «confirmar con buena bibliografía» → duda (b); las fórmulas de mezcla tienen erratas de paréntesis (la correcta es FiO2 = (0,21×L_aire + 1,0×L_O2)/(L_aire + L_O2)) → duda (d) |
+
+### 17.2 Dudas y discrepancias que se devuelven a Enrique
+
+**Tabla de umbrales discrepantes** (propuesta: mantener los de la base, referenciados, salvo justificación):
+
+| Magnitud | Escrito de Enrique | Base científica (fuente) |
+|---|---|---|
+| pH de fallo hipercápnico | <7,33 | **<7,35** (ERS/ATS 2017 Q1b; BTS 2016; consenso 2021) |
+| pCO2 de fallo hipercápnico | >50 | **>45** (ERS/ATS; BTS usa ~49 [6,5 kPa] como criterio de inicio tras 60 min de tratamiento) |
+| SpO2 objetivo hipercápnico (EPOC, ENM) | 89–91% | **88–92%** (BTS rec. 4, grado A) |
+| SpO2 objetivo no hipercápnico (asma, restrictivo, SAHOS/SHO) | 94–96% | **92–96%** (D-9); GINA 93–95% en asma |
+| Vt objetivo | PI×6 fijo (×5 en ENM) | **6–8 ml/kg** de peso ideal (BTS; D-10) |
+| Peso ideal | Lorentz | **ARDSNet** [10] (la del Vt protector) |
+| pH predicho | 7,40 + (40−PaCO2)/200 (0,005/mmHg único) | **0,008 agudo / 0,003 crónico** + Winter (Berend [26]) |
+| IPAP en acidosis grave | 15 si pH <7,20 | BTS: **20 si pH <7,25** (D-7) |
+| FiO2 por gafas nasales | 0,21 + 0,3×L (errata; ¿0,03?) | 0,21 + **0,04**×L (D-2) → consolidar 0,03 vs 0,04 |
+| pH de inicio de retirada | >7,34 (escrito «1,34») | **≥7,35** con pCO2 <50 (§9) |
+
+**Dudas concretas (lista para la respuesta):**
+
+- **(a) Fórmulas del Vivo.** Escribe «tengo fórmulas para Vivo»; la D-12 se reformuló asumiendo que no existen (el fabricante no las publica). Pedirle las fórmulas **con su fuente** para reevaluar la D-12.
+- **(b) Bibliografía pendiente.** Umbrales MG1–MG3 de mejoría gasométrica y tabla flujo→CPAP del Boussignac (él mismo pide «confirmar con buena bibliografía»). Sin referencia no pueden entrar en el motor (regla del proyecto).
+- **(c) FR de respaldo.** «FR 15 (10 r/min por debajo de la del paciente)»: ambas reglas no siempre coinciden (p. ej., paciente a 32 rpm). ¿Prevalece el valor fijo o la regla relativa, y con qué techo/suelo?
+- **(d) Erratas a confirmar.** Gafas «0,21+0,3×L» (¿0,03?; la base propone 0,04 — consolidar) · retirada «pH > 1,34» (→ 7,34; ¿unificamos en ≥7,35?) · MG3 escrito como *subida* de pCO2 (entender descenso >9) · categorías de HCO3 solapadas (15–22 / 20–30) · paréntesis de las fórmulas de mezcla del Boussignac.
+- **(e) Lorentz vs ARDSNet.** El Vt protector (6–8 ml/kg) se definió con el peso ideal de ARDSNet; proponer mantener ARDSNet salvo que justifique Lorentz (las dos difieren varios kg en tallas extremas).
+- **(f) pH predicho.** Su fórmula única (0,005/mmHg) frente a la doble pendiente agudo/crónico + Winter ya documentada (Berend NEJM 2014 [26]); la única no distingue la crónica agudizada que su propio flujo (D vs E) necesita.
+- **(g) Asma (REC 2).** ERS/ATS 2017 no hace recomendación (evidencia insuficiente; Cochrane 2012, Homer-Bouthiette 2025 con certeza baja). ¿Confirmamos que REC 2 queda como **criterio de autores** con monitorización estricta y aviso explícito en la app?
+- **(h) Ti / I:E (su duda).** Respuesta: en S/T, el Ti y la I:E programados **solo gobiernan los ciclos mandatorios** de la FR de respaldo, y el Ti actúa además como **Ti máximo de seguridad** del ciclado (si la fuga impide ciclar por flujo). En los ciclos espontáneos manda el paciente. Se propone aclararlo en la propia interfaz de la app.
+
+### 17.3 Peticiones de funcionalidad de la app (fuera de la base científica)
+
+Se trasladan a los hilos de desarrollo (motor/seguimiento y simulador); no requieren validación científica, sí diseño:
+
+1. **Alarmas de seguimiento:** al pulsar «Iniciar seguimiento», alarma a 1 h (valoración 60–120 min) y a las 6 h (valoración estructurada).
+2. **Pantalla permanente de corrección de problemas**, activa salvo cuando saltan las ventanas de 1 h / 6 h, con los últimos parámetros y gasometría a la vista y almacenando cada cambio.
+3. **Seguimiento simultáneo de ≥3 pacientes** desde móvil, tablet u ordenador.
+4. **Simulador: conmutador por gráfica** (un pulsador por cada una de las 3 curvas, por defecto las tres activas; combinables).
+5. **Memoria de parámetros** IPAP1/EPAP1/rampa1 («marcar la definitiva») recuperada en cada ventana.
+6. **Selector de respirador** en la evaluación inicial o al elegir modo (incluir Boussignac como dispositivo si se valida E-32).
 
 ---
 

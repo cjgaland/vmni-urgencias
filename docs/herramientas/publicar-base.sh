@@ -15,7 +15,11 @@ s = re.sub(r"\n> \*\*Objeto\.\*\*.*?---\n", "\n---\n", s, count=1, flags=re.S)
 # fuera las secciones internas de revisión
 s = re.sub(r"## 14\. Decisiones abiertas para revisión.*?(?=## 15\.)", "", s, flags=re.S)
 s = re.sub(r"## 16\. Correcciones al borrador inicial.*?(?=\n## |\Z)", "", s, flags=re.S)
+s = re.sub(r"## 17\. Revisión de Enrique.*?(?=\n## |\Z)", "", s, flags=re.S)
+# la coletilla interna de la línea de versión → solo el número
+s = re.sub(r"\*\*Versión ([\d.]+) — [^\n]*\*\*", r"**Versión \1**", s)
 # referencias internas al formulario → nota neutra
+s = re.sub(r"\s*→ decisiones abiertas \*\*D-\d+(?:, D-\d+)*(?: y D-\d+)?\*\* \(§14\)", " (pendientes de revisión)", s)
 s = re.sub(r"\s*→ \*\*decisión abierta D-\d+\*\*", " (pendiente de revisión)", s)
 s = re.sub(r"\s*→ decisión abierta D-\d+( \([^)]*\))?", " (pendiente de revisión)", s)
 s = re.sub(r"\s*\(→ decisión abierta D-\d+\)", " (pendiente de revisión)", s)
